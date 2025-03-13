@@ -36,4 +36,12 @@ public class ColorTests
         Assert.True(Color.CloseEnough(new Color(4.0f, 8.0f, 12.0f), m * col1));
         Assert.True(Color.CloseEnough(new Color(5.0f, 12.0f, 21.0f), col1 * col2));
     }
+    
+    // Test method ToString
+    [Fact]
+    public void TestToString()
+    {
+        var col = new Color(1.1f, 2.0f, 3);
+        Assert.True("<R:1.1, G:2, B:3>" == col.ToString(),  "<R:1.0, G:2.0, B:3> != " + col.ToString());
+    }
 }
