@@ -6,6 +6,7 @@ namespace Trace.Tests;
 
 public class UtilsTests
 {
+    // Test for method CloseEnough between floats
     [Fact]
     public void TestCloseEnough()
     {
