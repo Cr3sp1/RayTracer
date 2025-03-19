@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayTracer", "RayTracer\RayT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trace.Tests", "Trace.Tests\Trace.Tests.csproj", "{76D71D98-6DFF-4DF7-BB68-5383D272CF58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exceptions", "Exceptions\Exceptions.csproj", "{EE247B44-466F-4BC5-9FBC-116401D029AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{76D71D98-6DFF-4DF7-BB68-5383D272CF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76D71D98-6DFF-4DF7-BB68-5383D272CF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76D71D98-6DFF-4DF7-BB68-5383D272CF58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE247B44-466F-4BC5-9FBC-116401D029AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE247B44-466F-4BC5-9FBC-116401D029AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE247B44-466F-4BC5-9FBC-116401D029AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE247B44-466F-4BC5-9FBC-116401D029AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
