@@ -14,4 +14,14 @@ public class UtilsTests
         Assert.True(Utils.CloseEnough(100, 101, 2));
         Assert.False(Utils.CloseEnough(1f, 1f - 2e-5f));
     }
+    
+    // Tests for methods regarding PFM format
+    
+    // Method ParseEndianness
+    [Fact]
+    public void TestParseEndianness()
+    {
+        Assert.True(Utils.ParseEndianness("1.0")==Utils.Endianness.BigEndian);
+        Assert.True(Utils.ParseEndianness("-1.0")==Utils.Endianness.LittleEndian);
+    }
 }
