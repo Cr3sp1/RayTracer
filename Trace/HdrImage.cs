@@ -1,5 +1,8 @@
 ﻿namespace Trace;
 
+using Exceptions;
+using static Utils;
+
 public class HdrImage
 {
     // HdrImage fields
@@ -37,4 +40,25 @@ public class HdrImage
 
     // Get array index corresponding to coordinates
     public int _PixelOffset(int x, int y) => y * Width + x;
+    
+    // Method to read floats from file to be used exclusively in HdrImage.ReadPfmImage!
+    private static float _ReadFloat(Stream stream, Endianness endianness = Endianness.LittleEndian )
+    {
+        var buffer = new byte[4];
+        
+        try
+        {
+            stream.ReadExactly(buffer, 0, 4);
+            // Convert to big-endian if needed
+            if (endianness == Endianness.BigEndian) Array.Reverse(buffer); 
+            // Check system endianness
+            if(BitConverter.IsLittleEndian == false) Array.Reverse(buffer); 
+
+            return BitConverter.ToSingle(buffer, 0);
+        }
+        catch
+        {
+            throw new InvalidPfmFileFormatException("Impossible to read binary data from the file");
+        }
+    }
 }
