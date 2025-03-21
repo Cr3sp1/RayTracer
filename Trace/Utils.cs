@@ -26,7 +26,6 @@ public static class Utils
         return Encoding.ASCII.GetString(buffer.ToArray());
     }
 
-
     // Endianness
     public enum Endianness
     {
@@ -87,5 +86,17 @@ public static class Utils
         }
 
         return (width, height);
+    }
+
+    // Write float to file in binary
+    public static void WriteFloat(Stream outStream, float value, Endianness endianness = Endianness.LittleEndian)
+    {
+        var valueBytes = BitConverter.GetBytes(value);
+
+        // Invert byte order if needed
+        var converterEndianness = BitConverter.IsLittleEndian ? Endianness.LittleEndian : Endianness.BigEndian;
+        if (converterEndianness != endianness) Array.Reverse(valueBytes);
+
+        outStream.Write(valueBytes, 0, valueBytes.Length);
     }
 }

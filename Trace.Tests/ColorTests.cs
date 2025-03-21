@@ -42,6 +42,6 @@ public class ColorTests
     public void TestToString()
     {
         var col = new Color(1.1f, 2.0f, 3);
-        Assert.True("<R:1.1, G:2, B:3>" == col.ToString(),  "<R:1.0, G:2.0, B:3> != " + col.ToString());
+        Assert.True("<R:1.1, G:2, B:3>" == col.ToString(),  "<R:1.1, G:2.0, B:3> != " + col.ToString());
     }
 }

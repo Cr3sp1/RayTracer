@@ -1,6 +1,7 @@
 ﻿namespace Trace;
 
 using Exceptions;
+using System.Text;
 using static Utils;
 
 public class HdrImage
@@ -34,31 +35,53 @@ public class HdrImage
 
         Pixels[_PixelOffset(x, y)] = c;
     }
-    
+
     // Check validity of coordinates
     public bool ValidCoords(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
 
     // Get array index corresponding to coordinates
     public int _PixelOffset(int x, int y) => y * Width + x;
-    
+
     // Method to read floats from file to be used exclusively in HdrImage.ReadPfmImage!
-    private static float _ReadFloat(Stream stream, Endianness endianness = Endianness.LittleEndian )
+    private static float _ReadFloat(Stream stream, Endianness endianness = Endianness.LittleEndian)
     {
         var buffer = new byte[4];
-        
+
         try
         {
             stream.ReadExactly(buffer, 0, 4);
-            // Convert to big-endian if needed
-            if (endianness == Endianness.BigEndian) Array.Reverse(buffer); 
-            // Check system endianness
-            if(BitConverter.IsLittleEndian == false) Array.Reverse(buffer); 
+
+            // Invert byte order if needed
+            var converterEndianness = BitConverter.IsLittleEndian ? Endianness.LittleEndian : Endianness.BigEndian;
+            if (converterEndianness != endianness) Array.Reverse(buffer);
 
             return BitConverter.ToSingle(buffer, 0);
         }
         catch
         {
             throw new InvalidPfmFileFormatException("Impossible to read binary data from the file");
+        }
+    }
+
+
+    // Write HdrImage to pfm file
+    public void WritePfm(Stream outStream, Endianness endianness = Endianness.LittleEndian)
+    {
+        // Write the header
+        var endianStr = endianness == Endianness.LittleEndian ? "-1.0" : "1.0";
+        var header = Encoding.ASCII.GetBytes($"PF\n{Width} {Height}\n{endianStr}\n");
+        outStream.Write(header, 0, header.Length);
+        
+        // Write the image (bottom-to-up, left-to-right)
+        for (var y = Height - 1; y >= 0; y--)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                var color = Pixels[_PixelOffset(x, y)];
+                WriteFloat( outStream, color.R, endianness);
+                WriteFloat( outStream, color.G, endianness);
+                WriteFloat( outStream, color.B, endianness);
+            }
         }
     }
 }
