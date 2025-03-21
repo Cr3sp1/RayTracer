@@ -18,6 +18,10 @@ public class HdrImage
         Pixels = new Color[width * height];
     }
 
+    public HdrImage()
+    {
+    }
+
     // Get a pixel
     public Color GetPixel(int x, int y)
     {
@@ -62,7 +66,35 @@ public class HdrImage
             throw new InvalidPfmFileFormatException("Impossible to read binary data from the file");
         }
     }
+    
+    // Read PFM file - to be fixed: out of here?
+    public HdrImage ReadPfm(Stream stream)
+    {
+        var magic = ReadLine(stream);
+        if (magic != "PF")
+        {
+            throw new InvalidPfmFileFormatException("Invalid magic in Pfm file.");
+        }
 
+        var imgSize = ReadLine(stream);
+        (var width, var height) = ParseImgSize(imgSize);
+
+        var endianStr = ReadLine(stream);
+        var endianness = ParseEndianness(endianStr);
+
+        var imgResult = new HdrImage(width, height);
+        for (var y = height - 1; y >= 0; y--)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var color = new Color(_ReadFloat(stream, endianness), _ReadFloat(stream, endianness),
+                    _ReadFloat(stream, endianness));
+                imgResult.SetPixel(x, y, color);
+            }
+        }
+
+        return imgResult;
+    }
 
     // Write HdrImage to pfm file
     public void WritePfm(Stream outStream, Endianness endianness = Endianness.LittleEndian)
@@ -71,16 +103,16 @@ public class HdrImage
         var endianStr = endianness == Endianness.LittleEndian ? "-1.0" : "1.0";
         var header = Encoding.ASCII.GetBytes($"PF\n{Width} {Height}\n{endianStr}\n");
         outStream.Write(header, 0, header.Length);
-        
+
         // Write the image (bottom-to-up, left-to-right)
         for (var y = Height - 1; y >= 0; y--)
         {
             for (var x = 0; x < Width; x++)
             {
                 var color = Pixels[_PixelOffset(x, y)];
-                WriteFloat( outStream, color.R, endianness);
-                WriteFloat( outStream, color.G, endianness);
-                WriteFloat( outStream, color.B, endianness);
+                WriteFloat(outStream, color.R, endianness);
+                WriteFloat(outStream, color.G, endianness);
+                WriteFloat(outStream, color.B, endianness);
             }
         }
     }

@@ -38,20 +38,20 @@ public class UtilsTests
         Assert.True(Utils.ParseEndianness("1.0") == Utils.Endianness.BigEndian);
         Assert.True(Utils.ParseEndianness("-1.0") == Utils.Endianness.LittleEndian);
 
-        /*try
+        var en = new Utils.Endianness();
+        
+        try
         {
-            var e = new Utils.Endianness();
-            e = Utils.ParseEndianness("0.0");
+            en = Utils.ParseEndianness("0.0");
             Assert.Fail("Expected exception");
         }
         catch (InvalidPfmFileFormatException)
         {
             Assert.True(true);
-        }*/
+        }
 
         try
         {
-            var en = new Utils.Endianness();
             en = Utils.ParseEndianness("pippo");
             Assert.Fail("Expected exception");
         }
