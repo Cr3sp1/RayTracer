@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Exceptions;
 using Xunit;
 using Trace;
 
@@ -41,37 +42,56 @@ public class HdrImageTests
         Assert.Equal(3.1f, img.GetPixel(0, 1).B);
         Assert.Equal(pixel, img.GetPixel(0, 1));
     }
-    
+
     // Test ReadPfm method
     [Fact]
     public void TestReadPfm()
     {
         byte[] leReferenceBytes =
-        {
-            0x50, 0x46, 0x0a, 0x33, 0x20, 0x32, 0x0a, 0x2d, 0x31, 0x2e, 0x30, 0x0a,
-            0x00, 0x00, 0xc8, 0x42, 0x00, 0x00, 0x48, 0x43, 0x00, 0x00, 0x96, 0x43,
-            0x00, 0x00, 0xc8, 0x43, 0x00, 0x00, 0xfa, 0x43, 0x00, 0x00, 0x16, 0x44,
-            0x00, 0x00, 0x2f, 0x44, 0x00, 0x00, 0x48, 0x44, 0x00, 0x00, 0x61, 0x44,
-            0x00, 0x00, 0x20, 0x41, 0x00, 0x00, 0xa0, 0x41, 0x00, 0x00, 0xf0, 0x41,
-            0x00, 0x00, 0x20, 0x42, 0x00, 0x00, 0x48, 0x42, 0x00, 0x00, 0x70, 0x42,
-            0x00, 0x00, 0x8c, 0x42, 0x00, 0x00, 0xa0, 0x42, 0x00, 0x00, 0xb4, 0x42
-        };
+            File.ReadAllBytes(
+                @"C:\Users\Utente\Documents\Università\Magistrale\CNGIF\RayTracer\Trace.Tests\TestFiles\reference_le.pfm");
         byte[] beReferenceBytes =
-        {
-            0x50, 0x46, 0x0a, 0x33, 0x20, 0x32, 0x0a, 0x31, 0x2e, 0x30, 0x0a, 0x42,
-            0xc8, 0x00, 0x00, 0x43, 0x48, 0x00, 0x00, 0x43, 0x96, 0x00, 0x00, 0x43,
-            0xc8, 0x00, 0x00, 0x43, 0xfa, 0x00, 0x00, 0x44, 0x16, 0x00, 0x00, 0x44,
-            0x2f, 0x00, 0x00, 0x44, 0x48, 0x00, 0x00, 0x44, 0x61, 0x00, 0x00, 0x41,
-            0x20, 0x00, 0x00, 0x41, 0xa0, 0x00, 0x00, 0x41, 0xf0, 0x00, 0x00, 0x42,
-            0x20, 0x00, 0x00, 0x42, 0x48, 0x00, 0x00, 0x42, 0x70, 0x00, 0x00, 0x42,
-            0x8c, 0x00, 0x00, 0x42, 0xa0, 0x00, 0x00, 0x42, 0xb4, 0x00, 0x00
-        };
+            File.ReadAllBytes(
+                @"C:\Users\Utente\Documents\Università\Magistrale\CNGIF\RayTracer\Trace.Tests\TestFiles\reference_be.pfm");
 
-        /*using (MemoryStream ms = new MemoryStream(leReferenceBytes))
+        using var leMs = new MemoryStream(leReferenceBytes);
+        var leTestImg = new HdrImage(leMs);
+
+        Assert.True(leTestImg.Width == 3);
+        Assert.True(leTestImg.Height == 2);
+
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(0, 0), new Color((float)1.0e1, (float)2.0e1, (float)3.0e1)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(1, 0), new Color((float)4.0e1, (float)5.0e1, (float)6.0e1)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(2, 0), new Color((float)7.0e1, (float)8.0e1, (float)9.0e1)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(0, 1), new Color((float)1.0e2, (float)2.0e2, (float)3.0e2)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(0, 0), new Color((float)1.0e1, (float)2.0e1, (float)3.0e1)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(1, 1), new Color((float)4.0e2, (float)5.0e2, (float)6.0e2)));
+        Assert.True(Color.CloseEnough(leTestImg.GetPixel(2, 1), new Color((float)7.0e2, (float)8.0e2, (float)9.0e2)));
+
+        using var beMs = new MemoryStream(beReferenceBytes);
+        var beTestImg = new HdrImage(beMs);
+
+        Assert.True(leTestImg.Width == 3);
+        Assert.True(leTestImg.Height == 2);
+
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(0, 0), new Color((float)1.0e1, (float)2.0e1, (float)3.0e1)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(1, 0), new Color((float)4.0e1, (float)5.0e1, (float)6.0e1)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(2, 0), new Color((float)7.0e1, (float)8.0e1, (float)9.0e1)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(0, 1), new Color((float)1.0e2, (float)2.0e2, (float)3.0e2)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(0, 0), new Color((float)1.0e1, (float)2.0e1, (float)3.0e1)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(1, 1), new Color((float)4.0e2, (float)5.0e2, (float)6.0e2)));
+        Assert.True(Color.CloseEnough(beTestImg.GetPixel(2, 1), new Color((float)7.0e2, (float)8.0e2, (float)9.0e2)));
+
+        byte[] pfmWrong = System.Text.Encoding.ASCII.GetBytes("PF\n3 2\n-1.0\nstop");
+        using var wrongMs = new MemoryStream(pfmWrong);
+        try
         {
-            var testImg = new HdrImage();
-            testImg.ReadPfm(ms);
-            
-        }*/
+            var wrongTestImg = new HdrImage(wrongMs);
+            Assert.Fail("Expected exception");
+        }
+        catch (InvalidPfmFileFormatException)
+        {
+            Assert.True(true);
+        }
     }
 }

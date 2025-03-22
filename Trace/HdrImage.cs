@@ -7,7 +7,8 @@ using static Utils;
 public class HdrImage
 {
     // HdrImage fields
-    public readonly int Width, Height;
+    public int Width;
+    public int Height;
     public Color[] Pixels;
 
     // Constructor
@@ -18,8 +19,9 @@ public class HdrImage
         Pixels = new Color[width * height];
     }
 
-    public HdrImage()
+    public HdrImage(Stream stream)
     {
+        _ReadPfm(stream);
     }
 
     // Get a pixel
@@ -66,9 +68,9 @@ public class HdrImage
             throw new InvalidPfmFileFormatException("Impossible to read binary data from the file");
         }
     }
-    
-    // Read PFM file - to be fixed: out of here?
-    public HdrImage ReadPfm(Stream stream)
+
+    // Read PFM file
+    private void _ReadPfm(Stream stream)
     {
         var magic = ReadLine(stream);
         if (magic != "PF")
@@ -77,23 +79,21 @@ public class HdrImage
         }
 
         var imgSize = ReadLine(stream);
-        (var width, var height) = ParseImgSize(imgSize);
+        (Width, Height) = ParseImgSize(imgSize);
+        Pixels = new Color[Width * Height];
 
         var endianStr = ReadLine(stream);
         var endianness = ParseEndianness(endianStr);
 
-        var imgResult = new HdrImage(width, height);
-        for (var y = height - 1; y >= 0; y--)
+        for (var y = Height - 1; y >= 0; y--)
         {
-            for (var x = 0; x < width; x++)
+            for (var x = 0; x < Width; x++)
             {
                 var color = new Color(_ReadFloat(stream, endianness), _ReadFloat(stream, endianness),
                     _ReadFloat(stream, endianness));
-                imgResult.SetPixel(x, y, color);
+                SetPixel(x, y, color);
             }
         }
-
-        return imgResult;
     }
 
     // Write HdrImage to pfm file
