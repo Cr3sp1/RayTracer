@@ -24,4 +24,10 @@
     <ProjectReference Include="..\Trace\Trace.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestFiles\**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+</ItemGroup>
+
 </Project>

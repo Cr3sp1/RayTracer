@@ -47,12 +47,11 @@ public class HdrImageTests
     [Fact]
     public void TestReadPfm()
     {
-        byte[] leReferenceBytes =
-            File.ReadAllBytes(
-                @"C:\Users\Utente\Documents\Università\Magistrale\CNGIF\RayTracer\Trace.Tests\TestFiles\reference_le.pfm");
-        byte[] beReferenceBytes =
-            File.ReadAllBytes(
-                @"C:\Users\Utente\Documents\Università\Magistrale\CNGIF\RayTracer\Trace.Tests\TestFiles\reference_be.pfm");
+        string leFilePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "reference_le.pfm");
+        byte[] leReferenceBytes = File.ReadAllBytes(leFilePath);
+        
+        string beFilePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "reference_be.pfm");
+        byte[] beReferenceBytes = File.ReadAllBytes(beFilePath);
 
         using var leMs = new MemoryStream(leReferenceBytes);
         var leTestImg = new HdrImage(leMs);
