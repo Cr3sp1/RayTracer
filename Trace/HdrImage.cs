@@ -19,9 +19,17 @@ public class HdrImage
         Pixels = new Color[width * height];
     }
 
+    // Construct from pfm file
     public HdrImage(Stream stream)
     {
         _ReadPfm(stream);
+    }
+    
+    // Construct from pfm file
+    public HdrImage(string filePath)
+    {
+        using var pfmStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        _ReadPfm(pfmStream);
     }
 
     // Get a pixel
@@ -96,7 +104,7 @@ public class HdrImage
         }
     }
 
-    // Write HdrImage to pfm file
+    // Write HdrImage to PFM file
     public void WritePfm(Stream outStream, Endianness endianness = Endianness.LittleEndian)
     {
         // Write the header
@@ -115,5 +123,43 @@ public class HdrImage
                 WriteFloat(outStream, color.B, endianness);
             }
         }
+    }
+    
+    // Override 'Equals' method
+    public override bool Equals(object obj)
+    {
+        if (obj is not HdrImage other)
+            return false;
+
+        for (int i = 0; i < Pixels.Length; i++)
+        {
+            if (!Pixels[i].Equals(other.Pixels[i]))
+                return false;
+        }
+
+        return true;
+    }
+    
+    // Overload '==' operator
+    public static bool operator ==(HdrImage left, HdrImage right)
+    {
+        return ReferenceEquals(left, right) || left.Equals(right);
+    }
+
+    // Overload '!=' operator
+    public static bool operator !=(HdrImage left, HdrImage right)
+    {
+        return !(left == right);
+    }
+    
+    // Override 'GetHashCode' to ensure consistency with 'Equals'
+    public override int GetHashCode()
+    {
+        var hash = HashCode.Combine(Width, Height);
+        foreach (var pixel in Pixels)
+        {
+           hash = HashCode.Combine(hash, pixel.R, pixel.G, pixel.B);
+        }
+        return hash;
     }
 }

@@ -49,7 +49,7 @@ public class HdrImageTests
     {
         string leFilePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "reference_le.pfm");
         byte[] leReferenceBytes = File.ReadAllBytes(leFilePath);
-        
+
         string beFilePath = Path.Combine(AppContext.BaseDirectory, "TestFiles", "reference_be.pfm");
         byte[] beReferenceBytes = File.ReadAllBytes(beFilePath);
 
@@ -92,5 +92,26 @@ public class HdrImageTests
         {
             Assert.True(true);
         }
+    }
+
+    // Test WritePfm method
+    [Fact]
+    public void TestWritePfm()
+    {
+        var img = new HdrImage(2, 3);
+        var pixel = new Color(1, 2, 3.1f);
+        img.SetPixel(0, 1, pixel);
+
+        using var leStream = new MemoryStream();
+        img.WritePfm(leStream);
+        leStream.Seek(0, SeekOrigin.Begin);     // Resets stream position
+        var leImage = new HdrImage(leStream);
+        Assert.Equal(img, leImage);
+        
+        using var beStream = new MemoryStream();
+        img.WritePfm(beStream);
+        beStream.Seek(0, SeekOrigin.Begin);
+        var beImage = new HdrImage(beStream);
+        Assert.Equal(img, beImage);
     }
 }
