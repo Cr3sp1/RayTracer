@@ -109,8 +109,8 @@ public class HdrImageTests
         Assert.Equal(img, leImage);
         
         using var beStream = new MemoryStream();
-        img.WritePfm(beStream);
-        beStream.Seek(0, SeekOrigin.Begin);
+        img.WritePfm(beStream, Utils.Endianness.BigEndian);
+        beStream.Seek(0, SeekOrigin.Begin);     // Resets stream position
         var beImage = new HdrImage(beStream);
         Assert.Equal(img, beImage);
     }
