@@ -124,6 +124,39 @@ public class HdrImage
             }
         }
     }
+
+    // Compute average luminosity
+    public float AverageLuminosity(float delta = 1e-10f)
+    {
+        var sum = 0.0f;
+        for (int i = 0; i < Pixels.Length; i++)
+        {
+            sum += (float)Math.Log10(delta + Pixels[i].Luminosity());
+        }
+
+        return (float)Math.Pow(10, sum / Pixels.Length);
+    }
+    
+    // Normalize image
+    public void NormalizeImage(float factor, float? luminosity = null)
+    {
+        var lum = luminosity ?? AverageLuminosity();
+        for (int i = 0; i < Pixels.Length; ++i) { Pixels[i] = factor / lum * Pixels[i]; }
+    }
+    
+    // Equation for preventing RGB from being too large
+    private static float _Clamp(float x) => x / (1.0f + x);     // only used in ClampImage!
+    
+    // Clips RGB values that are too large
+    public void ClampImage()
+    {
+        for (int i = 0; i < Pixels.Length; ++i)
+        {
+            Pixels[i].R = _Clamp(Pixels[i].R);
+            Pixels[i].G = _Clamp(Pixels[i].G);
+            Pixels[i].B = _Clamp(Pixels[i].B);
+        }
+    }
     
     // Override 'Equals' method
     public override bool Equals(object obj)
