@@ -44,8 +44,8 @@ public class ColorTests
         var col1 = new Color(1.0f, 2.0f, 3.0f);
         var col2 = new Color(9.0f, 5.0f, 7.0f);
 
-        Assert.True(Utils.CloseEnough(col1.Luminosity(), 2.0f));
-        Assert.True(Utils.CloseEnough(col2.Luminosity(), 7.0f));
+        Assert.True(Utils.CloseEnough(2.0f, col1.Luminosity()));
+        Assert.True(Utils.CloseEnough(7.0f, col2.Luminosity()));
     }
 
     // Test method ToString

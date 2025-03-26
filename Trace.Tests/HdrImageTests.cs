@@ -104,17 +104,17 @@ public class HdrImageTests
 
         using var leStream = new MemoryStream();
         img.WritePfm(leStream);
-        leStream.Seek(0, SeekOrigin.Begin);     // Resets stream position
+        leStream.Seek(0, SeekOrigin.Begin); // Resets stream position
         var leImage = new HdrImage(leStream);
         Assert.Equal(img, leImage);
-        
+
         using var beStream = new MemoryStream();
         img.WritePfm(beStream, Utils.Endianness.BigEndian);
-        beStream.Seek(0, SeekOrigin.Begin);     // Resets stream position
+        beStream.Seek(0, SeekOrigin.Begin); // Resets stream position
         var beImage = new HdrImage(beStream);
         Assert.Equal(img, beImage);
     }
-    
+
     // Test average luminosity
     [Fact]
     public void TestAverageLuminosity()
@@ -122,43 +122,36 @@ public class HdrImageTests
         var img = new HdrImage(2, 1);
         img.SetPixel(0, 0, new Color(5.0f, 10.0f, 15.0f));
         img.SetPixel(1, 0, new Color(500.0f, 1000.0f, 1500.0f));
-        
-        Assert.True(Trace.Utils.CloseEnough(img.AverageLuminosity(0.0f), 100.0f));
-        
-        img.SetPixel(1, 0, new Color(500.0f, 0.0f, 1500.0f));
-        if (float.IsInfinity(img.AverageLuminosity(0.0f)))
-        {
-            Assert.True(true);
-        }
-        if (float.IsInfinity(img.AverageLuminosity()))
-        {
-            Assert.Fail("Parameter delta does not work");
-        }
+        Assert.True(Utils.CloseEnough(img.AverageLuminosity(0.0f), 100.0f));
+
+        img.SetPixel(1, 0, new Color(0f, 0f, 0f));
+        Assert.Equal(0f, img.AverageLuminosity(0.0f) );
+        Assert.False(Utils.CloseEnough(0f, img.AverageLuminosity()) );
     }
-    
+
     // Test normalize image
     [Fact]
     public void TestNormalizeImage()
     {
         var img = new HdrImage(2, 1);
-        
+
         img.SetPixel(0, 0, new Color(5.0f, 10.0f, 15.0f));
         img.SetPixel(1, 0, new Color(500.0f, 1000.0f, 1500.0f));
-        
+
         img.NormalizeImage(1000.0f, 100.0f);
         Assert.True(Color.CloseEnough(img.GetPixel(0, 0), new Color(0.5e2f, 1.0e2f, 1.5e2f)));
         Assert.True(Color.CloseEnough(img.GetPixel(1, 0), new Color(0.5e4f, 1.0e4f, 1.5e4f)));
     }
-    
+
     // Test clamp image
     [Fact]
     public void TestClampImage()
     {
         var img = new HdrImage(2, 1);
-        
+
         img.SetPixel(0, 0, new Color(5.0f, 10.0f, 15.0f));
         img.SetPixel(1, 0, new Color(500.0f, 1000.0f, 1500.0f));
-        
+
         img.ClampImage();
         foreach (var pixel in img.Pixels)
         {

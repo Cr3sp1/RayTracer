@@ -35,14 +35,12 @@ public class UtilsTests
     [Fact]
     public void TestParseEndianness()
     {
-        Assert.True(Utils.ParseEndianness("1.0") == Utils.Endianness.BigEndian);
-        Assert.True(Utils.ParseEndianness("-1.0") == Utils.Endianness.LittleEndian);
-
-        var en = new Utils.Endianness();
+        Assert.True(ParseEndianness("1.0") == Endianness.BigEndian);
+        Assert.True(ParseEndianness("-1.0") == Endianness.LittleEndian);
         
         try
         {
-            en = Utils.ParseEndianness("0.0");
+            ParseEndianness("0.0");
             Assert.Fail("Expected exception");
         }
         catch (InvalidPfmFileFormatException)
@@ -52,7 +50,7 @@ public class UtilsTests
 
         try
         {
-            en = Utils.ParseEndianness("pippo");
+            ParseEndianness("pippo");
             Assert.Fail("Expected exception");
         }
         catch (InvalidPfmFileFormatException)
@@ -65,13 +63,12 @@ public class UtilsTests
     [Fact]
     public void TestParseImgSize()
     {
-        Assert.True(Utils.ParseImgSize("3 2") == (3, 2));
-        Assert.False(Utils.ParseImgSize("1 2") == (3, 2));
+        Assert.True(ParseImgSize("3 2") == (3, 2));
+        Assert.False(ParseImgSize("1 2") == (3, 2));
 
-        int width, height;
         try
         {
-            (width, height) = Utils.ParseImgSize("1 2 3");
+            ParseImgSize("1 2 3");
             Assert.Fail("Expected exception for invalid length of line");
         }
         catch (InvalidPfmFileFormatException)
@@ -81,7 +78,7 @@ public class UtilsTests
 
         try
         {
-            (width, height) = Utils.ParseImgSize("1");
+            ParseImgSize("1");
             Assert.Fail("Expected exception for invalid length of line");
         }
         catch (InvalidPfmFileFormatException)
@@ -91,7 +88,7 @@ public class UtilsTests
 
         try
         {
-            (width, height) = Utils.ParseImgSize("-1 1");
+            ParseImgSize("-1 1");
             Assert.Fail("Expected exception for negative width or height");
         }
         catch (InvalidPfmFileFormatException)
@@ -101,7 +98,7 @@ public class UtilsTests
 
         try
         {
-            (width, height) = Utils.ParseImgSize("pippo pippa");
+            ParseImgSize("pippo pippa");
             Assert.Fail("Expected exception for invalid width or height");
         }
         catch (InvalidPfmFileFormatException)

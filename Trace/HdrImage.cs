@@ -141,7 +141,7 @@ public class HdrImage
     public void NormalizeImage(float factor, float? luminosity = null)
     {
         var lum = luminosity ?? AverageLuminosity();
-        for (int i = 0; i < Pixels.Length; ++i) { Pixels[i] = factor / lum * Pixels[i]; }
+        for (int i = 0; i < Pixels.Length; ++i)  Pixels[i] = factor / lum * Pixels[i];
     }
     
     // Equation for preventing RGB from being too large
@@ -159,7 +159,7 @@ public class HdrImage
     }
     
     // Override 'Equals' method
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not HdrImage other)
             return false;
