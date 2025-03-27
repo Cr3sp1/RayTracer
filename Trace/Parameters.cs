@@ -9,7 +9,7 @@ public struct Parameters
     public string InputPfmFileName;
     public float Factor;
     public float Gamma;
-    public string OutputPngFileName;
+    public string OutputLdrFileName;
 
     // Constructor
     public Parameters()
@@ -17,22 +17,22 @@ public struct Parameters
         InputPfmFileName = string.Empty;
         Factor = 0.2f;
         Gamma = 1.0f;
-        OutputPngFileName = string.Empty;
+        OutputLdrFileName = string.Empty;
     }
     
     // Read the parameters from command line
     public void ParseFromCommandLine(string[] argv)
     {
-        if (argv.Length != 5)
+        if (argv.Length != 4)
         {
-            throw new RuntimeException("Usage: Main INPUT_PFM_FILE FACTOR GAMMA OUTPUT_PNG_FILE");
+            throw new RuntimeException("Usage: INPUT_PFM_FILE FACTOR GAMMA OUTPUT_LDR_FILE");
         }
         
-        InputPfmFileName = argv[1];
+        InputPfmFileName = argv[0];
         
         try
         {
-            Factor = float.Parse(argv[2]);
+            Factor = float.Parse(argv[1]);
         }
         catch (FormatException)
         {
@@ -41,14 +41,14 @@ public struct Parameters
         
         try
         {
-            Gamma = float.Parse(argv[3]);
+            Gamma = float.Parse(argv[2]);
         }
         catch (FormatException)
         {
             throw new RuntimeException("Invalid gamma value, it must be a floating point number.");
         }
         
-        OutputPngFileName = argv[4];
+        OutputLdrFileName = argv[3];
     }
     
 }
