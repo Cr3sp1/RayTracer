@@ -1,6 +1,8 @@
 ﻿namespace Trace;
 
-// Color struct 
+/// <summary>
+/// Struct representing RGB colors, with R,G,B values represented as <c>float</c> values.
+/// </summary>
 public struct Color
 {
     // Color fields
@@ -20,7 +22,9 @@ public struct Color
     public static Color operator *(Color col1, Color col2) =>
         new Color(col1.R * col2.R, col1.G * col2.G, col1.B * col2.B);
 
-    // Checks if two Color objects are equal with a tolerance epsilon
+    /// <summary>
+    /// Check if two <c>Color</c> have the same rgb values with tolerance <c>epsilon</c>.
+    /// </summary>
     public static bool CloseEnough(Color col1, Color col2, float epsilon = 1e-5f) =>
         Utils.CloseEnough(col1.R, col2.R, epsilon) && Utils.CloseEnough(col1.G, col2.G, epsilon) &&
         Utils.CloseEnough(col1.B, col2.B, epsilon);

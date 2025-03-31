@@ -5,12 +5,16 @@ using System.Text;
 
 public static class Utils
 {
-    // Checks if two floats are equal with a tolerance epsilon
+    /// <summary>
+    /// Check if two <c>float</c> have the same values with tolerance <c>epsilon</c>.
+    /// </summary>
     public static bool CloseEnough(float a, float b, float epsilon = 1e-5f) => Math.Abs(a - b) < epsilon;
 
     // Utilities for managing PFM format
 
-    // Read line of ascii characters
+    /// <summary>
+    /// Read line of ascii characters from a <c>Stream</c>.
+    /// </summary>
     public static string ReadLine(Stream stream)
     {
         using var buffer = new MemoryStream();
@@ -100,7 +104,11 @@ public static class Utils
         outStream.Write(valueBytes, 0, valueBytes.Length);
     }
     
-    // Return absolute path to the directory containing solution
+    /// <summary>
+    /// Method to find the main directory containing image folders.
+    /// </summary>
+    /// <returns>Path to directory containing RayTracer.sln.</returns>
+    /// <exception cref="DirectoryNotFoundException"></exception>
     public static string FindSlnPath()
     {
         // Start from current directory
@@ -109,7 +117,7 @@ public static class Utils
         while (directoryInfo!= null)
         {
             
-            // Search for folder in the current directory
+            // Search for RayTracer.sln in the current directory
             // Console.WriteLine("Searching directory " + directoryInfo.FullName);
             if(File.Exists(Path.Combine(directoryInfo.FullName, "RayTracer.sln"))) return directoryInfo.FullName;
 

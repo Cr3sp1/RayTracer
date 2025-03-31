@@ -6,11 +6,13 @@ using static Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+/// <summary>
+/// Class representing a high dynamic range image. Contains image <c> int Width, Height</c>, and an array <c>Pixels</c> of <c>Color</c>.
+/// </summary>
 public class HdrImage
 {
     // HdrImage fields
-    public int Width;
-    public int Height;
+    public int Width, Height;
     public Color[] Pixels;
 
     // Constructor
@@ -21,14 +23,20 @@ public class HdrImage
         Pixels = new Color[width * height];
     }
 
-    // Construct from pfm file
+    /// <summary>
+    /// Construct <c>HdrImage</c> from PFM image.
+    /// </summary>
+    /// <param name="stream"><c>Stream</c> from which PFM image is read.</param>
     public HdrImage(Stream stream)
-    {   
+    {
         Pixels = [];
         _ReadPfm(stream);
     }
 
-    // Construct from pfm file
+    /// <summary>
+    /// Construct <c>HdrImage</c> from PFM image.
+    /// </summary>
+    /// <param name="filePath"><c>String</c> representing file path from which PFM image is read.</param>
     public HdrImage(string filePath)
     {
         Pixels = [];
@@ -60,7 +68,10 @@ public class HdrImage
     // Get array index corresponding to coordinates
     public int _PixelOffset(int x, int y) => y * Width + x;
 
-    // Method to read floats from file to be used exclusively in HdrImage.ReadPfmImage!
+    /// <summary>
+    /// Read <c>float</c> from stream with specified <c>endianness</c>. To be used only to read PFM files!
+    /// </summary>
+    /// <exception cref="InvalidPfmFileFormatException"></exception>
     private static float _ReadFloat(Stream stream, Endianness endianness = Endianness.LittleEndian)
     {
         var buffer = new byte[4];
@@ -108,7 +119,11 @@ public class HdrImage
         }
     }
 
-    // Write HdrImage to PFM file
+    /// <summary>
+    /// Method to write <c>HdrImage</c> as a PFM image.
+    /// </summary>
+    /// <param name="outStream"><c>Stream</c> on which PFM image is written.</param>
+    /// <param name="endianness">Endianness of the PFM image.</param>
     public void WritePfm(Stream outStream, Endianness endianness = Endianness.LittleEndian)
     {
         // Write the header
@@ -128,20 +143,25 @@ public class HdrImage
             }
         }
     }
-    
-    // Write HdrImage to PFM file
+
+    /// <summary>
+    /// Method to write <c>HdrImage</c> as a PFM image.
+    /// </summary>
+    /// <param name="fileName"><c>String</c> representing file path on which PFM image is written.</param>
+    /// <param name="endianness">Endianness of the PFM image.</param>
     public void WritePfm(string fileName, Endianness endianness = Endianness.LittleEndian)
     {
-        string directoryPath  = Path.Combine(FindSlnPath(), "PfmFiles");
+        string directoryPath = Path.Combine(FindSlnPath(), "PfmFiles");
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
+
         string filePath = Path.Combine(directoryPath, fileName);
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
 
-        WritePfm(outStream, endianness); 
+        WritePfm(outStream, endianness);
     }
 
     // Compute average luminosity
@@ -156,7 +176,11 @@ public class HdrImage
         return MathF.Pow(10, sum / Pixels.Length);
     }
 
-    // Normalize image
+    /// <summary>
+    /// Method to normalize <c>HdrImage</c>.
+    /// </summary>
+    /// <param name="factor">Normalization factor, higher means a more luminous image.</param>
+    /// <param name="luminosity">Leave blank to use average luminosity of the <c>HdrImage</c>.</param>
     public void NormalizeImage(float factor, float? luminosity = null)
     {
         var lum = luminosity ?? AverageLuminosity();
@@ -166,7 +190,9 @@ public class HdrImage
     // Equation for preventing RGB from being too large
     private static float _Clamp(float x) => x / (1.0f + x); // only used in ClampImage!
 
-    // Clip RGB values that are too large
+    /// <summary>
+    /// Clip RGB values so that they belong in [0, 1] interval.
+    /// </summary>
     public void ClampImage()
     {
         for (int i = 0; i < Pixels.Length; ++i)
@@ -177,11 +203,17 @@ public class HdrImage
         }
     }
 
-    // Write image to file in ldr format (format must be one of "png", "bmp", "jpeg", "gif", "tga", "webp")
+    /// <summary>
+    /// Write <c>HdrImage</c> in low dynamic range format. RGB values must be in [0, 1] interval!
+    /// </summary>
+    /// <param name="outStream"><c>Stream</c> on which LDR image is written.</param>
+    /// <param name="format">Valid formats are "png", "bmp", "jpeg", "gif", "tga", "webp".</param>
+    /// <param name="gamma">Gamma correction.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void WriteLdr(Stream outStream, string format = "png", float gamma = 1f)
     {
         var bitmap = new Image<Rgb24>(Configuration.Default, Width, Height);
-        
+
         for (var y = 0; y < bitmap.Height; ++y)
         {
             for (var x = 0; x < bitmap.Width; ++x)
@@ -193,7 +225,7 @@ public class HdrImage
                 bitmap[x, y] = new Rgb24(r, g, b);
             }
         }
-        
+
         switch (format)
         {
             case ("png"):
@@ -219,18 +251,26 @@ public class HdrImage
         }
     }
 
-    // Write image to file in ldr format (format is inferred by file extension and must be one of "png", "bmp", "jpeg", "gif", "tga", "webp")
+    /// <summary>
+    /// Write <c>HdrImage</c> in low dynamic range format. RGB values must be in [0, 1] interval!
+    /// </summary>
+    /// <param name="fileName"><c>String</c> representing output file name on which LDR image is written.
+    /// Format is inferred from name extension.
+    /// Valid formats are "png", "bmp", "jpeg", "gif", "tga", "webp".</param>
+    /// <param name="gamma">Gamma correction.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void WriteLdr(string fileName, float gamma = 1f)
     {
         // Get the extension and remove the dot
         string format = Path.GetExtension(fileName).TrimStart('.');
-        
-        string directoryPath  = Path.Combine(FindSlnPath(), "LdrFiles");
+
+        string directoryPath = Path.Combine(FindSlnPath(), "LdrFiles");
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
+
         string filePath = Path.Combine(directoryPath, fileName);
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         Console.WriteLine($"Writing file '{filePath}'");

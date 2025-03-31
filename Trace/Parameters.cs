@@ -4,22 +4,16 @@ namespace Trace;
 
 using System;
 
-public struct Parameters
-{
-    public string InputPfmFileName;
-    public float Factor;
-    public float Gamma;
-    public string OutputLdrFileName;
+/// <summary>
+/// Struct containing parameters passed from main used in PFM to LDR image conversion.
+/// </summary>
+public struct Parameters()
+{   
+    public string InputPfmFileName = string.Empty;
+    public float Factor = 0.2f;
+    public float Gamma = 1.0f;
+    public string OutputLdrFileName = string.Empty;
 
-    // Constructor
-    public Parameters()
-    {
-        InputPfmFileName = string.Empty;
-        Factor = 0.2f;
-        Gamma = 1.0f;
-        OutputLdrFileName = string.Empty;
-    }
-    
     // Read the parameters from command line
     public void ParseFromCommandLine(string[] argv)
     {
@@ -49,6 +43,10 @@ public struct Parameters
         }
         
         OutputLdrFileName = argv[3];
+        
+        string format = Path.GetExtension(OutputLdrFileName).TrimStart('.');
+        string[] validFormats = ["png", "bmp", "jpeg", "gif", "tga", "webp"];
+        if(validFormats.Contains(format)!=true) throw new RuntimeException("Invalid output file format.");
     }
     
 }
