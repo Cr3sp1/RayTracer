@@ -103,26 +103,4 @@ public static class Utils
 
         outStream.Write(valueBytes, 0, valueBytes.Length);
     }
-    
-    /// <summary>
-    /// Method to find the main directory containing image folders.
-    /// </summary>
-    /// <returns>Path to directory containing RayTracer.sln.</returns>
-    /// <exception cref="DirectoryNotFoundException"></exception>
-    public static string FindSlnPath()
-    {
-        // Start from current directory
-        var directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
-        
-        while (directoryInfo!= null)
-        {
-            
-            // Search for RayTracer.sln in the current directory
-            // Console.WriteLine("Searching directory " + directoryInfo.FullName);
-            if(File.Exists(Path.Combine(directoryInfo.FullName, "RayTracer.sln"))) return directoryInfo.FullName;
-
-            directoryInfo = directoryInfo.Parent; // Move to the parent directory
-        }
-        throw new DirectoryNotFoundException($"Could not find RayTracer.sln");
-    }
 }

@@ -9,10 +9,10 @@ using System;
 /// </summary>
 public struct Parameters()
 {   
-    public string InputPfmFileName = string.Empty;
+    public string InputPfmFilePath = string.Empty;
     public float Factor = 0.2f;
     public float Gamma = 1.0f;
-    public string OutputLdrFileName = string.Empty;
+    public string OutputLdrFilePath= string.Empty;
 
     // Read the parameters from command line
     public void ParseFromCommandLine(string[] argv)
@@ -22,7 +22,7 @@ public struct Parameters()
             throw new RuntimeException("Usage: INPUT_PFM_FILE FACTOR GAMMA OUTPUT_LDR_FILE");
         }
         
-        InputPfmFileName = argv[0];
+        InputPfmFilePath = argv[0];
         
         try
         {
@@ -42,9 +42,9 @@ public struct Parameters()
             throw new RuntimeException("Invalid gamma value, it must be a floating point number.");
         }
         
-        OutputLdrFileName = argv[3];
+        OutputLdrFilePath = argv[3];
         
-        string format = Path.GetExtension(OutputLdrFileName).TrimStart('.');
+        string format = Path.GetExtension(OutputLdrFilePath).TrimStart('.');
         string[] validFormats = ["png", "bmp", "jpeg", "gif", "tga", "webp"];
         if(validFormats.Contains(format)!=true) throw new RuntimeException("Invalid output file format.");
     }

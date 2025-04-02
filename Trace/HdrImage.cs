@@ -147,20 +147,19 @@ public class HdrImage
     /// <summary>
     /// Method to write <c>HdrImage</c> as a PFM image.
     /// </summary>
-    /// <param name="fileName"><c>String</c> representing file path on which PFM image is written.</param>
+    /// <param name="filePath"><c>String</c> representing file path on which PFM image is written.</param>
     /// <param name="endianness">Endianness of the PFM image.</param>
-    public void WritePfm(string fileName, Endianness endianness = Endianness.LittleEndian)
+    public void WritePfm(string filePath, Endianness endianness = Endianness.LittleEndian)
     {
-        string directoryPath = Path.Combine(FindSlnPath(), "PfmFiles");
+        // Create output directory if it doesn't exist
+        string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
-
-        string filePath = Path.Combine(directoryPath, fileName);
+        
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-
         WritePfm(outStream, endianness);
     }
 
@@ -207,7 +206,7 @@ public class HdrImage
     /// Write <c>HdrImage</c> in low dynamic range format. RGB values must be in [0, 1] interval!
     /// </summary>
     /// <param name="outStream"><c>Stream</c> on which LDR image is written.</param>
-    /// <param name="format">Valid formats are "png", "bmp", "jpeg", "gif", "tga", "webp".</param>
+    /// <param name="format">Valid formats are "png", "bmp", "jpeg", "tga", "webp".</param>
     /// <param name="gamma">Gamma correction.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public void WriteLdr(Stream outStream, string format = "png", float gamma = 1f)
@@ -229,22 +228,19 @@ public class HdrImage
         switch (format)
         {
             case ("png"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+                bitmap.SaveAsPng(outStream);
                 break;
             case ("bmp"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Bmp.BmpEncoder());
+                bitmap.SaveAsBmp(outStream);
                 break;
             case ("jpeg"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
-                break;
-            case ("gif"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Gif.GifEncoder());
+                bitmap.SaveAsJpeg(outStream);
                 break;
             case ("tga"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Tga.TgaEncoder());
+                bitmap.SaveAsTga(outStream);
                 break;
             case ("webp"):
-                bitmap.Save(outStream, new SixLabors.ImageSharp.Formats.Webp.WebpEncoder());
+                bitmap.SaveAsWebp(outStream);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(format), format, null);
@@ -254,24 +250,24 @@ public class HdrImage
     /// <summary>
     /// Write <c>HdrImage</c> in low dynamic range format. RGB values must be in [0, 1] interval!
     /// </summary>
-    /// <param name="fileName"><c>String</c> representing output file name on which LDR image is written.
+    /// <param name="filePath"><c>String</c> representing output file path on which LDR image is written.
     /// Format is inferred from name extension.
-    /// Valid formats are "png", "bmp", "jpeg", "gif", "tga", "webp".</param>
+    /// Valid formats are "png", "bmp", "jpeg", "tga", "webp".</param>
     /// <param name="gamma">Gamma correction.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public void WriteLdr(string fileName, float gamma = 1f)
+    public void WriteLdr(string filePath, float gamma = 1f)
     {
         // Get the extension and remove the dot
-        string format = Path.GetExtension(fileName).TrimStart('.');
+        string format = Path.GetExtension(filePath).TrimStart('.');
 
-        string directoryPath = Path.Combine(FindSlnPath(), "LdrFiles");
+        // Create output directory if it doesn't exist
+        string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
-
-        string filePath = Path.Combine(directoryPath, fileName);
+        
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         Console.WriteLine($"Writing file '{filePath}'");
 

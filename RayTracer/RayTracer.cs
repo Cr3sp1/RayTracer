@@ -7,10 +7,7 @@ class Program
 {   
     // Example usage: dotnet run memorial.pfm 0.2 1. memorial.png
     static void Main(string[] args)
-    {
-        Console.WriteLine("Current directory: " + Directory.GetCurrentDirectory());
-        Console.WriteLine("Path to LdrFiles: " + Path.Combine(Utils.FindSlnPath(), "LdrFiles"));
-
+    { 
         // Read parameters
         var parameters = new Parameters();
         try
@@ -22,24 +19,23 @@ class Program
             Console.WriteLine("Error! " + error.Message);
             return;
         }
-        Console.WriteLine($"Input PFM File: {parameters.InputPfmFileName}");
+        Console.WriteLine($"Input PFM File: {parameters.InputPfmFilePath}");
         Console.WriteLine($"Factor: {parameters.Factor}");
         Console.WriteLine($"Gamma: {parameters.Gamma}");
-        Console.WriteLine($"Output LDR File: {parameters.OutputLdrFileName}");
+        Console.WriteLine($"Output LDR File: {parameters.OutputLdrFilePath}");
 
         // Read image
-        var inFilePath = Path.Combine(Utils.FindSlnPath(), "PfmFiles", parameters.InputPfmFileName);
         HdrImage img;
         try
         {
-            img = new HdrImage(inFilePath);
+            img = new HdrImage(parameters.InputPfmFilePath);
         }
         catch
         {
-            Console.WriteLine($"Error! Image '{inFilePath}' couldn't be read.");
+            Console.WriteLine($"Error! Image '{parameters.InputPfmFilePath}' couldn't be read.");
             return;
         }
-        Console.WriteLine($"Image '{inFilePath}' successfully read");
+        Console.WriteLine($"Image '{parameters.InputPfmFilePath}' successfully read");
 
         // Prepare image
         img.NormalizeImage(parameters.Factor);
@@ -50,12 +46,12 @@ class Program
         // Print image
         try
         {
-            img.WriteLdr(parameters.OutputLdrFileName, parameters.Gamma);
+            img.WriteLdr(parameters.OutputLdrFilePath, parameters.Gamma);
+            Console.WriteLine($"Image successfully written.");
         }
         catch
         {
             Console.WriteLine($"Error! Image couldn't be written.");
         }
-        Console.WriteLine($"Image successfully written.");
     }
 }
