@@ -11,8 +11,10 @@ public class ColorTests
     public void TestCloseEnough()
     {
         Color col1 = new Color(1.0f, 2.0f, 3.0f);
+        Color col2 = new Color(4.0f, 5.0f, 6.0f);
 
-        Assert.True(Color.CloseEnough(new Color(1.0f, 2.0f, 3.0f), col1));
+        Assert.True(Color.CloseEnough(col1, col1));
+        Assert.False(Color.CloseEnough(col1, col2));
     }
 
     // Test sum between two Colors
