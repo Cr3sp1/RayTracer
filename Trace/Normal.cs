@@ -9,13 +9,7 @@ public struct Normal
 
     // Constructor
     public Normal(float x, float y, float z) => (X, Y, Z) = (x, y, z);
-
-    // Sum between two Normal objects
-    public static Normal operator +(Normal n1, Normal n2) => new Normal(n1.X + n2.X, n1.Y + n2.Y, n1.Z + n2.Z);
-
-    // Difference between two Normal objects
-    public static Normal operator -(Normal n1, Normal n2) => new Normal(n1.X - n2.X, n1.Y - n2.Y, n1.Z - n2.Z);
-
+    
     // Product between scalar (float) and Normal
     public static Normal operator *(float f, Normal n) => new Normal(f * n.X, f * n.Y, f * n.Z);
 
@@ -25,14 +19,17 @@ public struct Normal
         return new Normal(-n.X, -n.Y, -n.Z);
     }
 
-    // Dot product between Vec and Normal
+    // Dot product between Normal and  Vec
     public float Dot(Vec v) => X * v.X + Y * v.Y + Z * v.Z;
 
-    // Cross product between Vec and Normal
+    // Cross product between Normal and Vec 
     public Vec Cross(Vec v) => new Vec(Y * v.Z - Z * v.Y,
         Z * v.X - X * v.Z,
         X * v.Y - Y * v.X);
 
+    // Dot product between two Normal
+    public float Dot(Normal n) => X * n.X + Y * n.Y + Z * n.Z;
+    
     // Cross product between two Normal
     public Normal Cross(Normal other) => new Normal(Y * other.Z - Z * other.Y,
         Z * other.X - X * other.Z,
@@ -51,6 +48,13 @@ public struct Normal
         Y /= norm;
         Z /= norm;
     }
+    
+    /// <summary>
+    /// Check if two <c>Normal</c> have the same components with tolerance <c>epsilon</c>.
+    /// </summary>
+    public static bool CloseEnough(Normal n1, Normal n2, float epsilon = 1e-5f) =>
+        Utils.CloseEnough(n1.X, n2.X, epsilon) && Utils.CloseEnough(n1.Y, n2.Y, epsilon) &&
+        Utils.CloseEnough(n1.Z, n2.Z, epsilon);
 
     public override string ToString() => $"Normal<X:{X}, Y:{Y}, Z:{Z}>";
 }
