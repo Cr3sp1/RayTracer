@@ -8,13 +8,18 @@ public struct HomMat
 {
     public readonly float[] Elements = new float[16];
 
-    // Default constructor, returns an identity matrix
+    /// <summary>
+    /// Default constructor, return an identity matrix.
+    /// </summary>
     public HomMat()
     {
         Elements[0] = Elements[5] = Elements[10] = Elements[15] = 1.0f;
     }
 
-    // Constructor with values of first three rows
+    /// <summary>
+    /// Constructor taking as arguments the first three rows, which must all have 4 elements each. Last row is
+    /// automatically set to [0, 0, 0, 1].
+    /// </summary>
     public HomMat(float[] row0, float[] row1, float[] row2)
     {
         Console.WriteLine("starting");
