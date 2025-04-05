@@ -49,6 +49,14 @@ public struct HomMat
 
     // return column j
     public float[] Col(int j) => [this[0, j], this[1, j], this[2, j], this[3, j]];
+    
+    // Product between scalar and HomMat
+    public static HomMat operator *(float a, HomMat m)
+    {
+        var n = new HomMat(m.Row(0), m.Row(1), m.Row(2));
+        for(int i = 0; i < 16; ++i){ n.Elements[i] *= a; }
+        return n;
+    }
 
     // Optimized product between two HomMat, assumes that last row of both a and b is [0, 0, 0, 1]
     public static HomMat operator *(HomMat a, HomMat b)

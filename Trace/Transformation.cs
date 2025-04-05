@@ -19,7 +19,7 @@ public struct Transformation
     /// </summary>
     public Transformation(HomMat m, HomMat invm)
     {
-        m = m;
+        M = m;
         InvM = invm;
     }
 
