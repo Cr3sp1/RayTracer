@@ -26,6 +26,31 @@ public struct Point
 
     // Conversion from Point to Vec
     public Vec ToVec() => new Vec(X, Y, Z);
+    
+    public float this[int index]
+    {
+        get
+        {
+            return index switch
+            {
+                0 => X,
+                1 => Y,
+                2 => Z,
+                _ => throw new IndexOutOfRangeException("Index must be 0, 1 or 2")
+            };
+        }
+        set
+        {
+            switch (index)
+            {
+                case 0: X = value; break;
+                case 1: Y = value; break;
+                case 2: Z = value; break;
+                default:
+                    throw new IndexOutOfRangeException("Index must be 0, 1 or 2");
+            }
+        }
+    }
 
     /// <summary>
     /// Check if two <c>Point</c> have the same coordinates with tolerance <c>epsilon</c>.

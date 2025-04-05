@@ -98,7 +98,7 @@ public struct HomMat
     {
         for (int i = 0; i < 16; i++)
         {
-            Console.WriteLine(i);
+            Console.WriteLine(i);   // check that maybe should be cut off?
             if (Utils.CloseEnough(m1.Elements[i], m2.Elements[i], epsilon) != true) return false;
         }
 
