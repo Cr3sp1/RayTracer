@@ -19,8 +19,8 @@ public struct Transformation
     /// </summary>
     public Transformation(HomMat m, HomMat invm)
     {
-        M = m;
-        InvM = invm;
+        M = new HomMat(m.Row(0), m.Row(1), m.Row(2));
+        InvM = new HomMat(invm.Row(0), invm.Row(1), invm.Row(2));
     }
 
     // Return inverse transformation

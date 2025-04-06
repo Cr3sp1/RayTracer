@@ -43,8 +43,8 @@ public class TransformationTests
     public void TestOperations()
     {
         var n = new HomMat([1.0f, 2.0f, 3.0f, 4.0f],
-            [0.0f, 6.0f, 1.0f, 8.0f],
-            [0.0f, 5.0f, 0.0f, 1.0f]);
+            [5.0f, 6.0f, 7.0f, 8.0f],
+            [9.0f, 9.0f, 8.0f, 7.0f]);
         var invn = new HomMat([-3.75f, 2.75f, -1.0f, 0.0f],
             [5.75f, -4.75f, 2.0f, 1.0f],
             [-2.25f, 2.25f, -1.0f, -2.0f]);
@@ -67,8 +67,8 @@ public class TransformationTests
         output.WriteLine("Point t1*p =\n" + t1*p);
         output.WriteLine("Vec t1*v =\n" + t1*v);
         output.WriteLine("Normal t1*w =\n" + t1*w);
-        Assert.True(Point.CloseEnough(t1*p, new Point(6, 14, 6)));
-        Assert.True(Vec.CloseEnough(t1*v, new Vec(2, 6, 5)));
+        Assert.True(Point.CloseEnough(t1*p, new Point(6, 14, 16)));
+        Assert.True(Vec.CloseEnough(t1*v, new Vec(2, 6, 9)));
         Assert.True(Normal.CloseEnough(t1*w, new Normal(5.75f, -4.75f, 2.0f)));
         
         output.WriteLine("Product n*invn =\n" + n*invn);
