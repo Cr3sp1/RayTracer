@@ -68,10 +68,6 @@ public struct Transformation
             v2 += t.M[2, j] * v[j];
         }
 
-        v0 += t.M[0, 3];
-        v1 += t.M[1, 3];
-        v2 += t.M[2, 3];
-
         return new Vec(v0, v1, v2);
 
     }
