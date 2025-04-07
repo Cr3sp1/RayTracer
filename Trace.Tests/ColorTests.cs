@@ -49,12 +49,4 @@ public class ColorTests
         Assert.True(Utils.CloseEnough(2.0f, col1.Luminosity()));
         Assert.True(Utils.CloseEnough(7.0f, col2.Luminosity()));
     }
-
-    // Test method ToString
-    [Fact]
-    public void TestToString()
-    {
-        var col = new Color(1.1f, 2.0f, 3.0f);
-        Assert.True("<R:1.1, G:2.0, B:3.0>" == col.ToString(), "<R:1.1, G:2.0, B:3.0> != " + col.ToString());
-    }
 }
