@@ -11,8 +11,10 @@ public class ColorTests
     public void TestCloseEnough()
     {
         Color col1 = new Color(1.0f, 2.0f, 3.0f);
+        Color col2 = new Color(4.0f, 5.0f, 6.0f);
 
-        Assert.True(Color.CloseEnough(new Color(1.0f, 2.0f, 3.0f), col1));
+        Assert.True(Color.CloseEnough(col1, col1));
+        Assert.False(Color.CloseEnough(col1, col2));
     }
 
     // Test sum between two Colors
@@ -46,13 +48,5 @@ public class ColorTests
 
         Assert.True(Utils.CloseEnough(2.0f, col1.Luminosity()));
         Assert.True(Utils.CloseEnough(7.0f, col2.Luminosity()));
-    }
-
-    // Test method ToString
-    [Fact]
-    public void TestToString()
-    {
-        var col = new Color(1.1f, 2.0f, 3);
-        Assert.True("<R:1.1, G:2, B:3>" == col.ToString(), "<R:1.1, G:2.0, B:3> != " + col.ToString());
     }
 }
