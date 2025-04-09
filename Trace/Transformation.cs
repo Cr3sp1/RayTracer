@@ -90,6 +90,9 @@ public struct Transformation
 
     }
     
+    // Apply a Transformation object to a Ray
+    public static Ray operator *(Transformation t, Ray r) => new Ray(t * r.Origin, t * r.Dir, r.TMin, r.TMax, r.Depth);
+    
     /// <summary>
     /// Check if Transformation object has been built with a <c>HomMat</c> object and its inverse.
     /// </summary>
