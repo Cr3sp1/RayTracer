@@ -125,10 +125,10 @@ public class TransformationTests
         Assert.True(Transformation.RotationZ(0.1f).IsConsistent());
 
         Assert.True(
-            Vec.CloseEnough(Transformation.RotationX(90) * new Vec(0.0f, 1.0f, 0.0f), new Vec(0.0f, 0.0f, 1.0f)));
+            Vec.CloseEnough(Transformation.RotationX(90) * Vec.YAxis, Vec.ZAxis));
         Assert.True(
-            Vec.CloseEnough(Transformation.RotationY(90) * new Vec(0.0f, 0.0f, 1.0f), new Vec(1.0f, 0.0f, 0.0f)));
+            Vec.CloseEnough(Transformation.RotationY(90) * Vec.ZAxis, Vec.XAxis));
         Assert.True(
-            Vec.CloseEnough(Transformation.RotationZ(90) * new Vec(1.0f, 0.0f, 0.0f), new Vec(0.0f, 1.0f, 0.0f)));
+            Vec.CloseEnough(Transformation.RotationZ(90) * Vec.XAxis, Vec.YAxis));
     }
 }
