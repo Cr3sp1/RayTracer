@@ -62,6 +62,7 @@ public class TransformationTests
         var p = new Point(0, 1, 0);
         var v = new Vec(0, 1, 0);
         var w = new Normal(0, 1, 0);
+        var r = new Ray(p, v);
 
         output.WriteLine("Matrix M of t1 =\n" + t1.M);
         output.WriteLine("Matrix M of t2 =\n" + t2.M);
@@ -76,6 +77,8 @@ public class TransformationTests
         output.WriteLine("Product n*invn =\n" + n * invn);
         output.WriteLine("Composition t1*t2 =\n" + (t1 * t2).M);
         Assert.True(HomMat.CloseEnough((t1 * t2).M, idMat));
+        
+        Assert.True(Ray.CloseEnough(t1*r, new Ray(new Point(6, 14, 16), new Vec(2, 6, 9))));
     }
 
     // Test Translation
@@ -95,6 +98,13 @@ public class TransformationTests
 
         var p0 = new Point(1.0f, 2.0f, 3.0f);
         Assert.True(Point.CloseEnough(tr2 * p0, new Point(5.0f, 8.0f, 11.0f)));
+        
+        var v0 = new Vec(1.0f, 3.0f, 4.0f);
+        Assert.True(Vec.CloseEnough(tr2 * v0, v0));
+
+        var r = new Ray(p0, new Vec(1.0f, 3.0f, 4.0f));
+        var transformed = new Ray(new Point(5.0f, 8.0f, 11.0f), r.Dir);
+        Assert.True(Ray.CloseEnough(tr2*r, transformed));
     }
 
     // Test Scaling
@@ -114,6 +124,11 @@ public class TransformationTests
 
         var v0 = new Vec(2.0f, 5.0f, 10.0f);
         Assert.True(Vec.CloseEnough(tr2 * v0, new Vec(6.0f, 10.0f, 40.0f)));
+        
+        var p0 = new Point(0.0f, 1.0f, 2.0f);
+        var r = new Ray(p0, v0);
+        var transformed = new Ray(new Point(0.0f, 2.0f, 8.0f), new Vec(6.0f, 10.0f, 40.0f));
+        Assert.True(Ray.CloseEnough(tr2*r, transformed));
     }
 
     // Test RotationX, RotationY, RotationZ
@@ -130,5 +145,11 @@ public class TransformationTests
             Vec.CloseEnough(Transformation.RotationY(90) * Vec.ZAxis, Vec.XAxis));
         Assert.True(
             Vec.CloseEnough(Transformation.RotationZ(90) * Vec.XAxis, Vec.YAxis));
+
+        var t = Transformation.RotationX(90);
+        var r = new Ray(new Point(1.0f, 2.0f, 3.0f), new Vec(6.0f, 5.0f, 4.0f));
+        var transl = Transformation.Translation(new Vec(10.0f, 11.0f, 12.0f));
+        var transformed = new Ray(new Point(11.0f, 8.0f, 14.0f), new Vec(6.0f, -4.0f, 5.0f));
+        Assert.True(Ray.CloseEnough(transl*t * r, transformed));
     }
 }
