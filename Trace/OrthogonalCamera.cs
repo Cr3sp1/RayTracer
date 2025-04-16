@@ -1,5 +1,10 @@
 namespace Trace;
 
+/// <summary>
+/// Implementation of Camera Interface that represents an orthogonal projection:
+/// it preserves parallelism and lengths. It contains the aspect ratio of the screen (<c>float</c>)
+/// and a <c>Transformation</c> to allow different orientations in space.
+/// </summary>
 public class OrthogonalCamera : ICamera
 {
     public float AspectRatio;

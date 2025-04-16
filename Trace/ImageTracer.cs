@@ -1,5 +1,8 @@
 namespace Trace;
 
+/// <summary>
+/// Class representing the connection between <c>HdrImage</c> and <c>Camera</c>.
+/// </summary>
 public class ImageTracer
 {
     public HdrImage Image;
@@ -8,7 +11,10 @@ public class ImageTracer
     // Constructor
     public ImageTracer(HdrImage image, ICamera camera) => (Image, Camera) = (image, camera);
     
-    // Fire a ray toward pixel (col, row) of HdrImage centered at position (u_pixel, v_pixel)
+    /// <summary>
+    /// Fire a ray towards pixel (col, row) of HdrImage;
+    /// inside the pixel the ray is centered at position (u_pixel, v_pixel).
+    /// </summary>
     public Ray FireRay(int col, int row, float u_pixel = 0.5f, float v_pixel = 0.5f)
     {
         float u = (col + u_pixel) / (Image.Width - 1.0f);
@@ -16,7 +22,11 @@ public class ImageTracer
         return Camera.FireRay(u, v);
     }
     
-    // Fire rays towards all pixels of HdrImage
+    /// <summary>
+    /// Fire rays towards all pixels of HdrImage.
+    /// </summary>
+    /// <param name="func">Function solving the rendering equation, taking as input a <c>Ray</c>
+    /// and as output a <c>Color</c>.</param>
     public void FireAllRays(Func<Ray, Color> func)
     {
         for (int row = 0; row < Image.Height; row++)
