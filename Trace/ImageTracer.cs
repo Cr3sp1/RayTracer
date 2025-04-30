@@ -17,8 +17,8 @@ public class ImageTracer
     /// </summary>
     public Ray FireRay(int col, int row, float u_pixel = 0.5f, float v_pixel = 0.5f)
     {
-        float u = (col + u_pixel) / (Image.Width - 1.0f);
-        float v = (row + v_pixel) / (Image.Height - 1.0f);
+        float u = (col + u_pixel) / Image.Width;
+        float v = 1.0f - (row + v_pixel) / Image.Height;
         return Camera.FireRay(u, v);
     }
     
