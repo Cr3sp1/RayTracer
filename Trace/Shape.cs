@@ -17,14 +17,18 @@ public class Shape
         Transform = transform;
     }
 
-    // Method to compute the intersection between a ray and a shape
-    public virtual HitRecord Intersect(Ray ray)
+    /// <summary>
+    /// Method to compute the intersection between a ray and a shape.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual HitRecord? Intersect(Ray ray)
     {
         throw new NotImplementedException();
     }
 }
 
-// Record struct containing information about ray and shape intersection
 /// <summary>
 /// <c>record struct</c> containing information about <c>Ray</c> and <c>Shape</c> intersection.
 /// </summary>
