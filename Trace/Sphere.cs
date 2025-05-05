@@ -12,8 +12,7 @@ public class Sphere : Shape
     public Sphere(Transformation transform) : base(transform)
     {
     }
-
-
+    
     // Return normal to the surface on the Point p
     public Normal SphereNormal(Point p, Vec rayDir)
     {
@@ -31,7 +30,7 @@ public class Sphere : Shape
     }
 
     /// <summary>
-    /// Method to compute the intersection between a ray and a shape.
+    /// Method to compute the intersection between a ray and a sphere.
     /// </summary>
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns>Return a <c>HitRecord</c> containing details of intersection if the Sphere intersects the <c>Ray</c>,
