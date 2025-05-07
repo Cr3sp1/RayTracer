@@ -9,8 +9,12 @@ public class ImageTracer
     public ICamera Camera;
     public World Scene;
 
+    // Basic constructor with no scene to be rendered
+    public ImageTracer(HdrImage image, ICamera camera) =>
+        (Image, Camera) = (image, camera);
+    
     // Constructor
-    public ImageTracer(HdrImage image, ICamera camera, World? scene = null) =>
+    public ImageTracer(HdrImage image, ICamera camera, World scene) =>
         (Image, Camera, Scene) = (image, camera, scene);
 
     /// <summary>
@@ -49,7 +53,7 @@ public class ImageTracer
     /// <returns><c>Color</c> of the pixel.</returns>
     public Color OnOffRenderer(Ray ray)
     {
-        if (Scene?.IntersectAll(ray) != null) return new Color(1.0f, 1.0f, 1.0f);
+        if (Scene.IntersectAll(ray) != null) return new Color(1.0f, 1.0f, 1.0f);
         else return new Color(0.0f, 0.0f, 0.0f);
     }
 }

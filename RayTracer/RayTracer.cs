@@ -190,11 +190,11 @@ public class DemoCommand : ICommand
         ICamera camera;
         if (!UseOrthogonalCamera)
         {
-            camera = new PerspectiveCamera(Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), Distance, AspectRatio);
+            camera = new PerspectiveCamera(Transformation.RotationZ(Angle)*Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), Distance, AspectRatio);
         }
         else
         {
-            camera = new OrthogonalCamera(Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), AspectRatio);
+            camera = new OrthogonalCamera(Transformation.RotationZ(Angle)*Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), AspectRatio);
         }
         
         // Set the scene

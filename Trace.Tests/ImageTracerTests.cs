@@ -59,11 +59,4 @@ public class ImageTracerTests
         output.WriteLine("Bottom Right Ray =\n" + bottomRightRay.At(1.0f));
         Assert.True(Point.CloseEnough(new Point(0.0f, -2.0f, -1.0f), bottomRightRay.At(1.0f)));
     }
-    
-    /*// Test On-Off Renderer
-    [Fact]
-    void TestOnOffRenderer()
-    {
-        throw new NotImplementedException();
-    }*/
-}
+  }
