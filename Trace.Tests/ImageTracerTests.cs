@@ -7,6 +7,7 @@ public class ImageTracerTests
 {
     private readonly HdrImage image;
     private readonly PerspectiveCamera camera;
+    private readonly World scene;
     private readonly ImageTracer tracer;
     private readonly ITestOutputHelper output;
 
@@ -15,7 +16,8 @@ public class ImageTracerTests
     {
         image = new HdrImage(width: 4, height: 2);
         camera = new PerspectiveCamera(aspectRatio: 2);
-        tracer = new ImageTracer(image: image, camera: camera);
+        scene = new World();
+        tracer = new ImageTracer(image: image, camera: camera, scene: scene);
         this.output = output;
     }
 
@@ -57,4 +59,11 @@ public class ImageTracerTests
         output.WriteLine("Bottom Right Ray =\n" + bottomRightRay.At(1.0f));
         Assert.True(Point.CloseEnough(new Point(0.0f, -2.0f, -1.0f), bottomRightRay.At(1.0f)));
     }
+    
+    /*// Test On-Off Renderer
+    [Fact]
+    void TestOnOffRenderer()
+    {
+        throw new NotImplementedException();
+    }*/
 }
