@@ -55,7 +55,6 @@ public class ImageTracer
     {
         if (Scene.IntersectAll(ray) != null)
         {
-            Console.WriteLine("Hit!");
             return new Color(1.0f, 1.0f, 1.0f);
         }
         else return new Color(0.0f, 0.0f, 0.0f);

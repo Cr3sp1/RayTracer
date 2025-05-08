@@ -103,10 +103,6 @@ public class DemoCommand : ICommand
         Description = "Set camera projection to orthogonal instead of perspective.")]
     public bool UseOrthogonalCamera { get; init; } = false;
 
-    [CommandOption("aspect ratio", 'r',
-        Description = "Aspect ratio of the screen.")]
-    public float AspectRatio { get; init; } = 1.0f;
-
     [CommandOption("distance", 'd',
         Description = "Distance of a perspective observer from the screen.")]
     public float Distance { get; init; } = 1.0f;
@@ -133,21 +129,22 @@ public class DemoCommand : ICommand
         console.Output.WriteLine($"Output PFM File: {OutputPfmFilePath}");
         console.Output.WriteLine($"Output LDR File: {OutputLdrFilePath}");
 
-        // var aspectRatio = Width / (float)Height;
+        var aspectRatio = Width / (float)Height;
 
         // Prepare World and Camera
         var scene = new World();
         ICamera camera;
-        if (!UseOrthogonalCamera)
+        if (UseOrthogonalCamera)
         {
-            camera = new PerspectiveCamera(
-                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), Distance,
-                AspectRatio);
+            camera = new OrthogonalCamera(
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), aspectRatio);
+            
         }
         else
         {
-            camera = new OrthogonalCamera(
-                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), AspectRatio);
+            camera = new PerspectiveCamera(
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), Distance,
+                aspectRatio);
         }
 
         // Set the scene
