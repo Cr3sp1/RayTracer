@@ -39,7 +39,7 @@ public class ImageTracer
         {
             for (int col = 0; col < Image.Width; col++)
             {
-                var ray = Camera.FireRay(col, row);
+                var ray = FireRay(col, row);
                 Color color = func(ray);
                 Image.SetPixel(col, row, color);
             }

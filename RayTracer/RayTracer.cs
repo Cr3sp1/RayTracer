@@ -133,32 +133,45 @@ public class DemoCommand : ICommand
         console.Output.WriteLine($"Output PFM File: {OutputPfmFilePath}");
         console.Output.WriteLine($"Output LDR File: {OutputLdrFilePath}");
 
+        // var aspectRatio = Width / (float)Height;
+
         // Prepare World and Camera
         var scene = new World();
         ICamera camera;
         if (!UseOrthogonalCamera)
         {
             camera = new PerspectiveCamera(
-                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), Distance,
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), Distance,
                 AspectRatio);
         }
         else
         {
             camera = new OrthogonalCamera(
-                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), AspectRatio);
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), AspectRatio);
         }
 
         // Set the scene
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, 0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, 0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, 0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, -0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, -0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, -0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.0f, -0.5f))));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, 0.0f))));
+        float rad = 0.1f;
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, 0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, 0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, 0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.0f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, 0.0f)) *
+                                  Transformation.Scaling(new Vec(rad, rad, rad))));
         console.Output.WriteLine("Scene successfully set");
 
         // Render the scene with on-off renderer
