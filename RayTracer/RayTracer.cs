@@ -15,59 +15,6 @@ class Program
             .RunAsync();
 }
 
-    // // Example usage: dotnet run memorial.pfm 0.2 1. memorial.png
-    // static void Main(string[] args)
-    // {
-    //     // Read parameters
-    //     var parameters = new Parameters();
-    //     try
-    //     {
-    //         parameters.ParseFromCommandLine(args);
-    //     }
-    //     catch (RuntimeException error)
-    //     {
-    //         Console.WriteLine("Error! " + error.Message);
-    //         return;
-    //     }
-    //
-    //     Console.WriteLine($"Input PFM File: {parameters.InputPfmFilePath}");
-    //     Console.WriteLine($"Factor: {parameters.Factor}");
-    //     Console.WriteLine($"Gamma: {parameters.Gamma}");
-    //     Console.WriteLine($"Output LDR File: {parameters.OutputLdrFilePath}");
-    //
-    //     // Read image
-    //     HdrImage img;
-    //     try
-    //     {
-    //         img = new HdrImage(parameters.InputPfmFilePath);
-    //     }
-    //     catch
-    //     {
-    //         Console.WriteLine($"Error! Image '{parameters.InputPfmFilePath}' couldn't be read.");
-    //         return;
-    //     }
-    //
-    //     Console.WriteLine($"Image '{parameters.InputPfmFilePath}' successfully read");
-    //
-    //     // Prepare image
-    //     img.NormalizeImage(parameters.Factor);
-    //     Console.WriteLine("Image successfully normalized");
-    //     img.ClampImage();
-    //     Console.WriteLine("Image successfully clamped");
-    //
-    //     // Print image
-    //     try
-    //     {
-    //         img.WriteLdr(parameters.OutputLdrFilePath, parameters.Gamma);
-    //         Console.WriteLine($"Image successfully written.");
-    //     }
-    //     catch
-    //     {
-    //         Console.WriteLine($"Error! Image couldn't be written.");
-    //     }
-    // }
-
-
 [Command("pfm2ldr",
     Description =
         "Convert a .pfm file to a ldr format file. Supported formats are: \"png\", \"bmp\", \"jpeg\", \"tga\", \"webp\".")]
@@ -83,11 +30,11 @@ public class ConverterCommand : ICommand
 
     // Options
     [CommandOption("factor", 'f',
-        Description = "Normalization factor, higher means a more luminous image. Default: \"0.2\".")]
+        Description = "Normalization factor, higher means a more luminous image.")]
     public float Factor { get; init; } = 0.2f;
 
     [CommandOption("gamma", 'g',
-        Description = "Gamma correction. Default: \"1.0\".")]
+        Description = "Gamma correction.")]
     public float Gamma { get; init; } = 1.0f;
 
 
@@ -140,43 +87,43 @@ public class DemoCommand : ICommand
 {
     // Options
     [CommandOption("width", 'W',
-        Description = "Width of the image to render. Default: \"640\".")]
+        Description = "Width of the image to render in pixels.")]
     public int Width { get; init; } = 640;
     
     [CommandOption("height", 'H',
-        Description = "Width of the image to render. Default: \"480\".")]
+        Description = "Height of the image to render in pixels.")]
     public int Height { get; init; } = 480;
     
     [CommandOption("angle-deg", 'a',
-        Description = "Angle of view, expressed in degrees. Default: \"0.0f\".")]
+        Description = "Angle of view, expressed in degrees.")]
     public float Angle { get; init; } = 0.0f;
     
     [CommandOption("orthogonal", 'o',
-        Description = "Set camera projection to orthogonal. Default: \"perspective\".")]
+        Description = "Set camera projection to orthogonal instead of perspective.")]
     public bool UseOrthogonalCamera { get; init; } = false;
     
     [CommandOption("aspect ratio", 'r',
-        Description = "Aspect ratio of the screen. Default: \"1.0\".")]
+        Description = "Aspect ratio of the screen.")]
     public float AspectRatio { get; init; } = 1.0f;
     
     [CommandOption("distance", 'd',
-        Description = "Distance of a perspective observer from the screen. Default: \"1.0\".")]
+        Description = "Distance of a perspective observer from the screen.")]
     public float Distance { get; init; } = 1.0f;
 
     [CommandOption("pfm-output", 'p',
-        Description = "Pfm output file path. Default: \"output.pfm\".")]
+        Description = "Pfm output file path.")]
     public string OutputPfmFilePath { get; init; } = "output.pfm";
     
     [CommandOption("ldr-output", 'l',
-        Description = "Ldr output file path, file extension specifies file format. Default: \"output.png\".")]
+        Description = "Ldr output file path, file extension specifies file format.")]
     public string OutputLdrFilePath { get; init; } = "output.png";
     
     [CommandOption("factor", 'f',
-        Description = "Normalization factor, higher means a more luminous image. Default: \"0.2\".")]
+        Description = "Normalization factor, higher means a more luminous image.")]
     public float Factor { get; init; } = 0.2f;
 
     [CommandOption("gamma", 'g',
-        Description = "Gamma correction. Default: \"1.0\".")]
+        Description = "Gamma correction.")]
     public float Gamma { get; init; } = 1.0f;
 
 
