@@ -269,7 +269,7 @@ public class HdrImage
         }
         
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        Console.WriteLine($"Writing file '{filePath}'");
+        // Console.WriteLine($"Writing file '{filePath}'");
 
         WriteLdr(outStream, format, gamma);
     }

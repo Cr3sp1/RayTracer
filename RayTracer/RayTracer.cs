@@ -75,6 +75,7 @@ public class ConverterCommand : ICommand
         {
             console.Output.WriteLine($"Error! Image couldn't be written.");
         }
+
         return default;
     }
 }
@@ -89,23 +90,23 @@ public class DemoCommand : ICommand
     [CommandOption("width", 'W',
         Description = "Width of the image to render in pixels.")]
     public int Width { get; init; } = 640;
-    
+
     [CommandOption("height", 'H',
         Description = "Height of the image to render in pixels.")]
     public int Height { get; init; } = 480;
-    
+
     [CommandOption("angle-deg", 'a',
         Description = "Angle of view, expressed in degrees.")]
     public float Angle { get; init; } = 0.0f;
-    
+
     [CommandOption("orthogonal", 'o',
         Description = "Set camera projection to orthogonal instead of perspective.")]
     public bool UseOrthogonalCamera { get; init; } = false;
-    
+
     [CommandOption("aspect ratio", 'r',
         Description = "Aspect ratio of the screen.")]
     public float AspectRatio { get; init; } = 1.0f;
-    
+
     [CommandOption("distance", 'd',
         Description = "Distance of a perspective observer from the screen.")]
     public float Distance { get; init; } = 1.0f;
@@ -113,11 +114,11 @@ public class DemoCommand : ICommand
     [CommandOption("pfm-output", 'p',
         Description = "Pfm output file path.")]
     public string OutputPfmFilePath { get; init; } = "output.pfm";
-    
+
     [CommandOption("ldr-output", 'l',
         Description = "Ldr output file path, file extension specifies file format.")]
     public string OutputLdrFilePath { get; init; } = "output.png";
-    
+
     [CommandOption("factor", 'f',
         Description = "Normalization factor, higher means a more luminous image.")]
     public float Factor { get; init; } = 0.2f;
@@ -131,19 +132,22 @@ public class DemoCommand : ICommand
     {
         console.Output.WriteLine($"Output PFM File: {OutputPfmFilePath}");
         console.Output.WriteLine($"Output LDR File: {OutputLdrFilePath}");
-        
+
         // Prepare World and Camera
         var scene = new World();
         ICamera camera;
         if (!UseOrthogonalCamera)
         {
-            camera = new PerspectiveCamera(Transformation.RotationZ(Angle)*Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), Distance, AspectRatio);
+            camera = new PerspectiveCamera(
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), Distance,
+                AspectRatio);
         }
         else
         {
-            camera = new OrthogonalCamera(Transformation.RotationZ(Angle)*Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), AspectRatio);
+            camera = new OrthogonalCamera(
+                Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-2.0f, 0.0f, 0.0f)), AspectRatio);
         }
-        
+
         // Set the scene
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.5f))));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, 0.5f))));
@@ -155,7 +159,8 @@ public class DemoCommand : ICommand
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, -0.5f))));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.0f, -0.5f))));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, 0.0f))));
-        
+        console.Output.WriteLine("Scene successfully set");
+
         // Render the scene with on-off renderer
         var tracer = new ImageTracer(new HdrImage(Width, Height), camera, scene);
         tracer.FireAllRays(tracer.OnOffRenderer);
@@ -179,6 +184,7 @@ public class DemoCommand : ICommand
         {
             console.Output.WriteLine($"Error! Image '{OutputLdrFilePath}' couldn't be written.");
         }
+
         return default;
     }
 }
