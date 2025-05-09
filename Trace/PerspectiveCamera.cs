@@ -11,7 +11,7 @@ public class PerspectiveCamera : ICamera
     public float AspectRatio;
     public Transformation Transform;
 
-    // Constructor: if not specified the associated transformation is identity
+    // Constructor: if not specified, the associated transformation is identity
     public PerspectiveCamera(Transformation? t = null, float distance = 1.0f, float aspectRatio = 1.0f)
     {
         Transform = t ?? new Transformation();
@@ -20,7 +20,7 @@ public class PerspectiveCamera : ICamera
     }
 
     /// <summary>
-    /// Fire a ray through point of coordinates (u,v) on the 2D screen (origin: bottom-left corner)
+    /// Fire a ray through a point of coordinates (u,v) on the 2D screen (origin: bottom-left corner)
     /// via a perspective camera.
     /// </summary>
     /// <param name="u">x-coordinate of the screen: <c>float</c> in [0,1]</param>

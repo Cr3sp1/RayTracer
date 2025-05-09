@@ -10,7 +10,7 @@ public class OrthogonalCamera : ICamera
     public float AspectRatio;
     public Transformation Transform;
 
-    // Constructor: if not specified the associated transformation is identity
+    // Constructor: if not specified, the associated transformation is identity
     public OrthogonalCamera(Transformation? t = null, float aspectRatio = 1.0f)
     {
         Transform = t ?? new Transformation();

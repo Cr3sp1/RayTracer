@@ -7,12 +7,18 @@ public class ImageTracer
 {
     public HdrImage Image;
     public ICamera Camera;
+    public World Scene = new World();
+
+    // Basic constructor with no scene to be rendered
+    public ImageTracer(HdrImage image, ICamera camera) =>
+        (Image, Camera) = (image, camera);
     
     // Constructor
-    public ImageTracer(HdrImage image, ICamera camera) => (Image, Camera) = (image, camera);
-    
+    public ImageTracer(HdrImage image, ICamera camera, World scene) =>
+        (Image, Camera, Scene) = (image, camera, scene);
+
     /// <summary>
-    /// Fire a ray towards pixel (col, row) of HdrImage;
+    /// Fire a ray towards a pixel (col, row) of HdrImage;
     /// inside the pixel the ray is centered at position (u_pixel, v_pixel).
     /// </summary>
     public Ray FireRay(int col, int row, float u_pixel = 0.5f, float v_pixel = 0.5f)
@@ -21,7 +27,7 @@ public class ImageTracer
         float v = 1.0f - (row + v_pixel) / Image.Height;
         return Camera.FireRay(u, v);
     }
-    
+
     /// <summary>
     /// Fire rays towards all pixels of HdrImage.
     /// </summary>
@@ -33,10 +39,24 @@ public class ImageTracer
         {
             for (int col = 0; col < Image.Width; col++)
             {
-                var ray = Camera.FireRay(col, row);
+                var ray = FireRay(col, row);
                 Color color = func(ray);
                 Image.SetPixel(col, row, color);
             }
-        }        
+        }
+    }
+
+    /// <summary>
+    /// On-off renderer: if <c>Ray</c> intersects the scene return white, else return black.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> taken as input for the renderer.</param>
+    /// <returns><c>Color</c> of the pixel.</returns>
+    public Color OnOffRenderer(Ray ray)
+    {
+        if (Scene.IntersectAll(ray) != null)
+        {
+            return new Color(1.0f, 1.0f, 1.0f);
+        }
+        else return new Color(0.0f, 0.0f, 0.0f);
     }
 }
