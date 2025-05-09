@@ -49,12 +49,12 @@ public class ImageTracerTests
     [Fact]
     void TestOrientation()
     {
-        // Fire ray against top-left corner of the screen
+        // Fire ray against the top-left corner of the screen
         var topLeftRay = tracer.FireRay(0, 0, 0.0f, 0.0f);
         output.WriteLine("Top Left Ray =\n" + topLeftRay.At(1.0f));
         Assert.True(Point.CloseEnough(new Point(0.0f, 2.0f, 1.0f), topLeftRay.At(1.0f)));
 
-        // Fire ray against bottom-right corner of the screen
+        // Fire ray against the bottom-right corner of the screen
         var bottomRightRay = tracer.FireRay(3, 1, 1.0f, 1.0f);
         output.WriteLine("Bottom Right Ray =\n" + bottomRightRay.At(1.0f));
         Assert.True(Point.CloseEnough(new Point(0.0f, -2.0f, -1.0f), bottomRightRay.At(1.0f)));

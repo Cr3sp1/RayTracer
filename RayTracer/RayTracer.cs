@@ -138,7 +138,6 @@ public class DemoCommand : ICommand
         {
             camera = new OrthogonalCamera(
                 Transformation.RotationZ(Angle) * Transformation.Translation(new Vec(-1.0f, 0.0f, 0.0f)), aspectRatio);
-            
         }
         else
         {
