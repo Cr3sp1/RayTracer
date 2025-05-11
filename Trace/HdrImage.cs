@@ -153,6 +153,7 @@ public class HdrImage
     {
         // Create an output directory if it doesn't exist
         string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
+        if (string.IsNullOrEmpty(directoryPath)) directoryPath = Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -262,6 +263,7 @@ public class HdrImage
 
         // Create the output directory if it doesn't exist
         string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
+        if (string.IsNullOrEmpty(directoryPath)) directoryPath = Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
