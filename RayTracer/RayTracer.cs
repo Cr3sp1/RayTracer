@@ -11,6 +11,7 @@ class Program
     public static async Task<int> Main() =>
         await new CliApplicationBuilder()
             .AddCommandsFromThisAssembly()
+            .SetExecutableName("RayTracer")
             .Build()
             .RunAsync();
 }
