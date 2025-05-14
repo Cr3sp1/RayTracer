@@ -1,6 +1,10 @@
 # RayTracer
 
-RayTracer is a C# command-line tool that converts a PFM (Portable Float Map) file to an LDR (Low Dynamic Range) image file in various formats. The project is developed using .NET 9.
+RayTracer is a C# command-line tool that has two main functionalities:
+- converting a PFM (Portable Float Map) file to an LDR (Low Dynamic Range) image file in various formats, with the possibility to specify the normalization factor and the gamma correction used for the conversion 
+- rendering a demo scene using an on-off renderer, with various options such as the type of projection (perspective or orthogonal), the distance of the perspective observer from the screen, the angle of view, the resolution of the resulting image; the output is a PFM file that is automatically converted to a LDR image with the options listed before.
+
+The project is developed using .NET 9.
 
 ## Supported Output Formats
 RayTracer supports the following LDR image formats:
@@ -11,41 +15,40 @@ RayTracer supports the following LDR image formats:
 - WebP (`.webp`)
 
 ## Prerequisites
-- .NET 9 SDK installed on your system.
+- Linux or Windows
 
 ## Usage
-RayTracer is executed from the command line in the `RayTracer/RayTracer` directory.
+Download the executable corresponding to your OS.
+RayTracer is executed from the command line.
 
+To run the tool on Windows:
 ```sh
-cd RayTracer/RayTracer
+.\RayTracer
 ```
-
-To run the tool:
+To run the tool on Linux:
 ```sh
-dotnet run <INPUT_PFM_FILE> <FACTOR> <GAMMA> <OUTPUT_LDR_FILE>
+./RayTracer
 ```
+This will show all arguments that have to be specified from command line.
 
 ### Parameters:
-- `<INPUT_PFM_FILE>`: Path to the input PFM file.
-- `<FACTOR>`: Scaling factor for adjusting the exposure of the image.
-- `<GAMMA>`: Gamma correction value.
-- `<OUTPUT_LDR_FILE>`: Path to the output LDR file with the desired extension (e.g., `.png`, `.bmp`, `.jpeg`, `.tga`, `.webp`).
+Use the option -h to show all available commands and options.
 
 ### Example:
+Pfm to Ldr converter:
 ```sh
-dotnet run input.pfm 1.2 2.2 output.png
+./RayTracer pfm2ldr input.pfm output.png -f 1.2 -g 2.2
 ```
 This command converts `input.pfm` to `output.png` using an exposure scaling factor of `1.2` and gamma correction of `2.2`.
 
-## Building the Project
-To build the project manually:
+Demo renderer:
 ```sh
-dotnet build
+./RayTracer demo -W 640 -H 480 -p output.pfm -l output.png -a 20
 ```
+This command renders a demo scene creating a pfm file `output.pfm` and automatically converting it into a ldr file `output.png`. The resulting image has resolution 640x480 pixels; the scene is rendered using a perspective projection with a 20 degrees angle of view.
 
 ## License
 This project is licensed under the EUPL-1.2 License.
-
 
 ## Authors
 Developed by giorgiaiori and Cr3sp1.
