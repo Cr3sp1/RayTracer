@@ -125,8 +125,8 @@ public class HdrImageTests
         Assert.True(Utils.CloseEnough(img.AverageLuminosity(0.0f), 100.0f));
 
         img.SetPixel(1, 0, new Color(0f, 0f, 0f));
-        Assert.Equal(0f, img.AverageLuminosity(0.0f) );
-        Assert.False(Utils.CloseEnough(0f, img.AverageLuminosity()) );
+        Assert.Equal(0f, img.AverageLuminosity(0.0f));
+        Assert.False(Utils.CloseEnough(0f, img.AverageLuminosity()));
     }
 
     // Test normalize image

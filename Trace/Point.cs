@@ -20,13 +20,13 @@ public struct Point
 
     // Difference between a Point and a Vec
     public static Point operator -(Point p, Vec v) => new Point(p.X - v.X, p.Y - v.Y, p.Z - v.Z);
-    
+
     // Product between scalar (float) and Point
     public static Point operator *(float f, Point p) => new Point(f * p.X, f * p.Y, f * p.Z);
 
     // Conversion from Point to Vec
     public Vec ToVec() => new Vec(X, Y, Z);
-    
+
     public float this[int index]
     {
         get
@@ -58,6 +58,6 @@ public struct Point
     public static bool CloseEnough(Point p1, Point p2, float epsilon = 1e-5f) =>
         Utils.CloseEnough(p1.X, p2.X, epsilon) && Utils.CloseEnough(p1.Y, p2.Y, epsilon) &&
         Utils.CloseEnough(p1.Z, p2.Z, epsilon);
-    
+
     public override string ToString() => $"Point<X:{X}, Y:{Y}, Z:{Z}>";
 }

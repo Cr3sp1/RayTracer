@@ -159,7 +159,7 @@ public class HdrImage
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
-        
+
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         WritePfm(outStream, endianness);
     }
@@ -269,7 +269,7 @@ public class HdrImage
             Directory.CreateDirectory(directoryPath);
             Console.WriteLine($"Directory '{directoryPath}' did not exist and was created.");
         }
-        
+
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         // Console.WriteLine($"Writing file '{filePath}'");
 

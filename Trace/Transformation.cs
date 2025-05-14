@@ -100,7 +100,7 @@ public struct Transformation
                 [-sinAngle, 0.0F, cosAngle, 0.0F]),
             new HomMat([cosAngle, 0.0F, -sinAngle, 0.0F], [0.0f, 1.0f, 0.0f, 0.0F], [sinAngle, 0.0F, cosAngle, 0.0F]));
     }
-    
+
     /// <summary>
     /// Return a <c>Transformation</c> encoding a rotation around the Z axis.
     /// </summary>
@@ -187,7 +187,7 @@ public struct Transformation
     {
         return (HomMat.CloseEnough(M * InvM, new HomMat()) && HomMat.CloseEnough(InvM * M, new HomMat()));
     }
-    
+
     /// <summary>
     /// Check if two <c>Transformation</c> have the same components with tolerance <c>epsilon</c>.
     /// </summary>

@@ -9,11 +9,11 @@ public struct Vec
 
     // Constructor
     public Vec(float x, float y, float z) => (X, Y, Z) = (x, y, z);
-    
+
     // Vec objects along X, Y, Z axes
-    public static readonly Vec XAxis= new Vec(1.0f, 0.0f, 0.0f); 
-    public static readonly Vec YAxis= new Vec(0.0f, 1.0f, 0.0f);
-    public static readonly Vec ZAxis= new Vec(0.0f, 0.0f, 1.0f);
+    public static readonly Vec XAxis = new Vec(1.0f, 0.0f, 0.0f);
+    public static readonly Vec YAxis = new Vec(0.0f, 1.0f, 0.0f);
+    public static readonly Vec ZAxis = new Vec(0.0f, 0.0f, 1.0f);
 
     // Sum between two Vec objects
     public static Vec operator +(Vec v1, Vec v2) => new Vec(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
@@ -23,7 +23,7 @@ public struct Vec
 
     // Product between scalar (float) and Vec
     public static Vec operator *(float f, Vec v) => new Vec(f * v.X, f * v.Y, f * v.Z);
-    
+
     // Negation
     public static Vec operator -(Vec v)
     {
@@ -53,7 +53,7 @@ public struct Vec
     }
 
     public Normal ToNorm() => new Normal(X, Y, Z);
-    
+
     public float this[int index]
     {
         get

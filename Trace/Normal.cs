@@ -9,7 +9,7 @@ public struct Normal
 
     // Constructor
     public Normal(float x, float y, float z) => (X, Y, Z) = (x, y, z);
-    
+
     // Product between scalar (float) and Normal
     public static Normal operator *(float f, Normal n) => new Normal(f * n.X, f * n.Y, f * n.Z);
 
@@ -29,7 +29,7 @@ public struct Normal
 
     // Dot product between two Normal
     public float Dot(Normal n) => X * n.X + Y * n.Y + Z * n.Z;
-    
+
     // Cross product between two Normal
     public Normal Cross(Normal other) => new Normal(Y * other.Z - Z * other.Y,
         Z * other.X - X * other.Z,
@@ -48,7 +48,7 @@ public struct Normal
         Y /= norm;
         Z /= norm;
     }
-    
+
     public float this[int index]
     {
         get
@@ -73,7 +73,7 @@ public struct Normal
             }
         }
     }
-    
+
     /// <summary>
     /// Check if two <c>Normal</c> have the same components with tolerance <c>epsilon</c>.
     /// </summary>

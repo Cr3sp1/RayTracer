@@ -7,6 +7,7 @@ using Trace;
 namespace Trace.Tests;
 
 using static Utils;
+
 public class UtilsTests
 {
     // Test for method CloseEnough between floats
@@ -17,10 +18,10 @@ public class UtilsTests
         Assert.True(CloseEnough(100, 101, 2));
         Assert.False(CloseEnough(1f, 1f - 2e-5f));
     }
-    
-    
+
+
     // Tests for methods regarding PFM format
-    
+
     // Test for method ReadLine
     [Fact]
     public void TestReadLine()
@@ -30,14 +31,14 @@ public class UtilsTests
         Assert.Equal("world", ReadLine(stream));
         Assert.Equal("", ReadLine(stream));
     }
-    
+
     // Method ParseEndianness
     [Fact]
     public void TestParseEndianness()
     {
         Assert.True(ParseEndianness("1.0") == Endianness.BigEndian);
         Assert.True(ParseEndianness("-1.0") == Endianness.LittleEndian);
-        
+
         try
         {
             ParseEndianness("0.0");

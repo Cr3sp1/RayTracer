@@ -33,7 +33,7 @@ public class World
                 closestHit = hit;
             }
         }
-        
+
         return closestHit;
     }
 }

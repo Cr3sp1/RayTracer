@@ -91,7 +91,7 @@ public static class Utils
 
         return (width, height);
     }
-    
+
     // Write float to file in binary
     public static void WriteFloat(Stream outStream, float value, Endianness endianness = Endianness.LittleEndian)
     {

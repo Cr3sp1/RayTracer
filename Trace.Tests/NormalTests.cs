@@ -24,12 +24,12 @@ public class NormalTests
 
         Assert.True(Normal.CloseEnough(-n1, new Normal(-1.0f, -2.0f, -3.0f)));
         Assert.True(Normal.CloseEnough(2 * n1, new Normal(2.0f, 4.0f, 6.0f)));
-        
+
         Assert.True(Utils.CloseEnough(n1.Dot(n2), 40.0f));
         Assert.True(Normal.CloseEnough(n1.Cross(n2), new Normal(-2.0f, 4.0f, -2.0f)));
         Assert.True(Utils.CloseEnough(n1.Dot(v2), 40.0f));
         Assert.True(Vec.CloseEnough(n2.Cross(v1), new Vec(2.0f, -4.0f, 2.0f)));
-        
+
         Assert.True(Utils.CloseEnough(n1.SquaredNorm(), 14.0f));
         Assert.True(Utils.CloseEnough(n1.Norm(), MathF.Sqrt(14.0f)));
     }

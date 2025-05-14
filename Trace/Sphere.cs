@@ -12,7 +12,7 @@ public class Sphere : Shape
     public Sphere(Transformation transform) : base(transform)
     {
     }
-    
+
     // Return normal to the surface on the Point p
     public Normal SphereNormal(Point p, Vec rayDir)
     {
