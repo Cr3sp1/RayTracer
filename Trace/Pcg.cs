@@ -51,4 +51,10 @@ public struct Pcg
 
         return (xorShifted >> (int)rot) | (xorShifted << (int)((-rot) & 31));
     }
+
+    /// <summary>
+    /// Generates the next pseudo-random <c>float</c> in the range [0, 1].
+    /// </summary>
+    /// <returns>A pseudo-random <c>float</c> in the range [0, 1].</returns>
+    public float RandomFloat() => Random() / (float)uint.MaxValue;
 }
