@@ -22,7 +22,7 @@ public struct HomMat
     /// </summary>
     public HomMat(float[] row0, float[] row1, float[] row2)
     {
-        Console.WriteLine("starting");
+        // Console.WriteLine("starting");
         if (row0.Length != 4 || row1.Length != 4 || row2.Length != 4)
         {
             throw new ArgumentException("HomMat rows must have 4 elements!");

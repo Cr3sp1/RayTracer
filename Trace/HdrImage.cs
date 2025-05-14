@@ -7,7 +7,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
-/// Class representing a high dynamic range image. Contains image <c> int Width, Height</c>, and an array <c>Pixels</c> of <c>Color</c>.
+/// Class representing a high-dynamic range image. Contains image <c> int Width, Height</c>, and an array <c>Pixels</c> of <c>Color</c>.
 /// </summary>
 public class HdrImage
 {
@@ -36,7 +36,7 @@ public class HdrImage
     /// <summary>
     /// Construct <c>HdrImage</c> from PFM image.
     /// </summary>
-    /// <param name="filePath"><c>String</c> representing file path from which PFM image is read.</param>
+    /// <param name="filePath"><c>String</c> representing the file path from which PFM image is read.</param>
     public HdrImage(string filePath)
     {
         Pixels = [];
@@ -92,7 +92,7 @@ public class HdrImage
         }
     }
 
-    // Read PFM file
+    // Read a PFM file
     private void _ReadPfm(Stream stream)
     {
         var magic = ReadLine(stream);
@@ -147,12 +147,13 @@ public class HdrImage
     /// <summary>
     /// Method to write <c>HdrImage</c> as a PFM image.
     /// </summary>
-    /// <param name="filePath"><c>String</c> representing file path on which PFM image is written.</param>
+    /// <param name="filePath"><c>String</c> representing the file path on which PFM image is written.</param>
     /// <param name="endianness">Endianness of the PFM image.</param>
     public void WritePfm(string filePath, Endianness endianness = Endianness.LittleEndian)
     {
-        // Create output directory if it doesn't exist
+        // Create an output directory if it doesn't exist
         string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
+        if (string.IsNullOrEmpty(directoryPath)) directoryPath = Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -190,7 +191,7 @@ public class HdrImage
     private static float _Clamp(float x) => x / (1.0f + x); // only used in ClampImage!
 
     /// <summary>
-    /// Clip RGB values so that they belong in [0, 1] interval.
+    /// Clip RGB values so that they belong in a [0, 1] interval.
     /// </summary>
     public void ClampImage()
     {
@@ -250,8 +251,8 @@ public class HdrImage
     /// <summary>
     /// Write <c>HdrImage</c> in low dynamic range format. RGB values must be in [0, 1] interval!
     /// </summary>
-    /// <param name="filePath"><c>String</c> representing output file path on which LDR image is written.
-    /// Format is inferred from name extension.
+    /// <param name="filePath"><c>String</c> representing the output file path on which LDR image is written.
+    /// Format is inferred from the name extension.
     /// Valid formats are "png", "bmp", "jpeg", "tga", "webp".</param>
     /// <param name="gamma">Gamma correction.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
@@ -260,8 +261,9 @@ public class HdrImage
         // Get the extension and remove the dot
         string format = Path.GetExtension(filePath).TrimStart('.');
 
-        // Create output directory if it doesn't exist
+        // Create the output directory if it doesn't exist
         string directoryPath = Path.GetDirectoryName(filePath) ?? Directory.GetCurrentDirectory();
+        if (string.IsNullOrEmpty(directoryPath)) directoryPath = Directory.GetCurrentDirectory();
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
@@ -269,7 +271,7 @@ public class HdrImage
         }
         
         using var outStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        Console.WriteLine($"Writing file '{filePath}'");
+        // Console.WriteLine($"Writing file '{filePath}'");
 
         WriteLdr(outStream, format, gamma);
     }
