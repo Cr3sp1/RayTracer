@@ -19,12 +19,12 @@ public class ImageTracer
 
     /// <summary>
     /// Fire a ray towards a pixel (col, row) of HdrImage;
-    /// inside the pixel the ray is centered at position (u_pixel, v_pixel).
+    /// inside the pixel the ray is centered at position (uPixel, vPixel).
     /// </summary>
-    public Ray FireRay(int col, int row, float u_pixel = 0.5f, float v_pixel = 0.5f)
+    public Ray FireRay(int col, int row, float uPixel = 0.5f, float vPixel = 0.5f)
     {
-        float u = (col + u_pixel) / Image.Width;
-        float v = 1.0f - (row + v_pixel) / Image.Height;
+        float u = (col + uPixel) / Image.Width;
+        float v = 1.0f - (row + vPixel) / Image.Height;
         return Camera.FireRay(u, v);
     }
 
