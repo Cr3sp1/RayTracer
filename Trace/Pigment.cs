@@ -81,8 +81,8 @@ public class CheckeredPigment : Pigment
     /// <returns><c>Color</c> of the pixel.</returns>
     public override Color GetColor(Vec2D uv)
     {
-        int u = NumSquares * (int)Math.Floor(uv.U);
-        int v = NumSquares * (int)Math.Floor(uv.V);
+        int u =  (int)Math.Floor(uv.U * NumSquares);
+        int v = (int)Math.Floor(uv.V * NumSquares);
         return ((u + v) % 2 == 0) ? Col1 : Col2;
     }
 }
