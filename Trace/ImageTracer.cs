@@ -9,10 +9,6 @@ public class ImageTracer
     public ICamera Camera;
     public Renderer Renderer;
 
-    // Basic constructor with no scene to be rendered
-    public ImageTracer(HdrImage image, ICamera camera) =>
-        (Image, Camera) = (image, camera);
-
     // Constructor
     public ImageTracer(HdrImage image, ICamera camera, Renderer renderer) =>
         (Image, Camera, Renderer) = (image, camera, renderer);
