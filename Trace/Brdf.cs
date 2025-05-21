@@ -5,17 +5,12 @@ namespace Trace;
 /// </summary>
 public class Brdf
 {
-    public Pigment Pigment = new Pigment();
-
-    // Default constructor
-    public Brdf()
-    {
-    }
+    public Pigment Pigment;
 
     // Constructor passing a pigment
-    public Brdf(Pigment pigment)
+    public Brdf(Pigment? pigment = null)
     {
-        Pigment = pigment;
+        Pigment = pigment ?? new Pigment();
     }
 
     /// <summary>
@@ -38,14 +33,9 @@ public class Brdf
 public class DiffuseBrdf : Brdf
 {
     public float Reflectance;
-
-    // Default constructor
-    public DiffuseBrdf() : base()
-    {
-    }
-
+    
     // Constructor passing a pigment and a reflectance
-    public DiffuseBrdf(Pigment pigment, float reflectance = 1.0f) : base(pigment)
+    public DiffuseBrdf(Pigment? pigment = null, float reflectance = 1.0f) : base(pigment)
     {
         Reflectance = reflectance;
     }

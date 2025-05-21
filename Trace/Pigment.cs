@@ -1,17 +1,12 @@
 namespace Trace;
 
 /// <summary>
-/// Abstract class defining a surface pigment.
+/// Class defining a surface pigment.
 /// </summary>
 public class Pigment
 {
-    // Default constructor
-    public Pigment()
-    {
-    }
-
     /// <summary>
-    /// Return the color of pixel (u,v) on the surface.
+    /// Return the color of the pixel (u,v) on the surface.
     /// </summary>
     /// <param name="uv"><c>Vec2D</c> representing coordinates of the pixel on the surface.</param>
     /// <returns><c>Color</c> of the pixel.</returns>
@@ -21,27 +16,23 @@ public class Pigment
     }
 }
 
+
 /// <summary>
-/// Class inheriting from <c>Pigment</c>, representing a uniform surface pigmentation.
+/// Class inheriting from <c>Pigment</c>, representing uniform surface pigmentation.
 /// Member: <c>Color</c> of the uniform pigment.
 /// </summary>
 public class UniformPigment : Pigment
 {
     public Color Col;
 
-    // Default constructor
-    public UniformPigment() : base()
+    // Constructor of a uniform pigment
+    public UniformPigment(Color? color = null)
     {
-    }
-
-    // Constructor of a uniform pigment specifying the color
-    public UniformPigment(Color color)
-    {
-        Col = color;
+        Col = color ?? Color.Black;
     }
 
     /// <summary>
-    /// Return the color of pixel (u,v) on the surface for a uniformly-pigmented surface.
+    /// Return the color of the pixel (u,v) on the surface for a uniformly pigmented surface.
     /// </summary>
     /// <param name="uv"><c>Vec2D</c> representing coordinates of the pixel on the surface.</param>
     /// <returns><c>Color</c> of the pixel.</returns>
@@ -51,8 +42,9 @@ public class UniformPigment : Pigment
     }
 }
 
+
 /// <summary>
-/// Class inheriting from <c>Pigment</c>, representing a checkered surface pigmentation.
+/// Class inheriting from <c>Pigment</c>, representing checkered surface pigmentation.
 /// Members: the two <c>Color</c> types of the checkered pigment,
 /// the <c>int</c> number of rows/columns of the checkered pattern (numbers of rows and columns must be equal).
 /// </summary>
@@ -61,31 +53,27 @@ public class CheckeredPigment : Pigment
     public Color Col1, Col2;
     public int NumSquares;
 
-    // Default constructor
-    public CheckeredPigment() : base()
+    // Constructor
+    public CheckeredPigment(Color? color1 = null, Color? color2 = null, int numSquares = 2)
     {
-    }
-
-    // Constructor of a uniform pigment specifying the color
-    public CheckeredPigment(Color color1, Color color2, int numSquares)
-    {
-        Col1 = color1;
-        Col2 = color2;
+        Col1 = color1 ?? Color.Black;
+        Col2 = color2 ?? Color.White;
         NumSquares = numSquares;
     }
 
     /// <summary>
-    /// Return the color of pixel (u,v) on the surface for a checkered surface.
+    /// Return the color of the pixel (u,v) on the surface for a checkered surface.
     /// </summary>
     /// <param name="uv"><c>Vec2D</c> representing coordinates of the pixel on the surface.</param>
     /// <returns><c>Color</c> of the pixel.</returns>
     public override Color GetColor(Vec2D uv)
     {
-        int u =  (int)Math.Floor(uv.U * NumSquares);
+        int u = (int)Math.Floor(uv.U * NumSquares);
         int v = (int)Math.Floor(uv.V * NumSquares);
         return ((u + v) % 2 == 0) ? Col1 : Col2;
     }
 }
+
 
 /// <summary>
 /// Class inheriting from <c>Pigment</c>, representing a textured surface pigmentation given by a PFM image.
@@ -94,20 +82,16 @@ public class CheckeredPigment : Pigment
 public class ImagePigment : Pigment
 {
     public HdrImage Image;
-
-    // Default constructor
-    public ImagePigment() : base()
+    
+    // Constructor
+    public ImagePigment(HdrImage? image = null)
     {
+        Image = image ?? new HdrImage(1, 1);
     }
 
-    // Constructor of a uniform pigment specifying the color
-    public ImagePigment(HdrImage image)
-    {
-        Image = image;
-    }
-
+    
     /// <summary>
-    /// Return the color of pixel (u,v) on the surface for a Pfm image wrapping surface.
+    /// Return the color of the pixel (u,v) on the surface for a Pfm image wrapping surface.
     /// </summary>
     /// <param name="uv"><c>Vec2D</c> representing coordinates of the pixel on the surface.</param>
     /// <returns><c>Color</c> of the pixel.</returns>

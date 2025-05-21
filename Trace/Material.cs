@@ -10,9 +10,9 @@ public class Material
     public Brdf Brdf;
 
     // Default constructor
-    public Material(Pigment? pigment = null, Brdf? brdf = null)
+    public Material(Brdf? brdf = null, Pigment? emittedRadiance = null)
     {
-        EmittedRadiance = pigment ?? new UniformPigment(Color.Black);
-        Brdf = brdf ?? new DiffuseBrdf(EmittedRadiance);
+        Brdf = brdf ?? new DiffuseBrdf( new UniformPigment());
+        EmittedRadiance = emittedRadiance ?? new UniformPigment();
     }
 }
