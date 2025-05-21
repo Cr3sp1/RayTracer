@@ -16,7 +16,6 @@ public class Pigment
     }
 }
 
-
 /// <summary>
 /// Class inheriting from <c>Pigment</c>, representing uniform surface pigmentation.
 /// Member: <c>Color</c> of the uniform pigment.
@@ -41,7 +40,6 @@ public class UniformPigment : Pigment
         return Col;
     }
 }
-
 
 /// <summary>
 /// Class inheriting from <c>Pigment</c>, representing checkered surface pigmentation.
@@ -74,7 +72,6 @@ public class CheckeredPigment : Pigment
     }
 }
 
-
 /// <summary>
 /// Class inheriting from <c>Pigment</c>, representing a textured surface pigmentation given by a PFM image.
 /// Member: <c>HdrImage</c> representing the texture.
@@ -82,14 +79,14 @@ public class CheckeredPigment : Pigment
 public class ImagePigment : Pigment
 {
     public HdrImage Image;
-    
+
     // Constructor
     public ImagePigment(HdrImage? image = null)
     {
         Image = image ?? new HdrImage(1, 1);
     }
 
-    
+
     /// <summary>
     /// Return the color of the pixel (u,v) on the surface for a Pfm image wrapping surface.
     /// </summary>

@@ -2,13 +2,10 @@ namespace Trace;
 
 public class Plane : Shape
 {
-    // Default constructor
-    public Plane() : base()
-    {
-    }
 
-    // Constructor of a plane subject to a transformation
-    public Plane(Transformation transform) : base(transform)
+
+    // Constructor of a plane subject to an optional transformation and with an optional material
+    public Plane(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
     }
 

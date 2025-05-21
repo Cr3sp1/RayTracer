@@ -95,7 +95,7 @@ public class FlatRenderer : Renderer
         if (hit.HasValue)
         {
             var hitVal = hit.Value;
-            return hitVal.Shape.Material.EmittedRadiance.GetColor(hitVal.SurfacePoint);
+            return hitVal.Shape.Material.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
         }
 
         return Color.Black;

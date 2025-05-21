@@ -3,13 +3,8 @@ namespace Trace;
 // Class representing a sphere
 public class Sphere : Shape
 {
-    // Default constructor
-    public Sphere() : base()
-    {
-    }
-
-    // Constructor of the sphere subject to a transformation
-    public Sphere(Transformation transform) : base(transform)
+    // Constructor of the sphere subject to an optional transformation and with an optional material
+    public Sphere(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
     }
 

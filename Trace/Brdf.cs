@@ -33,7 +33,7 @@ public class Brdf
 public class DiffuseBrdf : Brdf
 {
     public float Reflectance;
-    
+
     // Constructor passing a pigment and a reflectance
     public DiffuseBrdf(Pigment? pigment = null, float reflectance = 1.0f) : base(pigment)
     {
