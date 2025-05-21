@@ -27,8 +27,6 @@ public class ImageTracer
     /// <summary>
     /// Fire rays towards all pixels of HdrImage.
     /// </summary>
-    /// <param name="func">Function solving the rendering equation, taking as input a <c>Ray</c>
-    /// and as output a <c>Color</c>.</param>
     public void FireAllRays()
     {
         for (int row = 0; row < Image.Height; row++)
