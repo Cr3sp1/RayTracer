@@ -24,8 +24,8 @@ public class WorldTests
         world.AddShape(transPlane1);
 
         var ray1 = new Ray(new Point(0.0f, 0.0f, 2.0f), -Vec.ZAxis);
-        var exp1 = new HitRecord(new Point(0.0f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f), new Vec2D(0.0f, 0.0f), 1.0f,
-            ray1);
+        var exp1 = new HitRecord(unitSphere, new Point(0.0f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.0f), ray1, 1.0f);
         var hit1 = world.IntersectAll(ray1);
         output.WriteLine("Intersection =\n" + hit1.ToString());
         Assert.True(hit1.HasValue);
@@ -34,8 +34,8 @@ public class WorldTests
         var transPlane2 = new Plane(Transformation.Translation(new Vec(0.0f, 0.0f, 1.5f)));
         world.AddShape(transPlane2);
 
-        var exp2 = new HitRecord(new Point(0.0f, 0.0f, 1.5f), new Normal(0.0f, 0.0f, 1.0f), new Vec2D(0.0f, 0.0f), 0.5f,
-            ray1);
+        var exp2 = new HitRecord(transPlane2, new Point(0.0f, 0.0f, 1.5f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.0f), ray1, 0.5f);
         var hit2 = world.IntersectAll(ray1);
         output.WriteLine("Intersection =\n" + hit2.ToString());
         Assert.True(hit2.HasValue);

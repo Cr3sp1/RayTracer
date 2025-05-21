@@ -45,7 +45,7 @@ public class Plane : Shape
 
         Point hitPoint = invRay.At(tHit);
 
-        return new HitRecord(Transform * hitPoint, Transform * PlaneNormal(invRay.Dir),
-            PlanePointToUV(hitPoint), tHit, ray);
+        return new HitRecord(this, Transform * hitPoint, Transform * PlaneNormal(invRay.Dir),
+            PlanePointToUV(hitPoint), ray, tHit);
     }
 }
