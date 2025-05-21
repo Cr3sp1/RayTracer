@@ -13,7 +13,7 @@ public class NormalTests
         Assert.False(Normal.CloseEnough(n1, n2));
     }
 
-    // Test Vec operations
+    // Test Normal operations
     [Fact]
     public void TestOperations()
     {
@@ -32,5 +32,12 @@ public class NormalTests
 
         Assert.True(Utils.CloseEnough(n1.SquaredNorm(), 14.0f));
         Assert.True(Utils.CloseEnough(n1.Norm(), MathF.Sqrt(14.0f)));
+    }
+    
+    // Test Create ONB from Normal
+    [Fact]
+    public void TestCreateONB()
+    {
+        
     }
 }

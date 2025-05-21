@@ -6,13 +6,13 @@ namespace Trace;
 /// </summary>
 public class Material
 {
-    public Pigment Pigment;
+    public Pigment EmittedRadiance;
     public Brdf Brdf;
 
     // Default constructor
     public Material(Pigment? pigment = null, Brdf? brdf = null)
     {
-        Pigment = pigment ?? new UniformPigment(new Color(0.0f, 0.0f, 0.0f));
-        Brdf = brdf ?? new DiffuseBrdf(Pigment);
+        EmittedRadiance = pigment ?? new UniformPigment(new Color(0.0f, 0.0f, 0.0f));
+        Brdf = brdf ?? new DiffuseBrdf(EmittedRadiance);
     }
 }

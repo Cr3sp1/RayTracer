@@ -75,6 +75,24 @@ public struct Normal
     }
 
     /// <summary>
+    /// Create an orthonormal basis from a <c>Normal</c>: the z-axis of the ONB will be this normal.
+    /// The normal has to be normalized.
+    /// </summary>
+    /// <param name="n"><c>Normal</c>: z-axis of the ONB.</param>
+    /// <returns>(<c>Vec</c> e1, <c>Vec</c> e2, <c>Vec</c> e3) of the ONB.</returns>
+    public (Vec, Vec, Vec) CreateONBFromZ()
+    {
+        float sign = MathF.CopySign(1.0f, Z);
+        float a = -1.0f / (sign + Z);
+        float b = X * Y * a;
+
+        var e1 = new Vec(1.0f + sign * X * X * a, sign * b, -sign * X);
+        var e2 = new Vec(b, sign + Y * Y * a, -Y);
+
+        return (e1, e2, new Vec(X, Y, Z));
+    }
+
+    /// <summary>
     /// Check if two <c>Normal</c> have the same components with tolerance <c>epsilon</c>.
     /// </summary>
     public static bool CloseEnough(Normal n1, Normal n2, float epsilon = 1e-5f) =>
