@@ -5,7 +5,7 @@ namespace Trace;
 /// </summary>
 public class Brdf
 {
-    public Pigment Pigment;
+    public Pigment Pigment = new Pigment();
 
     // Default constructor
     public Brdf()
@@ -28,10 +28,7 @@ public class Brdf
     /// at point of 2D coordinates (u,v).</param>
     /// <param name="uv"><c>Vec2D</c> representing coordinates of the pixel on the surface.</param>
     /// <returns></returns>
-    public virtual Color Eval(Normal normal, Vec inDir, Vec outDir, Vec2D uv)
-    {
-        return new Color(0.0f, 0.0f, 0.0f);
-    }
+    public virtual Color Eval(Normal normal, Vec inDir, Vec outDir, Vec2D uv) => Color.Black;
 }
 
 /// <summary>

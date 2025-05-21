@@ -8,7 +8,7 @@ public class Shape
     public readonly Material Material;
 
     // Constructor of the shape subject to a transformation and with a material
-    public Shape(Transformation? transform = null, Material? material = null )
+    public Shape(Transformation? transform = null, Material? material = null)
     {
         Transform = transform ?? new Transformation();
         Material = material ?? new Material();

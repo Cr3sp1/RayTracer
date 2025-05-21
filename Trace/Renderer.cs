@@ -62,10 +62,10 @@ public class OnOffRenderer : Renderer
     {
         if (Scene.IntersectAll(ray) != null)
         {
-            return new Color(1.0f, 1.0f, 1.0f);
+            return Color.White;
         }
 
-        return new Color(0.0f, 0.0f, 0.0f);
+        return Color.Black;
     }
 }
 
@@ -75,9 +75,12 @@ public class OnOffRenderer : Renderer
 /// </summary>
 public class FlatRenderer : Renderer
 {
-    // Constructor passing a scene
-    public FlatRenderer(World world) : base(world)
+    public Color BackgroundColor;
+    
+    // Constructor passing a scene and optionally a background color
+    public FlatRenderer(World world, Color? backgroundColor = null) : base(world)
     {
+        BackgroundColor = backgroundColor ?? Color.Black;
     }
 
     /// <summary>
@@ -95,6 +98,6 @@ public class FlatRenderer : Renderer
             return hitVal.Shape.Material.EmittedRadiance.GetColor(hitVal.SurfacePoint);
         }
 
-        return new Color(0.0f, 0.0f, 0.0f);
+        return Color.Black;
     }
 }
