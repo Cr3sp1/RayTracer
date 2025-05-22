@@ -52,7 +52,7 @@ public struct Vec
         Z /= norm;
     }
 
-    public Normal ToNorm() => new Normal(X, Y, Z);
+    public Normal ToNormal() => new Normal(X, Y, Z);
 
     public float this[int index]
     {

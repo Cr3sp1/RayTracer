@@ -49,6 +49,8 @@ public struct Normal
         Z /= norm;
     }
 
+    public Vec ToVec() => new Vec(X, Y, Z);
+
     public float this[int index]
     {
         get
@@ -77,10 +79,10 @@ public struct Normal
     /// <summary>
     /// Create an orthonormal basis from a <c>Normal</c>: the z-axis of the ONB will be this normal.
     /// The normal has to be normalized.
+    /// WARNING: <c>Normal</c> is not normalized, so it is the caller responsibility to do so.
     /// </summary>
-    /// <param name="n"><c>Normal</c>: z-axis of the ONB.</param>
     /// <returns>(<c>Vec</c> e1, <c>Vec</c> e2, <c>Vec</c> e3) of the ONB.</returns>
-    public (Vec, Vec, Vec) CreateONBFromZ()
+    public (Vec, Vec, Vec) CreateOnbFromZ()
     {
         float sign = MathF.CopySign(1.0f, Z);
         float a = -1.0f / (sign + Z);
