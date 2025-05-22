@@ -36,7 +36,7 @@ public class NormalTests
 
     // Test Create ONB from Normal
     [Fact]
-    public void TestCreateONB()
+    public void TestCreateOnb()
     {
         var pcg = new Pcg();
 
@@ -44,7 +44,7 @@ public class NormalTests
         {
             var normal = new Normal(pcg.RandomFloat(), pcg.RandomFloat(), pcg.RandomFloat());
             normal.Normalize();
-            var (e1, e2, e3) = normal.CreateONBFromZ();
+            var (e1, e2, e3) = normal.CreateOnbFromZ();
 
             Assert.True(Vec.CloseEnough(e3, new Vec(normal.X, normal.Y, normal.Z)));
             Assert.True(Utils.CloseEnough(0.0f, e1.Dot(e2)));
