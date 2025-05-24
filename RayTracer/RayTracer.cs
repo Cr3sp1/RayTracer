@@ -149,31 +149,39 @@ public class DemoCommand : ICommand
 
         // Set the scene
         float rad = 0.1f;
+        var matRed = new Material(new Brdf(new UniformPigment(Color.Red)));
+        var matGreen = new Material(new Brdf(new UniformPigment(Color.Green)));
+        var matBlue = new Material(new Brdf(new UniformPigment(Color.Blue)));
+        var matWhite = new Material(new Brdf(new UniformPigment(Color.White)));
+        var matCheck1 = new Material(new Brdf(new CheckeredPigment(Color.Red, Color.White)));
+        var matCheck2 = new Material(new Brdf(new CheckeredPigment(Color.Green, Color.Blue, 3)));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matCheck2));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matGreen));
+        ;
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matCheck1));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matRed));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matGreen));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matWhite));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.0f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, 0.0f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad))));
+                                  Transformation.Scaling(new Vec(rad, rad, rad)), matRed));
         console.Output.WriteLine("Scene successfully set");
 
         // Render the scene with on-off renderer
-        var tracer = new ImageTracer(new HdrImage(Width, Height), camera, scene);
-        tracer.FireAllRays(tracer.OnOffRenderer);
+        var renderer = new FlatRenderer(scene);
+        var tracer = new ImageTracer(new HdrImage(Width, Height), camera, renderer);
+        tracer.FireAllRays();
 
         // Read rendered Pfm image
         var img = tracer.Image;

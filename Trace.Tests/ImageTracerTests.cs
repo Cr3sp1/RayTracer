@@ -8,6 +8,7 @@ public class ImageTracerTests
     private readonly HdrImage image;
     private readonly PerspectiveCamera camera;
     private readonly World scene;
+    private readonly Renderer renderer;
     private readonly ImageTracer tracer;
     private readonly ITestOutputHelper output;
 
@@ -17,7 +18,8 @@ public class ImageTracerTests
         image = new HdrImage(width: 4, height: 2);
         camera = new PerspectiveCamera(aspectRatio: 2);
         scene = new World();
-        tracer = new ImageTracer(image: image, camera: camera, scene: scene);
+        renderer = new Renderer(scene);
+        tracer = new ImageTracer(image: image, camera: camera, renderer: renderer);
         this.output = output;
     }
 
@@ -34,8 +36,10 @@ public class ImageTracerTests
     [Fact]
     void TestImageCoverage()
     {
-        tracer.FireAllRays(ray => new Color(1.0f, 2.0f, 3.0f));
-
+        var testRenderer = new TestRenderer(scene, new Color(1.0f, 2.0f, 3.0f));
+        tracer.Renderer = testRenderer;
+        
+        tracer.FireAllRays();
         for (int row = 0; row < image.Height; row++)
         {
             for (int col = 0; col < image.Width; col++)

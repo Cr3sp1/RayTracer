@@ -1,7 +1,7 @@
 ﻿namespace Trace;
 
 /// <summary>
-/// Struct representing RGB colors, with R,G,B values represented as <c>float</c> values.
+/// Struct representing RGB colors, with R, G, B values represented as <c>float</c> values.
 /// </summary>
 public struct Color
 {
@@ -34,4 +34,11 @@ public struct Color
 
 
     public override string ToString() => $"<R:{R}, G:{G}, B:{B}>";
+
+    // Some default colors
+    public static readonly Color Black = new Color(0.0f, 0.0f, 0.0f);
+    public static readonly Color White = new Color(1.0f, 1.0f, 1.0f);
+    public static readonly Color Red = new Color(1.0f, 0.0f, 0.0f);
+    public static readonly Color Green = new Color(0.0f, 1.0f, 0.0f);
+    public static readonly Color Blue = new Color(0.0f, 0.0f, 1.0f);
 }

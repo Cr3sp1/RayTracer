@@ -3,13 +3,8 @@ namespace Trace;
 // Class representing a sphere
 public class Sphere : Shape
 {
-    // Default constructor
-    public Sphere() : base()
-    {
-    }
-
-    // Constructor of the sphere subject to a transformation
-    public Sphere(Transformation transform) : base(transform)
+    // Constructor of the sphere subject to an optional transformation and with an optional material
+    public Sphere(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
     }
 
@@ -56,7 +51,7 @@ public class Sphere : Shape
 
         Point hitPoint = invRay.At(tHit);
 
-        return new HitRecord(Transform * hitPoint, Transform * SphereNormal(hitPoint, invRay.Dir),
-            SpherePointToUV(hitPoint), tHit, ray);
+        return new HitRecord(this, Transform * hitPoint, Transform * SphereNormal(hitPoint, invRay.Dir),
+            SpherePointToUV(hitPoint), ray, tHit);
     }
 }
