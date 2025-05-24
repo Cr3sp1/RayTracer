@@ -1,3 +1,5 @@
+using SixLabors.ImageSharp.Formats.Png;
+
 namespace Trace;
 
 /// <summary>
@@ -76,7 +78,7 @@ public class OnOffRenderer : Renderer
 public class FlatRenderer : Renderer
 {
     public Color BackgroundColor;
-    
+
     // Constructor passing a scene and optionally a background color
     public FlatRenderer(World world, Color? backgroundColor = null) : base(world)
     {
@@ -99,5 +101,82 @@ public class FlatRenderer : Renderer
         }
 
         return Color.Black;
+    }
+}
+
+// <summary>
+/// Class inheriting from Renderer, representing a path tracer:
+/// if <c>Ray</c> intersects a shape in the scene return the solution of the rendering equation, else return black.
+/// </summary>
+public class PathTracer : Renderer
+{
+    public Color BackgroundColor;
+    public Pcg Pcg;
+    public int NumRays;
+    public int MaxDepth;
+    public int RussianRouletteLimit;
+
+    // Constructor passing a scene and optionally a background color, the random number generator, the number of rays
+    // to generate for the integration, tha maximum ray depth, the limit beyond which to use Russian Roulette
+    public PathTracer(World world, int numRays = 10, int maxDepth = 10, int russianRouletteLimit = 2, Pcg? pcg = null,
+        Color? backgroundColor = null) : base(world)
+    {
+        NumRays = numRays;
+        MaxDepth = maxDepth;
+        RussianRouletteLimit = russianRouletteLimit;
+        Pcg = pcg ?? new Pcg();
+        BackgroundColor = backgroundColor ?? Color.Black;
+    }
+
+    /// <summary>
+    /// If <c>Ray</c> intersects a shape in the scene return the solution of the rendering equation, else return
+    /// black.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> taken as input for the renderer.</param>
+    /// <returns><c>Color</c> of the pixel.</returns>
+    public override Color Render(Ray ray)
+    {
+        // Return background color if maximum depth for recursion is exceeded
+        if (ray.Depth > MaxDepth) return BackgroundColor;
+
+        // Find the closest intersection between ray and the scene
+        var hit = Scene.IntersectAll(ray);
+        if (!hit.HasValue) return BackgroundColor;
+
+        // Register properties of the surface at the intersection
+        var hitVal = hit.Value;
+        var hitMaterial = hitVal.Shape.Material;
+        var hitColor = hitMaterial.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
+        var emittedRadiance = hitMaterial.EmittedRadiance.GetColor(hitVal.SurfacePoint);
+        var hitColorLum = Math.Max(Math.Max(hitColor.R, hitColor.G), hitColor.B);
+
+        // Russian roulette to avoid infinite recursion
+        if (ray.Depth > RussianRouletteLimit)
+        {
+            var q = Math.Max(0.05f, 1.0f - hitColorLum); // Probability to kill recursion
+            if (Pcg.RandomFloat() > q) hitColorLum *= 1.0f / (1.0f - q); // Reweight luminosity if recursion continues
+            else return emittedRadiance;
+        }
+
+        // Monte Carlo integration
+        var cumRadiance = new Color(0.0f, 0.0f, 0.0f);
+
+        // Do it only if the surface reflects some light, unless it would be useless
+        if (hitColorLum > 0.0f)
+        {
+            for (int rayIndex = 0; rayIndex < NumRays; rayIndex++)
+            {
+                // Generate new scattered ray
+                var newRay = hitMaterial.Brdf.ScatterRay(Pcg, hitVal.Ray.Dir, hitVal.WorldPoint, hitVal.Normal,
+                    ray.Depth + 1);
+                // Trace the new ray
+                var newRadiance = Render(newRay);
+                // Update the radiance accumulator, modulated by the surface color
+                cumRadiance += hitColor * newRadiance;
+            }
+        }
+
+        // Return emitted light + averaged reflected light
+        return emittedRadiance + 1.0f / NumRays * cumRadiance;
     }
 }

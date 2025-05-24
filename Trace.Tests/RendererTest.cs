@@ -63,4 +63,33 @@ public class RendererTest
         Assert.True(Color.CloseEnough(image.GetPixel(1, 2), Color.Black));
         Assert.True(Color.CloseEnough(image.GetPixel(2, 2), Color.Black));
     }
+    
+    // Test Path Tracer: Furnace test
+    [Fact]
+    public void TestPathTracer()
+    {
+        var pcg = new Pcg();
+        
+        // Furnace test for random values of L_e and Rho_d
+        for (int i = 0; i < 5; i++)
+        {
+            var emittedRadiance = pcg.RandomFloat();
+            var reflectance = pcg.RandomFloat() * 0.9f;   // Avoid numbers too close to 1
+            
+            var world = new World();
+            var enclosedMaterial = new Material(new DiffuseBrdf(new UniformPigment(reflectance*Color.White)), new UniformPigment(emittedRadiance*Color.White));
+            
+            world.AddShape(new Sphere(null, enclosedMaterial));
+
+            var pathTracer = new PathTracer(world, 1, 100, 101, pcg);
+
+            var ray = new Ray(new Point(0.0f, 0.0f, 0.0f), new Vec(1.0f, 0.0f, 0.0f));
+            var renderedColor = pathTracer.Render(ray);
+            
+            float expected = emittedRadiance / (1.0f - reflectance);
+            Assert.True(Utils.CloseEnough(expected, renderedColor.R));
+            Assert.True(Utils.CloseEnough(expected, renderedColor.G));
+            Assert.True(Utils.CloseEnough(expected, renderedColor.B));
+        }
+    }
 }
