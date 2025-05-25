@@ -100,7 +100,7 @@ public class FlatRenderer : Renderer
             return hitVal.Shape.Material.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
         }
 
-        return Color.Black;
+        return BackgroundColor;
     }
 }
 
@@ -117,7 +117,7 @@ public class PathTracer : Renderer
     public int RussianRouletteLimit;
 
     // Constructor passing a scene and optionally a background color, the random number generator, the number of rays
-    // to generate for the integration, tha maximum ray depth, the limit beyond which to use Russian Roulette
+    // to generate for the integration, the maximum ray depth, the limit beyond which to use Russian Roulette
     public PathTracer(World world, int numRays = 10, int maxDepth = 10, int russianRouletteLimit = 2, Pcg? pcg = null,
         Color? backgroundColor = null) : base(world)
     {
@@ -136,8 +136,8 @@ public class PathTracer : Renderer
     /// <returns><c>Color</c> of the pixel.</returns>
     public override Color Render(Ray ray)
     {
-        // Return background color if maximum depth for recursion is exceeded
-        if (ray.Depth > MaxDepth) return BackgroundColor;
+        // Return black color if the maximum depth for recursion is exceeded
+        if (ray.Depth > MaxDepth) return Color.Black;
 
         // Find the closest intersection between ray and the scene
         var hit = Scene.IntersectAll(ray);
@@ -148,14 +148,15 @@ public class PathTracer : Renderer
         var hitMaterial = hitVal.Shape.Material;
         var hitColor = hitMaterial.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
         var emittedRadiance = hitMaterial.EmittedRadiance.GetColor(hitVal.SurfacePoint);
-        var hitColorLum = Math.Max(Math.Max(hitColor.R, hitColor.G), hitColor.B);
+        var hitColorLum = MathF.Max(MathF.Max(hitColor.R, hitColor.G), hitColor.B);
 
         // Russian roulette to avoid infinite recursion
-        if (ray.Depth > RussianRouletteLimit)
+        if (ray.Depth >= RussianRouletteLimit)
         {
-            var q = Math.Max(0.05f, 1.0f - hitColorLum); // Probability to kill recursion
-            if (Pcg.RandomFloat() > q) hitColorLum *= 1.0f / (1.0f - q); // Reweight luminosity if recursion continues
-            else return emittedRadiance;
+            var q = MathF.Max(0.05f, 1.0f - hitColorLum); // Probability to kill recursion
+            if (Pcg.RandomFloat() < q)
+                return emittedRadiance; // Kill recursion
+            hitColor = 1.0f / (1.0f - q) * hitColor; // Reweight luminosity to compensate for lost rays
         }
 
         // Monte Carlo integration

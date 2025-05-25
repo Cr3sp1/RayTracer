@@ -83,7 +83,7 @@ public class DiffuseBrdf : Brdf
         float phi = 2.0f * MathF.PI * pcg.RandomFloat();
 
         return new Ray(origin: interactionPoint,
-            dir: MathF.Cos(phi) * cosTheta * e1 + MathF.Sin(phi) * e2 + sinTheta * e3, tmin: 1e-3f,
+            dir: MathF.Cos(phi) * cosTheta * e1 + MathF.Sin(phi) * cosTheta * e2 + sinTheta * e3, tmin: 1e-3f,
             tmax: float.PositiveInfinity, depth: depth);
     }
 }
