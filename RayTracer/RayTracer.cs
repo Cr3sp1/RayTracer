@@ -108,6 +108,30 @@ public class DemoCommand : ICommand
         Description = "Distance of a perspective observer from the screen.")]
     public float Distance { get; init; } = 1.0f;
 
+    [CommandOption("algorithm", 'A',
+        Description = "Rendering algorithm used. Available options are: \"on-off\", \"flat\", \"path-tracer\".")]
+    public string Algorithm { get; init; } = "path-tracer";
+
+    [CommandOption("num-rays", 'n',
+        Description = "Number of rays scattered at each iteration by the path renderer.")]
+    public int NumRays { get; init; } = 10;
+
+    [CommandOption("max-depth", 'm',
+        Description = "Maximum depth of rays scattered by the path renderer.")]
+    public int MaxDepth { get; init; } = 3;
+
+    [CommandOption("roulette", 'r',
+        Description = "Depth of rays scattered by the path renderer before russian roulette starts taking place.")]
+    public int RouletteLimit { get; init; } = 2;
+
+    [CommandOption("init-state", 's',
+        Description = "Initial seed for the random number generation.")]
+    public ulong InitState { get; init; } = 42;
+
+    [CommandOption("init-seq", 'S',
+        Description = "Initial sequence value for the random number generation.")]
+    public ulong InitSeq { get; init; } = 54;
+
     [CommandOption("pfm-output", 'p',
         Description = "Pfm output file path.")]
     public string OutputPfmFilePath { get; init; } = "output.pfm";
@@ -148,38 +172,52 @@ public class DemoCommand : ICommand
         }
 
         // Set the scene
-        float rad = 0.1f;
-        var matRed = new Material(new Brdf(new UniformPigment(Color.Red)));
-        var matGreen = new Material(new Brdf(new UniformPigment(Color.Green)));
-        var matBlue = new Material(new Brdf(new UniformPigment(Color.Blue)));
-        var matWhite = new Material(new Brdf(new UniformPigment(Color.White)));
-        var matCheck1 = new Material(new Brdf(new CheckeredPigment(Color.Red, Color.White)));
-        var matCheck2 = new Material(new Brdf(new CheckeredPigment(Color.Green, Color.Blue, 3)));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matCheck2));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matGreen));
-        ;
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, 0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matCheck1));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matRed));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, -0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matGreen));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matWhite));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.0f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matBlue));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, 0.0f)) *
-                                  Transformation.Scaling(new Vec(rad, rad, rad)), matRed));
+        float rad1 = 0.4f;
+        float rad2 = 0.3f;
+        var matRed = new Material(new DiffuseBrdf(new UniformPigment(Color.Red)));
+        var matSky = new Material(new DiffuseBrdf(new UniformPigment(new Color(0.5f, 0.9f, 1f))),
+            new UniformPigment(new Color(0.5f, 0.9f, 1f)));
+        var matGround =
+            new Material(new DiffuseBrdf(new CheckeredPigment(new Color(0.8f, 0.6f, 1f), new Color(1f, 1f, 0.8f), 10)));
+        var matMirror = new Material(new SpecularBrdf());
+        var matChess = new Material( new DiffuseBrdf(new CheckeredPigment(Color.White, Color.Black)));
+        
+
+        scene.AddShape(new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky));
+        scene.AddShape(new Plane(Transformation.Translation(-0.5f * Vec.ZAxis),material: matChess));
+
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, -0.5f)) *
+                                  Transformation.Scaling(new Vec(rad1, rad1, rad1)), matRed));
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, -0.5f, 0.3f)) *
+                                  Transformation.Scaling(new Vec(rad2, rad2, rad2)), matMirror));
+        console.Output.WriteLine("Scene successfully set");
         console.Output.WriteLine("Scene successfully set");
 
-        // Render the scene with on-off renderer
-        var renderer = new FlatRenderer(scene);
+        // Build renderer
+
+        Renderer renderer;
+        Pcg rng = new Pcg(InitState, InitSeq);
+        switch (Algorithm)
+        {
+            case "on-off":
+                renderer = new OnOffRenderer(scene);
+                break;
+            case "flat":
+                renderer = new FlatRenderer(scene);
+                break;
+            case "path-tracer":
+                renderer = new PathTracer(scene, NumRays, MaxDepth, RouletteLimit, rng);
+                break;
+            default:
+                console.Output.WriteLine(Algorithm +
+                                         "is not among implemented algorithms. Available options are: \"on-off\", \"flat\", \"path-tracer\".");
+                console.Output.WriteLine("Instead using default path-tracer.");
+                renderer = new PathTracer(scene, NumRays, MaxDepth, RouletteLimit, rng);
+                break;
+        }
+
+
+        // Render the scene
         var tracer = new ImageTracer(new HdrImage(Width, Height), camera, renderer);
         tracer.FireAllRays();
 

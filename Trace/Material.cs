@@ -6,8 +6,8 @@ namespace Trace;
 /// </summary>
 public class Material
 {
-    public Pigment EmittedRadiance;
     public Brdf Brdf;
+    public Pigment EmittedRadiance;
 
     // Default constructor
     public Material(Brdf? brdf = null, Pigment? emittedRadiance = null)
