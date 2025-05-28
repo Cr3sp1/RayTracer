@@ -175,20 +175,20 @@ public class DemoCommand : ICommand
         float rad1 = 0.4f;
         float rad2 = 0.3f;
         var matRed = new Material(new DiffuseBrdf(new UniformPigment(Color.Red)));
-        var matSky = new Material(new DiffuseBrdf(new UniformPigment(new Color(0.5f, 0.9f, 1f))),
-            new UniformPigment(new Color(0.5f, 0.9f, 1f)));
+        var matSky = new Material(new DiffuseBrdf(new UniformPigment(Color.Black)),
+            new UniformPigment(Color.White));
         var matGround =
             new Material(new DiffuseBrdf(new CheckeredPigment(new Color(0.8f, 0.6f, 1f), new Color(1f, 1f, 0.8f), 10)));
-        var matMirror = new Material(new SpecularBrdf());
-        var matChess = new Material( new DiffuseBrdf(new CheckeredPigment(Color.White, Color.Black)));
-        
+        var matMirror = new Material(new SpecularBrdf(new UniformPigment(0.6f * Color.White)));
+        var matChess = new Material(new DiffuseBrdf(new CheckeredPigment(Color.White, 0.2f*Color.White)));
+
 
         scene.AddShape(new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky));
-        scene.AddShape(new Plane(Transformation.Translation(-0.5f * Vec.ZAxis),material: matChess));
+        scene.AddShape(new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround));
 
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, 0.5f, -0.5f)) *
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
                                   Transformation.Scaling(new Vec(rad1, rad1, rad1)), matRed));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(0.0f, -0.5f, 0.3f)) *
+        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.3f)) *
                                   Transformation.Scaling(new Vec(rad2, rad2, rad2)), matMirror));
         console.Output.WriteLine("Scene successfully set");
         console.Output.WriteLine("Scene successfully set");
@@ -215,7 +215,6 @@ public class DemoCommand : ICommand
                 renderer = new PathTracer(scene, NumRays, MaxDepth, RouletteLimit, rng);
                 break;
         }
-
 
         // Render the scene
         var tracer = new ImageTracer(new HdrImage(Width, Height), camera, renderer);
