@@ -1,15 +1,15 @@
 namespace Trace;
 
 /// <summary>
-/// A PCG (Permuted Congruential Generator) struct that implements a simple pseudo-random number generator.
+/// A PCG (Permuted Congruential Generator) class that implements a simple pseudo-random number generator.
 /// </summary>
-public struct Pcg
+public class Pcg
 {
     public ulong State = 42;
     public ulong Inc = (54 << 1) | 1;
 
     /// <summary>
-    /// Initializes a new instance of the PCG struct with the specified initial state and sequence value with default
+    /// Initializes a new instance of the PCG class with the specified initial state and sequence value with default
     /// values <c>initState = 42</c> and <c>initSeq = 54</c> for the state and sequence values, respectively, and the
     /// default values for the increment value.
     /// </summary>
@@ -23,7 +23,7 @@ public struct Pcg
     }
 
     /// <summary>
-    /// Initializes a new instance of the PCG struct with the specified initial state and sequence value.
+    /// Initializes a new instance of the PCG class with the specified initial state and sequence value.
     /// </summary>
     /// <param name="initState">The initial state value (default is 42).</param>
     /// <param name="initSeq">The sequence value used to perturb the state (default is 54).</param>
