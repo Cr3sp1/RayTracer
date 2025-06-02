@@ -180,7 +180,7 @@ public class DemoCommand : ICommand
         var matGround =
             new Material(new DiffuseBrdf(new CheckeredPigment(new Color(0.8f, 0.6f, 1f), new Color(1f, 1f, 0.8f), 10)));
         var matMirror = new Material(new SpecularBrdf(new UniformPigment(0.6f * Color.White)));
-        var matChess = new Material(new DiffuseBrdf(new CheckeredPigment(Color.White, 0.2f*Color.White)));
+        var matChess = new Material(new DiffuseBrdf(new CheckeredPigment(Color.Green, 0.2f * Color.White, 20)));
 
 
         scene.AddShape(new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky));
@@ -190,11 +190,13 @@ public class DemoCommand : ICommand
                                   Transformation.Scaling(new Vec(rad1, rad1, rad1)), matRed));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.3f)) *
                                   Transformation.Scaling(new Vec(rad2, rad2, rad2)), matMirror));
+        scene.AddShape(new Sphere(
+            Transformation.Translation(new Vec(-0.3f, 0.2f, 0.7f)) * Transformation.RotationZ(-60) *
+            Transformation.RotationX(90) * Transformation.Scaling(new Vec(0.2f, 0.2f, 0.9f)), matChess));
         console.Output.WriteLine("Scene successfully set");
         console.Output.WriteLine("Scene successfully set");
 
         // Build renderer
-
         Renderer renderer;
         Pcg rng = new Pcg(InitState, InitSeq);
         switch (Algorithm)
