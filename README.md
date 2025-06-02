@@ -2,7 +2,7 @@
 
 RayTracer is a C# command-line tool that has two main functionalities:
 - converting a PFM (Portable Float Map) file to an LDR (Low Dynamic Range) image file in various formats, with the possibility to specify the normalization factor and the gamma correction used for the conversion 
-- rendering a demo scene using an on-off renderer, with various options such as the type of projection (perspective or orthogonal), the distance of the perspective observer from the screen, the angle of view, the resolution of the resulting image; the output is a PFM file that is automatically converted to a LDR image with the options listed before.
+- rendering a demo scene with various options such as the rendering algorithm (on-off, flat, path-tracing) type of projection (perspective or orthogonal), the distance of the perspective observer from the screen, the angle of view, the resolution of the resulting image; the output is a PFM file that is automatically converted to a LDR image with the options listed before.
 
 The project is developed using .NET 9.
 
@@ -43,13 +43,13 @@ This command converts `input.pfm` to `output.png` using an exposure scaling fact
 
 Demo renderer:
 ```sh
-./RayTracer demo -W 640 -H 480 -p output.pfm -l output.png -a 20
+./RayTracer demo -W 640 -H 480 -p output.pfm -l output.png -a 20 -A path-tracer
 ```
-This command renders a demo scene creating a pfm file `output.pfm` and automatically converting it into a ldr file `output.png`. The resulting image has resolution 640x480 pixels; the scene is rendered using a perspective projection with a 20 degrees angle of view.
+This command renders a demo scene creating a pfm file `output.pfm` and automatically converting it into a ldr file `output.png`. The resulting image has resolution 640x480 pixels; the scene is rendered using a perspective projection with a 20 degrees angle of view, and using a path tracing algorithm.
 
 ## License
 This project is licensed under the EUPL-1.2 License.
 
 ## Authors
-Developed by giorgiaiori and Cr3sp1.
+Developed by [giorgiaiori](https://github.com/giorgiaiori) and [Cr3sp1](giorgiaiori).
 
