@@ -13,7 +13,7 @@ public class NormalTests
         Assert.False(Normal.CloseEnough(n1, n2));
     }
 
-    // Test Vec operations
+    // Test Normal operations
     [Fact]
     public void TestOperations()
     {
@@ -32,5 +32,30 @@ public class NormalTests
 
         Assert.True(Utils.CloseEnough(n1.SquaredNorm(), 14.0f));
         Assert.True(Utils.CloseEnough(n1.Norm(), MathF.Sqrt(14.0f)));
+    }
+
+    // Test Create ONB from Normal
+    [Fact]
+    public void TestCreateOnb()
+    {
+        var pcg = new Pcg();
+
+        for (int i = 0; i < 10000; i++)
+        {
+            var normal = new Normal(pcg.RandomFloat(), pcg.RandomFloat(), pcg.RandomFloat());
+            normal.Normalize();
+            var (e1, e2, e3) = normal.CreateOnbFromZ();
+
+            Assert.True(Vec.CloseEnough(e3, new Vec(normal.X, normal.Y, normal.Z)));
+            Assert.True(Utils.CloseEnough(0.0f, e1.Dot(e2)));
+            Assert.True(Utils.CloseEnough(0.0f, e2.Dot(e3)));
+            Assert.True(Utils.CloseEnough(0.0f, e1.Dot(e3)));
+            Assert.True(Utils.CloseEnough(1.0f, e1.SquaredNorm()));
+            Assert.True(Utils.CloseEnough(1.0f, e2.SquaredNorm()));
+            Assert.True(Utils.CloseEnough(1.0f, e3.SquaredNorm()));
+            Assert.True(Vec.CloseEnough(e1.Cross(e2), e3));
+            Assert.True(Vec.CloseEnough(e2.Cross(e3), e1));
+            Assert.True(Vec.CloseEnough(e3.Cross(e1), e2));
+        }
     }
 }

@@ -19,25 +19,24 @@ public class PlaneTests
         var unitPlane = new Plane();
 
         var ray1 = new Ray(new Point(0.0f, 1.0f, 2.0f), -Vec.ZAxis);
-        var exp1 = new HitRecord(new Point(0.0f, 1.0f, 0.0f), new Normal(0.0f, 0.0f, 1.0f), new Vec2D(0.0f, 0.0f), 2.0f,
-            ray1);
+        var exp1 = new HitRecord(unitPlane, new Point(0.0f, 1.0f, 0.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.0f), ray1, 2.0f);
         var hit1 = unitPlane.Intersect(ray1);
         output.WriteLine("Intersection =\n" + hit1.ToString());
         Assert.True(hit1.HasValue);
         Assert.True(HitRecord.CloseEnough(hit1.Value, exp1));
 
         var ray2 = new Ray(new Point(1.0f, -2.0f, 2.0f), new Vec(-1.0f, 2.0f, -2.0f));
-        var exp2 = new HitRecord(new Point(0.0f, 0.0f, 0.0f), new Normal(0.0f, 0.0f, 1.0f), new Vec2D(0.0f, 0.0f), 1.0f,
-            ray2);
+        var exp2 = new HitRecord(unitPlane, new Point(0.0f, 0.0f, 0.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.0f), ray2, 1.0f);
         var hit2 = unitPlane.Intersect(ray2);
         output.WriteLine("Intersection =\n" + hit2.ToString());
         Assert.True(hit2.HasValue);
         Assert.True(HitRecord.CloseEnough(hit2.Value, exp2));
 
         var ray3 = new Ray(new Point(-1.1f, 2.3f, -1.0f), Vec.ZAxis);
-        var exp3 = new HitRecord(new Point(-1.1f, 2.3f, 0.0f), new Normal(0.0f, 0.0f, -1.0f), new Vec2D(0.9f, 0.3f),
-            1.0f,
-            ray3);
+        var exp3 = new HitRecord(unitPlane, new Point(-1.1f, 2.3f, 0.0f), new Normal(0.0f, 0.0f, -1.0f),
+            new Vec2D(0.9f, 0.3f), ray3, 1.0f);
         var hit3 = unitPlane.Intersect(ray3);
         output.WriteLine("Intersection =\n" + hit3.ToString());
         Assert.True(hit3.HasValue);
@@ -59,9 +58,8 @@ public class PlaneTests
 
         var transPlane2 = new Plane(Transformation.Translation(new Vec(0.0f, 0.0f, -10.0f)));
         var ray2 = new Ray(new Point(0.0f, 1.0f, 2.0f), -Vec.ZAxis);
-        var exp2 = new HitRecord(new Point(0.0f, 1.0f, -10.0f), new Normal(0.0f, 0.0f, 1.0f), new Vec2D(0.0f, 0.0f),
-            12.0f,
-            ray2);
+        var exp2 = new HitRecord(transPlane2, new Point(0.0f, 1.0f, -10.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.0f), ray2, 12.0f);
         var hit2 = transPlane2.Intersect(ray2);
         output.WriteLine("Intersection =\n" + hit2.ToString());
         Assert.True(hit2.HasValue);
@@ -69,8 +67,8 @@ public class PlaneTests
 
         var transPlane3 = new Plane(Transformation.RotationX(90));
         var ray3 = new Ray(new Point(0.0f, 2.0f, 5.0f), -Vec.YAxis);
-        var exp3 = new HitRecord(new Point(0.0f, 0.0f, 5.0f), new Normal(0.0f, 1.0f, 0.0f), new Vec2D(0.0f, 0.0f), 2.0f,
-            ray3);
+        var exp3 = new HitRecord(transPlane3, new Point(0.0f, 0.0f, 5.0f), new Normal(0.0f, 1.0f, 0.0f),
+            new Vec2D(0.0f, 0.0f), ray3, 2.0f);
         var hit3 = transPlane3.Intersect(ray3);
         output.WriteLine("Intersection =\n" + hit3.ToString());
         Assert.True(hit3.HasValue);

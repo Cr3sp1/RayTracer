@@ -4,17 +4,14 @@ namespace Trace;
 public class Shape
 {
     // Transformation applied to the shape
-    public readonly Transformation Transform = new Transformation();
+    public readonly Transformation Transform;
+    public readonly Material Material;
 
-    // Default constructor
-    public Shape()
+    // Constructor of the shape subject to a transformation and with a material
+    public Shape(Transformation? transform = null, Material? material = null)
     {
-    }
-
-    // Constructor of the shape subject to a transformation
-    public Shape(Transformation transform)
-    {
-        Transform = transform;
+        Transform = transform ?? new Transformation();
+        Material = material ?? new Material();
     }
 
     /// <summary>
@@ -32,21 +29,23 @@ public class Shape
 /// <summary>
 /// <c>record struct</c> containing information about <c>Ray</c> and <c>Shape</c> intersection.
 /// </summary>
+/// <param name="Shape"><c>Shape</c> intersected by the <c>Ray</c>.</param>
 /// <param name="WorldPoint"><c>Point</c> of contact between <c>Ray</c> and <c>Shape</c>.</param>
 /// <param name="Normal"><c>Normal</c> to the surface on point of contact.</param>
 /// <param name="SurfacePoint">Position of point of contact on the surface.</param>
-/// <param name="T">Distance between point of contact and <c>Ray</c> origin.</param>
 /// <param name="Ray"><c>Ray</c> that intersects the <c>Shape</c>.</param>
-public record struct HitRecord(Point WorldPoint, Normal Normal, Vec2D SurfacePoint, float T, Ray Ray)
+/// <param name="T">Distance between point of contact and <c>Ray</c> origin.</param>
+public record struct HitRecord(Shape Shape, Point WorldPoint, Normal Normal, Vec2D SurfacePoint, Ray Ray, float T)
 {
     /// <summary>
     /// Check if two <c>HitRecord</c> have the same components with tolerance <c>epsilon</c>.
     /// </summary>
     public static bool CloseEnough(HitRecord hr1, HitRecord hr2, float epsilon = 1e-5f) =>
+        hr1.Shape == hr2.Shape &&
         Point.CloseEnough(hr1.WorldPoint, hr2.WorldPoint, epsilon) &&
         Normal.CloseEnough(hr1.Normal, hr2.Normal, epsilon) &&
         Vec2D.CloseEnough(hr1.SurfacePoint, hr2.SurfacePoint, epsilon) &&
-        Utils.CloseEnough(hr1.T, hr2.T, epsilon) && Ray.CloseEnough(hr1.Ray, hr2.Ray, epsilon);
+        Ray.CloseEnough(hr1.Ray, hr2.Ray, epsilon) && Utils.CloseEnough(hr1.T, hr2.T, epsilon);
 }
 
 // Record struct representing 2d vector
