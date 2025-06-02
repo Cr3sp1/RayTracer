@@ -1,3 +1,11 @@
+# Version 0.3.0
+
+-   Update "demo" command to be able to choose the renderer [#6](https://github.com/Cr3sp1/RayTracer/pull/6)
+-   Implement a renderer that uses path tracing [#6](https://github.com/Cr3sp1/RayTracer/pull/6)
+-   Implement a flat renderer [#6](https://github.com/Cr3sp1/RayTracer/pull/6)
+-   Implement the texture of objects [#6](https://github.com/Cr3sp1/RayTracer/pull/6)
+
+
 # Version 0.2.0
 
 -   Add command "demo" that implements ray-tracing functionalities [#5](https://github.com/Cr3sp1/RayTracer/pull/5)
