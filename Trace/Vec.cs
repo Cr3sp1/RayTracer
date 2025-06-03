@@ -47,7 +47,7 @@ public readonly struct Vec
     public Vec Normalize()
     {
         float norm = Norm();
-        return new Vec(X/norm, Y/norm, Z/norm);
+        return new Vec(X / norm, Y / norm, Z / norm);
     }
 
     public Normal ToNormal() => new Normal(X, Y, Z);

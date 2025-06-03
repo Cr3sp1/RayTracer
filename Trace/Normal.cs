@@ -44,7 +44,7 @@ public readonly struct Normal
     public Normal Normalize()
     {
         float norm = Norm();
-        return new Normal(X/norm, Y/norm, Z/norm);
+        return new Normal(X / norm, Y / norm, Z / norm);
     }
 
     public Vec ToVec() => new Vec(X, Y, Z);

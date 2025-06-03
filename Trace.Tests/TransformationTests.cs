@@ -67,7 +67,6 @@ public class TransformationTests
         output.WriteLine("Matrix M of t1 =\n" + t1.M);
         output.WriteLine("Matrix M of t2 =\n" + t2.M);
         output.WriteLine("Point t1*p =\n" + t1 * p);
-        output.WriteLine("Point t1*p =\n" + t1 * p);
         output.WriteLine("Vec t1*v =\n" + t1 * v);
         output.WriteLine("Normal t1*w =\n" + t1 * w);
         Assert.True(Point.CloseEnough(t1 * p, new Point(6, 14, 16)));
