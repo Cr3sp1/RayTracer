@@ -13,16 +13,16 @@ public struct Point
     public Point(float x, float y, float z) => (X, Y, Z) = (x, y, z);
 
     // Difference between two Points objects
-    public static Vec operator -(Point p1, Point p2) => new Vec(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
+    public static Vec operator -(in Point p1, in Point p2) => new Vec(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
 
     // Sum between a Point and a Vec
-    public static Point operator +(Point p, Vec v) => new Point(p.X + v.X, p.Y + v.Y, p.Z + v.Z);
+    public static Point operator +(in Point p, in Vec v) => new Point(p.X + v.X, p.Y + v.Y, p.Z + v.Z);
 
     // Difference between a Point and a Vec
-    public static Point operator -(Point p, Vec v) => new Point(p.X - v.X, p.Y - v.Y, p.Z - v.Z);
+    public static Point operator -(in Point p, in Vec v) => new Point(p.X - v.X, p.Y - v.Y, p.Z - v.Z);
 
     // Product between scalar (float) and Point
-    public static Point operator *(float f, Point p) => new Point(f * p.X, f * p.Y, f * p.Z);
+    public static Point operator *(float f, in Point p) => new Point(f * p.X, f * p.Y, f * p.Z);
 
     // Conversion from Point to Vec
     public Vec ToVec() => new Vec(X, Y, Z);

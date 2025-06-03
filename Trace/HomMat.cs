@@ -38,20 +38,19 @@ public struct HomMat
         Elements[15] = 1.0f;
     }
 
-    public float this[int i, int j]
+    public readonly float this[int i, int j]
     {
         get => Elements[4 * i + j];
-        set => Elements[4 * i + j] = value;
     }
 
     // Return row i
-    public float[] Row(int i) => [this[i, 0], this[i, 1], this[i, 2], this[i, 3]];
+    public readonly float[] Row(int i) => [this[i, 0], this[i, 1], this[i, 2], this[i, 3]];
 
     // return column j
-    public float[] Col(int j) => [this[0, j], this[1, j], this[2, j], this[3, j]];
+    public readonly float[] Col(int j) => [this[0, j], this[1, j], this[2, j], this[3, j]];
 
     // Product between scalar and HomMat
-    public static HomMat operator *(float a, HomMat m)
+    public static HomMat operator *(float a, in HomMat m)
     {
         var n = new HomMat(m.Row(0), m.Row(1), m.Row(2));
         for (int i = 0; i < 16; ++i)
