@@ -43,10 +43,10 @@ public class NormalTests
         for (int i = 0; i < 10000; i++)
         {
             var normal = new Normal(pcg.RandomFloat(), pcg.RandomFloat(), pcg.RandomFloat());
-            normal.Normalize();
+            normal = normal.Normalize();
             var (e1, e2, e3) = normal.CreateOnbFromZ();
 
-            Assert.True(Vec.CloseEnough(e3, new Vec(normal.X, normal.Y, normal.Z)));
+            Assert.True(Vec.CloseEnough(e3, normal.ToVec()));
             Assert.True(Utils.CloseEnough(0.0f, e1.Dot(e2)));
             Assert.True(Utils.CloseEnough(0.0f, e2.Dot(e3)));
             Assert.True(Utils.CloseEnough(0.0f, e1.Dot(e3)));

@@ -5,9 +5,9 @@ namespace Trace;
 /// <summary>
 /// Struct representing 3-d points, with x,y,z coordinates represented as <c>float</c> values.
 /// </summary>
-public struct Point
+public readonly struct Point
 {
-    public float X, Y, Z;
+    public readonly float X, Y, Z;
 
     // Constructor
     public Point(float x, float y, float z) => (X, Y, Z) = (x, y, z);
@@ -38,17 +38,6 @@ public struct Point
                 2 => Z,
                 _ => throw new IndexOutOfRangeException("Index must be 0, 1 or 2")
             };
-        }
-        set
-        {
-            switch (index)
-            {
-                case 0: X = value; break;
-                case 1: Y = value; break;
-                case 2: Z = value; break;
-                default:
-                    throw new IndexOutOfRangeException("Index must be 0, 1 or 2");
-            }
         }
     }
 
