@@ -3,9 +3,9 @@ namespace Trace;
 /// <summary>
 /// Struct representing 3-d vectors (direction of light propagation), with x,y,z coordinates represented as <c>float</c> values.
 /// </summary>
-public struct Vec
+public readonly struct Vec
 {
-    public float X, Y, Z;
+    public readonly float X, Y, Z;
 
     // Constructor
     public Vec(float x, float y, float z) => (X, Y, Z) = (x, y, z);
@@ -16,25 +16,25 @@ public struct Vec
     public static readonly Vec ZAxis = new Vec(0.0f, 0.0f, 1.0f);
 
     // Sum between two Vec objects
-    public static Vec operator +(Vec v1, Vec v2) => new Vec(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
+    public static Vec operator +(in Vec v1, in Vec v2) => new Vec(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z);
 
     // Difference between two Vec objects
-    public static Vec operator -(Vec v1, Vec v2) => new Vec(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
+    public static Vec operator -(in Vec v1, in Vec v2) => new Vec(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
 
     // Product between scalar (float) and Vec
-    public static Vec operator *(float f, Vec v) => new Vec(f * v.X, f * v.Y, f * v.Z);
+    public static Vec operator *(float f, in Vec v) => new Vec(f * v.X, f * v.Y, f * v.Z);
 
     // Negation
-    public static Vec operator -(Vec v)
+    public static Vec operator -(in Vec v)
     {
         return new Vec(-v.X, -v.Y, -v.Z);
     }
 
     // Dot product between two Vec
-    public float Dot(Vec other) => X * other.X + Y * other.Y + Z * other.Z;
+    public float Dot(in Vec other) => X * other.X + Y * other.Y + Z * other.Z;
 
     // Cross product between two Vec
-    public Vec Cross(Vec other) => new Vec(Y * other.Z - Z * other.Y,
+    public Vec Cross(in Vec other) => new Vec(Y * other.Z - Z * other.Y,
         Z * other.X - X * other.Z,
         X * other.Y - Y * other.X);
 
@@ -44,12 +44,10 @@ public struct Vec
     // Norm
     public float Norm() => MathF.Sqrt(SquaredNorm());
 
-    public void Normalize()
+    public Vec Normalize()
     {
         float norm = Norm();
-        X /= norm;
-        Y /= norm;
-        Z /= norm;
+        return new Vec(X / norm, Y / norm, Z / norm);
     }
 
     public Normal ToNormal() => new Normal(X, Y, Z);
@@ -65,17 +63,6 @@ public struct Vec
                 2 => Z,
                 _ => throw new IndexOutOfRangeException("Index must be 0, 1 or 2")
             };
-        }
-        set
-        {
-            switch (index)
-            {
-                case 0: X = value; break;
-                case 1: Y = value; break;
-                case 2: Z = value; break;
-                default:
-                    throw new IndexOutOfRangeException("Index must be 0, 1 or 2");
-            }
         }
     }
 

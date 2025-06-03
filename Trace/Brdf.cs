@@ -82,7 +82,7 @@ public class SpecularBrdf : Brdf
     public override Ray ScatterRay(Pcg pcg, Vec incomingDir, Point interactionPoint, Normal normal, int depth)
     {
         incomingDir.Normalize();
-        normal.Normalize();
+        normal = normal.Normalize();
         float dotProd = normal.Dot(incomingDir);
 
         return new Ray(origin: interactionPoint,

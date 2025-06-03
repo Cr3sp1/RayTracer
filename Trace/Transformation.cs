@@ -1,9 +1,9 @@
 namespace Trace;
 
-public struct Transformation
+public readonly struct Transformation
 {
-    public HomMat M;
-    public HomMat InvM;
+    public readonly HomMat M;
+    public readonly HomMat InvM;
 
     /// <summary>
     /// Default constructor, return an identity transformation.
@@ -69,8 +69,8 @@ public struct Transformation
     /// <returns></returns>
     public static Transformation RotationX(float angle)
     {
-        float sinAngle = MathF.Sin(Single.Pi * angle / 180.0f);
-        float cosAngle = MathF.Cos(Single.Pi * angle / 180.0f);
+        float sinAngle = MathF.Sin(float.Pi * angle / 180.0f);
+        float cosAngle = MathF.Cos(float.Pi * angle / 180.0f);
 
         return new Transformation(
             new HomMat(
@@ -90,8 +90,8 @@ public struct Transformation
     /// <returns></returns>
     public static Transformation RotationY(float angle)
     {
-        float sinAngle = MathF.Sin(Single.Pi * angle / 180.0f);
-        float cosAngle = MathF.Cos(Single.Pi * angle / 180.0f);
+        float sinAngle = MathF.Sin(float.Pi * angle / 180.0f);
+        float cosAngle = MathF.Cos(float.Pi * angle / 180.0f);
 
         return new Transformation(
             new HomMat(
@@ -108,8 +108,8 @@ public struct Transformation
     /// <returns></returns>
     public static Transformation RotationZ(float angle)
     {
-        float sinAngle = MathF.Sin(Single.Pi * angle / 180.0f);
-        float cosAngle = MathF.Cos(Single.Pi * angle / 180.0f);
+        float sinAngle = MathF.Sin(float.Pi * angle / 180.0f);
+        float cosAngle = MathF.Cos(float.Pi * angle / 180.0f);
 
         return new Transformation(
             new HomMat(
@@ -123,19 +123,21 @@ public struct Transformation
     }
 
     // Apply a transformation to a Point object
-    public static Point operator *(Transformation t, Point p)
+    public static Point operator *(in Transformation t, in Point p)
     {
         var p0 = 0f;
         var p1 = 0f;
         var p2 = 0f;
 
-        for (int j = 0; j < 3; j++)
-        {
-            p0 += t.M[0, j] * p[j];
-            p1 += t.M[1, j] * p[j];
-            p2 += t.M[2, j] * p[j];
-        }
-
+        p0 += t.M[0, 0] * p.X;
+        p1 += t.M[1, 0] * p.X;
+        p2 += t.M[2, 0] * p.X;
+        p0 += t.M[0, 1] * p.Y;
+        p1 += t.M[1, 1] * p.Y;
+        p2 += t.M[2, 1] * p.Y;
+        p0 += t.M[0, 2] * p.Z;
+        p1 += t.M[1, 2] * p.Z;
+        p2 += t.M[2, 2] * p.Z;
         p0 += t.M[0, 3];
         p1 += t.M[1, 3];
         p2 += t.M[2, 3];
@@ -144,41 +146,48 @@ public struct Transformation
     }
 
     // Apply a transformation to a Vec object
-    public static Vec operator *(Transformation t, Vec v)
+    public static Vec operator *(in Transformation t, in Vec v)
     {
         var v0 = 0f;
         var v1 = 0f;
         var v2 = 0f;
 
-        for (int j = 0; j < 3; j++)
-        {
-            v0 += t.M[0, j] * v[j];
-            v1 += t.M[1, j] * v[j];
-            v2 += t.M[2, j] * v[j];
-        }
+        v0 += t.M[0, 0] * v.X;
+        v1 += t.M[1, 0] * v.X;
+        v2 += t.M[2, 0] * v.X;
+        v0 += t.M[0, 1] * v.Y;
+        v1 += t.M[1, 1] * v.Y;
+        v2 += t.M[2, 1] * v.Y;
+        v0 += t.M[0, 2] * v.Z;
+        v1 += t.M[1, 2] * v.Z;
+        v2 += t.M[2, 2] * v.Z;
 
         return new Vec(v0, v1, v2);
     }
 
     // Apply a transformation to a Normal object
-    public static Normal operator *(Transformation t, Normal n)
+    public static Normal operator *(in Transformation t, in Normal n)
     {
         var n0 = 0f;
         var n1 = 0f;
         var n2 = 0f;
 
-        for (int j = 0; j < 3; j++)
-        {
-            n0 += t.InvM[j, 0] * n[j];
-            n1 += t.InvM[j, 1] * n[j];
-            n2 += t.InvM[j, 2] * n[j];
-        }
+        n0 += t.InvM[0, 0] * n.X;
+        n1 += t.InvM[0, 1] * n.X;
+        n2 += t.InvM[0, 2] * n.X;
+        n0 += t.InvM[1, 0] * n.Y;
+        n1 += t.InvM[1, 1] * n.Y;
+        n2 += t.InvM[1, 2] * n.Y;
+        n0 += t.InvM[2, 0] * n.Z;
+        n1 += t.InvM[2, 1] * n.Z;
+        n2 += t.InvM[2, 2] * n.Z;
 
         return new Normal(n0, n1, n2);
     }
 
     // Apply a Transformation object to a Ray
-    public static Ray operator *(Transformation t, Ray r) => new Ray(t * r.Origin, t * r.Dir, r.TMin, r.TMax, r.Depth);
+    public static Ray operator *(in Transformation t, in Ray r) =>
+        new Ray(t * r.Origin, t * r.Dir, r.TMin, r.TMax, r.Depth);
 
     /// <summary>
     /// Check if Transformation object has been built with a <c>HomMat</c> object and its inverse.

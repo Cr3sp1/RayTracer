@@ -4,7 +4,7 @@ namespace Trace;
 /// Struct representing 4x4 matrix representing homogenous transformations (last row is always [0, 0, 0, 1]), with
 /// elements represented as <c>float</c> values.
 /// </summary>
-public struct HomMat
+public readonly struct HomMat
 {
     public readonly float[] Elements = new float[16];
 
@@ -41,7 +41,6 @@ public struct HomMat
     public float this[int i, int j]
     {
         get => Elements[4 * i + j];
-        set => Elements[4 * i + j] = value;
     }
 
     // Return row i
@@ -51,7 +50,7 @@ public struct HomMat
     public float[] Col(int j) => [this[0, j], this[1, j], this[2, j], this[3, j]];
 
     // Product between scalar and HomMat
-    public static HomMat operator *(float a, HomMat m)
+    public static HomMat operator *(float a, in HomMat m)
     {
         var n = new HomMat(m.Row(0), m.Row(1), m.Row(2));
         for (int i = 0; i < 16; ++i)
@@ -63,7 +62,7 @@ public struct HomMat
     }
 
     // Optimized product between two HomMat, assumes that last row of both a and b is [0, 0, 0, 1]
-    public static HomMat operator *(HomMat a, HomMat b)
+    public static HomMat operator *(in HomMat a, in HomMat b)
     {
         var row0 = new float[4];
         for (int j = 0; j < 4; j++)

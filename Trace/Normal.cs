@@ -3,9 +3,9 @@ namespace Trace;
 /// <summary>
 /// Struct representing 3-d normals (inclination of a surface in a point), with x,y,z coordinates represented as <c>float</c> values.
 /// </summary>
-public struct Normal
+public readonly struct Normal
 {
-    public float X, Y, Z;
+    public readonly float X, Y, Z;
 
     // Constructor
     public Normal(float x, float y, float z) => (X, Y, Z) = (x, y, z);
@@ -41,12 +41,10 @@ public struct Normal
     // Norm
     public float Norm() => MathF.Sqrt(SquaredNorm());
 
-    public void Normalize()
+    public Normal Normalize()
     {
         float norm = Norm();
-        X /= norm;
-        Y /= norm;
-        Z /= norm;
+        return new Normal(X / norm, Y / norm, Z / norm);
     }
 
     public Vec ToVec() => new Vec(X, Y, Z);
@@ -62,17 +60,6 @@ public struct Normal
                 2 => Z,
                 _ => throw new IndexOutOfRangeException("Index must be 0, 1 or 2")
             };
-        }
-        set
-        {
-            switch (index)
-            {
-                case 0: X = value; break;
-                case 1: Y = value; break;
-                case 2: Z = value; break;
-                default:
-                    throw new IndexOutOfRangeException("Index must be 0, 1 or 2");
-            }
         }
     }
 
