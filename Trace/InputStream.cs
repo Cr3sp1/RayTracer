@@ -5,15 +5,18 @@ namespace Trace;
 
 public class InputStream
 {
-    public Stream Stream;
+    private readonly StreamReader Reader;
     public SourceLocation Location;
     public char? SavedChar = null;
     public SourceLocation LastLocation;
     public int Tab;
+    public static string Whitespace = " \t\n\r";
 
-    public InputStream(Stream stream, string fileName, int tab = 8)
+    public InputStream(Stream stream, string fileName = "", int tab = 8)
     {
-        Stream = stream;
+        Reader = new StreamReader(stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false,
+            bufferSize: 1024, leaveOpen: true);
+
         Location = new SourceLocation(fileName, 1, 1);
         LastLocation = Location;
         Tab = tab;
@@ -25,7 +28,7 @@ public class InputStream
         {
             case null:
                 break;
-            case '\n': 
+            case '\n':
                 Location.Line += 1;
                 Location.Column = 1;
                 break;
@@ -48,14 +51,11 @@ public class InputStream
         }
         else
         {
-            using (var reader = new StreamReader(Stream))
-            {
-                int intChar = reader.Read();
-                if (intChar == -1) return null;
-                newChar = (char)intChar;
-            }
+            int intChar = Reader.Read();
+            if (intChar == -1) return null;
+            newChar = (char)intChar;
         }
-        
+
         LastLocation = Location;
         UpdatePosition(newChar);
         return newChar;
@@ -67,11 +67,34 @@ public class InputStream
         {
             throw new RuntimeException("Tried to unread two characters in a row!");
         }
+
         SavedChar = newChar;
         Location = LastLocation;
     }
-}
 
+    public void SkipWhitespaceAndComments()
+    {
+        char? newChar = ReadChar();
+        // Keep going until a non-skippable char
+        while (newChar.HasValue && (Whitespace.Contains(newChar.Value) || newChar == '#'))
+        {
+            // Skip comment line
+            if (newChar == '#')
+            {
+                char? skipChar;
+                do
+                {
+                    skipChar = ReadChar();
+                } while (skipChar != '\r' && skipChar != '\n' && skipChar.HasValue);
+            }
+
+            newChar = ReadChar();
+        }
+
+        if (newChar == null) return;
+        UnreadChar(newChar.Value);
+    }
+}
 
 /// <summary>
 /// Represents a location in a source file, including file name, line number, and column number.
