@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Exceptions;
 
 namespace Trace;
@@ -10,7 +11,9 @@ public class InputStream
     public char? SavedChar = null;
     public SourceLocation LastLocation;
     public int Tab;
+
     public static string Whitespace = " \t\n\r";
+    public static string Symbols = "()<>[],*";
 
     public InputStream(Stream stream, string fileName = "", int tab = 8)
     {
@@ -94,6 +97,107 @@ public class InputStream
         if (newChar == null) return;
         UnreadChar(newChar.Value);
     }
+
+    public Token ReadToken()
+    {
+        SkipWhitespaceAndComments();
+
+        // Return StopToken if end of file is reached
+        char? newChar = ReadChar();
+        if (newChar == null) return new StopToken(Location);
+        char charValue = newChar.Value;
+        var tokenLocation = Location;
+
+        if (Symbols.Contains(charValue)) return new SymbolToken(Location, charValue);
+        if (charValue == '"') return _ParseLiteralStringToken(Location);
+        if (char.IsDigit(charValue) || charValue == '+' || charValue == '-' || charValue == '.')
+            return _ParseLiteralNumberToken(charValue.ToString(), Location);
+        if (char.IsLetter(charValue) || charValue == '_')
+            return _ParseKeywordOrIdentifierToken(charValue.ToString(), Location);
+
+        throw new GrammarException("Invalid character " + charValue, tokenLocation);
+    }
+
+    private LiteralStringToken _ParseLiteralStringToken(SourceLocation tokenLocation)
+    {
+        string token = "";
+
+        char? newChar = ReadChar();
+        while (newChar != '"')
+        {
+            if (newChar == null) throw new GrammarException("Unterminated literal string!", tokenLocation);
+            token += newChar;
+            newChar = ReadChar();
+        }
+
+        return new LiteralStringToken(tokenLocation, token);
+    }
+
+    private LiteralNumberToken _ParseLiteralNumberToken(string firstChar, SourceLocation tokenLocation)
+    {
+        string token = firstChar;
+
+        char? newChar = ReadChar();
+        while (newChar.HasValue && (char.IsDigit(newChar.Value) || newChar == '.' || newChar == 'e' || newChar == 'E'))
+        {
+            token += newChar;
+            newChar = ReadChar();
+        }
+
+        if (newChar.HasValue) UnreadChar(newChar.Value);
+
+        if (!float.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out float tokenVal))
+        {
+            throw new GrammarException($"\"{token}\" is an invalid floating-point number", tokenLocation);
+        }
+
+        return new LiteralNumberToken(tokenLocation, tokenVal);
+    }
+
+    private Token _ParseKeywordOrIdentifierToken(string firstChar, SourceLocation tokenLocation)
+    {
+        string token = firstChar;
+
+        char? newChar = ReadChar();
+        while (newChar.HasValue && (char.IsLetterOrDigit(newChar.Value) || newChar == '_'))
+        {
+            token += newChar;
+            newChar = ReadChar();
+        }
+
+        if (newChar.HasValue) UnreadChar(newChar.Value);
+
+        // Try to interpret it as a keyword, if it fails interpret it as an identifier
+        if (KeywordMap.TryGetValue(token, out var keyword))
+        {
+            return new KeywordToken(tokenLocation, keyword);
+        }
+
+        return new IdentifierToken(tokenLocation, token);
+    }
+
+    public static readonly Dictionary<string, Keyword> KeywordMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "new", Keyword.New },
+        { "material", Keyword.Material },
+        { "plane", Keyword.Plane },
+        { "sphere", Keyword.Sphere },
+        { "diffuse", Keyword.Diffuse },
+        { "specular", Keyword.Specular },
+        { "uniform", Keyword.Uniform },
+        { "checkered", Keyword.Checkered },
+        { "image", Keyword.Image },
+        { "identity", Keyword.Identity },
+        { "translation", Keyword.Translation },
+        { "rotation_x", Keyword.RotationX },
+        { "rotation_y", Keyword.RotationY },
+        { "rotation_z", Keyword.RotationZ },
+        { "scaling", Keyword.Scaling },
+        { "camera", Keyword.Camera },
+        { "orthogonal", Keyword.Orthogonal },
+        { "perspective", Keyword.Perspective },
+        { "float", Keyword.Float }
+    };
 }
 
 /// <summary>

@@ -5,17 +5,13 @@ using System.Text;
 
 public class InputStreamTests
 {
-    // Test InputStream methods
+    // Test InputStream char reading
     [Fact]
-    public void TestInputStream()
+    public void TestInputReading()
     {
-        var memStream = new MemoryStream();
-        var writer = new StreamWriter(memStream, Encoding.UTF8);
-        writer.Write("abc   \nd\nef");
-        writer.Flush(); // Ensure all data is written to the stream
-        memStream.Position = 0; // Reset position for reading
+        var input = "abc   \nd\nef";
+        var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
 
-        var stream = new InputStream(memStream);
         Assert.Equal(1, stream.Location.Line);
         Assert.Equal(1, stream.Location.Column);
 
@@ -59,5 +55,61 @@ public class InputStreamTests
 
 
         Assert.True(stream.ReadChar() == null);
+    }
+
+    // Test lexer
+    [Fact]
+    public void TestLexer()
+    {
+        var input = """
+                    # This is a comment
+                    new material sky_material(
+                        diffuse(image("my file.pfm")),
+                        <5.0, 500.0, 300.0>
+                    )
+                    """;
+        var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
+
+        _AssertIsKeyword(stream.ReadToken(), Keyword.New);
+        _AssertIsKeyword(stream.ReadToken(), Keyword.Material);
+        _AssertIsIdentifier(stream.ReadToken(), "sky_material");
+        _AssertIsSymbol(stream.ReadToken(), '(');
+        _AssertIsKeyword(stream.ReadToken(), Keyword.Diffuse);
+        _AssertIsSymbol(stream.ReadToken(), '(');
+        _AssertIsKeyword(stream.ReadToken(), Keyword.Image);
+        _AssertIsSymbol(stream.ReadToken(), '(');
+        _AssertIsString(stream.ReadToken(), "my file.pfm");
+        _AssertIsSymbol(stream.ReadToken(), ')');
+    }
+
+    // Support functions for TestLexer
+    private void _AssertIsKeyword(Token token, Keyword expectedKeyword)
+    {
+        Assert.IsType<KeywordToken>(token);
+        Assert.Equal(expectedKeyword, ((KeywordToken)token).Keyword);
+    }
+
+    private void _AssertIsIdentifier(Token token, string expectedIdentifier)
+    {
+        Assert.IsType<IdentifierToken>(token);
+        Assert.Equal(expectedIdentifier, ((IdentifierToken)token).Identifier);
+    }
+
+    private void _AssertIsSymbol(Token token, char expectedSymbol)
+    {
+        Assert.IsType<SymbolToken>(token);
+        Assert.Equal(expectedSymbol, ((SymbolToken)token).Symbol);
+    }
+
+    private void _AssertIsNumber(Token token, float expectedValue)
+    {
+        Assert.IsType<LiteralNumberToken>(token);
+        Assert.Equal(expectedValue, ((LiteralNumberToken)token).Value);
+    }
+
+    private void _AssertIsString(Token token, string expectedString)
+    {
+        Assert.IsType<LiteralStringToken>(token);
+        Assert.Equal(expectedString, ((LiteralStringToken)token).String);
     }
 }

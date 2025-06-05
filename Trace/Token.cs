@@ -4,7 +4,7 @@ namespace Trace;
 public class Token
 {
     public SourceLocation Location;
-    
+
     // Constructor
     public Token(SourceLocation location) => Location = location;
 }
@@ -17,7 +17,7 @@ public class KeywordToken : Token
     public Keyword Keyword;
 
     // Constructor
-    public KeywordToken(Keyword keyword, SourceLocation location) : base(location) => Keyword = keyword;
+    public KeywordToken(SourceLocation location, Keyword keyword) : base(location) => Keyword = keyword;
 }
 
 /// <summary>
@@ -26,9 +26,9 @@ public class KeywordToken : Token
 public class IdentifierToken : Token
 {
     public string Identifier;
-    
+
     // Constructor
-    public IdentifierToken(string identifier, SourceLocation location) : base(location) => Identifier = identifier;
+    public IdentifierToken(SourceLocation location, string identifier) : base(location) => Identifier = identifier;
 }
 
 /// <summary>
@@ -36,21 +36,23 @@ public class IdentifierToken : Token
 /// </summary>
 public class LiteralStringToken : Token
 {
-    public string LiteralString;
-    
+    public string String;
+
     // Constructor
-    public LiteralStringToken(string literalString, SourceLocation location) : base(location) => LiteralString = literalString;
+    public LiteralStringToken(SourceLocation location, string @string) : base(location) =>
+        String = @string;
 }
 
 /// <summary>
-/// Token containing a literal number.
+/// Token containing the value of a literal number.
 /// </summary>
 public class LiteralNumberToken : Token
 {
-    public float LiteralNumber;
-    
+    public float Value;
+
     // Constructor
-    public LiteralNumberToken(float literalNumber, SourceLocation location) : base(location) => LiteralNumber = literalNumber;
+    public LiteralNumberToken(SourceLocation location, float value) : base(location) =>
+        Value = value;
 }
 
 /// <summary>
@@ -58,19 +60,21 @@ public class LiteralNumberToken : Token
 /// </summary>
 public class SymbolToken : Token
 {
-    public float Symbol;
-    
+    public char Symbol;
+
     // Constructor
-    public SymbolToken(float symbol, SourceLocation location) : base(location) => Symbol = symbol;
+    public SymbolToken(SourceLocation location, char symbol) : base(location) => Symbol = symbol;
 }
 
 /// <summary>
-/// Token signalling the end of a file.
+/// Token signaling the end of a file.
 /// </summary>
 public class StopToken : Token
 {
     // Constructor
-    public StopToken(SourceLocation location) : base(location){}
+    public StopToken(SourceLocation location) : base(location)
+    {
+    }
 }
 
 /// <summary>
@@ -78,9 +82,10 @@ public class StopToken : Token
 /// </summary>
 public enum Keyword
 {
+    New,
     Material,
-    Sphere,
     Plane,
+    Sphere,
     Diffuse,
     Specular,
     Uniform,
@@ -95,8 +100,5 @@ public enum Keyword
     Camera,
     Orthogonal,
     Perspective,
-    Float,
-    OnOffRenderer,
-    FlatRenderer,
-    PathTracer
+    Float
 }
