@@ -65,7 +65,7 @@ public class InputStreamTests
                     # This is a comment
                     new material sky_material(
                         diffuse(image("my file.pfm")),
-                        <5.0, 500.0, 300.0>
+                        <5.1, 5.2e+3, 5.3e-2>
                     )
                     """;
         var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
@@ -80,6 +80,17 @@ public class InputStreamTests
         _AssertIsSymbol(stream.ReadToken(), '(');
         _AssertIsString(stream.ReadToken(), "my file.pfm");
         _AssertIsSymbol(stream.ReadToken(), ')');
+        _AssertIsSymbol(stream.ReadToken(), ')');
+        _AssertIsSymbol(stream.ReadToken(), ',');
+        _AssertIsSymbol(stream.ReadToken(), '<');
+        _AssertIsNumber(stream.ReadToken(), 5.1f);
+        _AssertIsSymbol(stream.ReadToken(), ',');
+        _AssertIsNumber(stream.ReadToken(), 5200f);
+        _AssertIsSymbol(stream.ReadToken(), ',');
+        _AssertIsNumber(stream.ReadToken(), 0.053f);
+        _AssertIsSymbol(stream.ReadToken(), '>');
+        _AssertIsSymbol(stream.ReadToken(), ')');
+        Assert.IsType<StopToken>(stream.ReadToken());
     }
 
     // Support functions for TestLexer

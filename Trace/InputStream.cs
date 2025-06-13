@@ -138,8 +138,11 @@ public class InputStream
         string token = firstChar;
 
         char? newChar = ReadChar();
-        while (newChar.HasValue && (char.IsDigit(newChar.Value) || newChar == '.' || newChar == 'e' || newChar == 'E'))
+        bool lastCharIsE = false;
+        while (newChar.HasValue && (char.IsDigit(newChar.Value) || newChar is '.' or 'e' or 'E' ||
+                                    (lastCharIsE && newChar is '+' or '-')))
         {
+            lastCharIsE = newChar is 'e' or 'E';
             token += newChar;
             newChar = ReadChar();
         }
