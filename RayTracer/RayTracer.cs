@@ -142,7 +142,7 @@ public class DemoCommand : ICommand
 
     [CommandOption("factor", 'f',
         Description = "Normalization factor, higher means a more luminous image.")]
-    public float Factor { get; init; } = 0.2f;
+    public float Factor { get; init; } = 1.0f;
 
     [CommandOption("gamma", 'g',
         Description = "Gamma correction.")]
@@ -181,18 +181,21 @@ public class DemoCommand : ICommand
             new Material(new DiffuseBrdf(new CheckeredPigment(new Color(0.8f, 0.6f, 1f), new Color(1f, 1f, 0.8f), 10)));
         var matMirror = new Material(new SpecularBrdf(new UniformPigment(0.6f * Color.White)));
         var matChess = new Material(new DiffuseBrdf(new CheckeredPigment(Color.Green, 0.2f * Color.White, 20)));
+        var matSripeVert = new Material(new DiffuseBrdf(new StripedPigment(Color.Green, 0.2f * Color.White, 20)));
+        var matSripeHor =
+            new Material(new DiffuseBrdf(new StripedPigment(Color.Blue, 0.2f * Color.White, 20,  false)));
 
 
         scene.AddShape(new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky));
         scene.AddShape(new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround));
 
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad1, rad1, rad1)), matRed));
+                                  Transformation.Scaling(new Vec(rad1, rad1, rad1)), matSripeHor));
         scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.3f)) *
                                   Transformation.Scaling(new Vec(rad2, rad2, rad2)), matMirror));
         scene.AddShape(new Sphere(
-            Transformation.Translation(new Vec(-0.3f, 0.2f, 0.7f)) * Transformation.RotationZ(-60) *
-            Transformation.RotationX(90) * Transformation.Scaling(new Vec(0.2f, 0.2f, 0.9f)), matChess));
+            Transformation.Translation(new Vec(-0.3f, 0.2f, 0.7f)) * Transformation.Scaling(new Vec(0.4f, 0.4f, 0.4f)),
+            matSripeVert));
         console.Output.WriteLine("Scene successfully set");
         console.Output.WriteLine("Scene successfully set");
 
