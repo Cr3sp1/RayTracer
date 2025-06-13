@@ -15,12 +15,23 @@ public class Shape
     }
 
     /// <summary>
-    /// Method to compute the intersection between a ray and a shape.
+    /// Method to compute the intersection closest to the origin between a <c>Ray</c> and a <c>Shape</c>.
     /// </summary>
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     public virtual HitRecord? Intersect(Ray ray)
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>
+    /// Method to compute all the intersections between a <c>Ray</c> and a <c>Shape</c>.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual List<HitRecord> AllIntersects(Ray ray)
     {
         throw new NotImplementedException();
     }

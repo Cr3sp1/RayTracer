@@ -45,4 +45,18 @@ public class Plane : Shape
         return new HitRecord(this, Transform * hitPoint, Transform * PlaneNormal(invRay.Dir),
             PlanePointToUV(hitPoint), ray, tHit);
     }
+    
+    /// <summary>
+    /// Method to compute all the intersections between a ray and a plane.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <returns> Return a <c>List</c> of <c>HitRecord</c> containing all the intersections between the <c>Ray</c> and
+    /// a <c>Plane</c> from closest to <c>Ray</c> origin to furthest.</returns>
+    public override List<HitRecord> AllIntersects(Ray ray)
+    {
+        var res = new List<HitRecord>();
+        var hit = Intersect(ray);
+        if (hit.HasValue) res.Add(hit.Value);
+        return res;
+    }
 }
