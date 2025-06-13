@@ -1,3 +1,5 @@
+// ReSharper disable InconsistentNaming
+
 namespace Trace;
 
 // Class representing a sphere
@@ -25,11 +27,11 @@ public class Sphere : Shape
     }
 
     /// <summary>
-    /// Method to compute the intersection between a ray and a sphere.
+    /// Method to compute the intersection between a ray and a <c>Sphere</c>.
     /// </summary>
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns>Return a <c>HitRecord</c> containing details of intersection if the <c>Sphere</c> intersects the <c>Ray</c>,
-    /// and return null if the Sphere doesn't intersect the <c>Ray</c>.</returns>
+    /// and return null if the <c>Sphere</c> doesn't intersect the <c>Ray</c>.</returns>
     public override HitRecord? Intersect(Ray ray)
     {
         Ray invRay = Transform.Inverse() * ray;
@@ -51,7 +53,7 @@ public class Sphere : Shape
 
         Point hitPoint = invRay.At(tHit);
 
-        return new HitRecord(this, Transform * hitPoint, Transform * SphereNormal(hitPoint, invRay.Dir),
+        return new HitRecord(this, Transform * hitPoint, (Transform * SphereNormal(hitPoint, invRay.Dir)).Normalize(),
             SpherePointToUV(hitPoint), ray, tHit);
     }
 

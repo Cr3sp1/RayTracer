@@ -33,14 +33,14 @@ public static class Utils
     // Endianness
     public enum Endianness
     {
-        BigEndian = 0,
-        LittleEndian = 1
+        LittleEndian,
+        BigEndian
     }
 
     // Get Endianness
     public static Endianness ParseEndianness(string line)
     {
-        var value = 0f;
+        float value;
 
         try
         {
@@ -65,10 +65,10 @@ public static class Utils
         }
     }
 
-    // Read width and height of the image
+    // Read the width and height of the image
     public static (int, int) ParseImgSize(string line)
     {
-        int width, height = 0;
+        int width, height;
         string[] elements = line.Split(' ');
         if (elements.Length != 2)
         {

@@ -38,17 +38,18 @@ public class SphereTests
     [Fact]
     public void TestTransformations()
     {
-        var transSphere = new Sphere(Transformation.Translation(new Vec(10.0f, 0.0f, 0.0f)));
+        var transSphere = new Sphere(Transformation.Translation(new Vec(10.0f, 0.0f, 0.0f)) *
+                                     Transformation.Scaling(new Vec(2.0f, 2.0f, 2.0f)));
 
-        var ray1 = new Ray(new Point(10.0f, 0.0f, 2.0f), -Vec.ZAxis);
-        var exp1 = new HitRecord(transSphere, new Point(10.0f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
+        var ray1 = new Ray(new Point(10.0f, 0.0f, 3.0f), -Vec.ZAxis);
+        var exp1 = new HitRecord(transSphere, new Point(10.0f, 0.0f, 2.0f), new Normal(0.0f, 0.0f, 1.0f),
             new Vec2D(0.0f, 0.0f), ray1, 1.0f);
         var hit1 = transSphere.Intersect(ray1);
         Assert.True(hit1.HasValue);
         Assert.True(HitRecord.CloseEnough(hit1.Value, exp1));
 
-        var ray2 = new Ray(new Point(13.0f, 0.0f, 0.0f), -Vec.XAxis);
-        var exp2 = new HitRecord(transSphere, new Point(11.0f, 0.0f, 0.0f), new Normal(1.0f, 0.0f, 0.0f),
+        var ray2 = new Ray(new Point(14.0f, 0.0f, 0.0f), -Vec.XAxis);
+        var exp2 = new HitRecord(transSphere, new Point(12.0f, 0.0f, 0.0f), new Normal(1.0f, 0.0f, 0.0f),
             new Vec2D(0.0f, 0.5f), ray2, 2.0f);
         var hit2 = transSphere.Intersect(ray2);
         Assert.True(hit2.HasValue);
@@ -57,7 +58,7 @@ public class SphereTests
         Assert.False(HitRecord.CloseEnough(hit2.Value, exp1));
         Assert.False(transSphere.Intersect(new Ray(new Point(0.0f, 0.0f, 1.0f), -Vec.ZAxis)).HasValue);
     }
-    
+
     [Fact]
     public void TestAllIntersects()
     {

@@ -24,7 +24,7 @@ public class Shape
     {
         throw new NotImplementedException();
     }
-    
+
     /// <summary>
     /// Method to compute all the intersections between a <c>Ray</c> and a <c>Shape</c>.
     /// </summary>
@@ -67,4 +67,18 @@ public record struct Vec2D(float U, float V)
     /// </summary>
     public static bool CloseEnough(Vec2D v1, Vec2D v2, float epsilon = 1e-5f) =>
         Utils.CloseEnough(v1.U, v2.U, epsilon) && Utils.CloseEnough(v1.V, v2.V, epsilon);
+}
+
+public class CloserHit : Comparer<HitRecord>
+{
+    // Compares by Length, Height, and Width.
+    public override int Compare(HitRecord hit1, HitRecord hit2)
+    {
+        return (hit1.T - hit2.T) switch
+        {
+            < 0 => -1,
+            > 0 => 1,
+            _ => 0
+        };
+    }
 }
