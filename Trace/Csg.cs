@@ -40,6 +40,8 @@ public class Csg : Shape
         // Add valid intersections with ShapeA
         foreach (var hitRecord in allHits1)
         {
+            if (Type is CsgType.Union) validHits.Add(hitRecord);
+
             if (IsInside(hitRecord, allHits2))
             {
                 if (Type is CsgType.Intersection) validHits.Add(hitRecord);
@@ -53,6 +55,8 @@ public class Csg : Shape
         // Add valid intersections with ShapeB
         foreach (var hitRecord in allHits2)
         {
+            if (Type is CsgType.Union) validHits.Add(hitRecord);
+
             if (IsInside(hitRecord, allHits1))
             {
                 if (Type is CsgType.Intersection or CsgType.Difference) validHits.Add(hitRecord);
@@ -95,5 +99,6 @@ public enum CsgType
 {
     Fusion,
     Difference,
-    Intersection
+    Intersection,
+    Union
 }
