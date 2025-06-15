@@ -17,7 +17,7 @@ public class CsgTests
     [Fact]
     public void TestUnion()
     {
-        var union = new Csg(sphereA, sphereB, CsgType.Union);
+        var union = new Csg(sphereA, sphereB, CsgType.Fusion);
         var ray = new Ray(new Point(5.0f, 0.0f, 0.0f), -Vec.XAxis);
         var exp0 = new HitRecord(sphereB, new Point(1.5f, 0.0f, 0.0f), new Normal(1.0f, 0.0f, 0.0f),
             new Vec2D(0.0f, 0.5f), ray, 3.5f);

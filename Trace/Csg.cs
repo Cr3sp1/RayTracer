@@ -46,7 +46,7 @@ public class Csg : Shape
             }
             else
             {
-                if (Type is CsgType.Union or CsgType.Difference) validHits.Add(hitRecord);
+                if (Type is CsgType.Fusion or CsgType.Difference) validHits.Add(hitRecord);
             }
         }
 
@@ -59,7 +59,7 @@ public class Csg : Shape
             }
             else
             {
-                if (Type is CsgType.Union) validHits.Add(hitRecord);
+                if (Type is CsgType.Fusion) validHits.Add(hitRecord);
             }
         }
 
@@ -93,7 +93,7 @@ public class Csg : Shape
 
 public enum CsgType
 {
-    Union,
+    Fusion,
     Difference,
     Intersection
 }

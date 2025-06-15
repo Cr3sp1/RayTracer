@@ -191,13 +191,13 @@ public class DemoCommand : ICommand
                                           Transformation.Scaling(new Vec(0.4f, 0.4f, 0.4f)), matStripeVert);
         var sphereMirror = new Sphere(Transformation.Translation(new Vec(0f, -0.15f, 0f)) *
                                       Transformation.Scaling(new Vec(rad, rad, rad)), matMirror);
-        var csgDoubleSphere = new Csg(sphereStripeHor, sphereStripeVert, CsgType.Union,
+        var csgDoubleSphere = new Csg(sphereStripeHor, sphereStripeVert, CsgType.Fusion,
             Transformation.Translation(new Vec(0.5f, 0.7f, -0.6f)));
         var planeGround = new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround);
         var planeSky = new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky);
         var csgHole = new Csg(planeGround, sphereStripeHor, CsgType.Difference);
         var csgTripleHole = new Csg(csgHole, csgDoubleSphere, CsgType.Difference);
-        var csgUnion = new Csg(sphereStripeVert, sphereMirror, CsgType.Union, Transformation.Translation(new Vec(0.3f, 1.5f, 1f)));
+        var csgUnion = new Csg(sphereStripeVert, sphereMirror, CsgType.Fusion, Transformation.Translation(new Vec(0.3f, 1.5f, 1f)));
         var csgInter = new Csg(sphereStripeVert, sphereMirror, CsgType.Intersection, Transformation.Translation(new Vec(0.3f, 0f, 1f)));
         var csgDiff = new Csg(sphereMirror, sphereStripeVert, CsgType.Difference, Transformation.Translation(new Vec(0.3f, -1.5f, 1f)));
 
