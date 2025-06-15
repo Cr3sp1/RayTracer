@@ -15,12 +15,34 @@ public class Shape
     }
 
     /// <summary>
-    /// Method to compute the intersection between a ray and a shape.
+    /// Method to compute the intersection closest to the origin between a <c>Ray</c> and a <c>Shape</c>.
     /// </summary>
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     public virtual HitRecord? Intersect(Ray ray)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Method to compute all the intersections between a <c>Ray</c> and a <c>Shape</c>.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual List<HitRecord> AllIntersects(Ray ray)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Method to check if a <c>HitRecord</c> falls inside a <c>Shape</c>.
+    /// </summary>
+    /// <param name="hit"><c>HitRecord</c> to check.</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual int IsInside(in HitRecord hit)
     {
         throw new NotImplementedException();
     }
@@ -56,4 +78,18 @@ public record struct Vec2D(float U, float V)
     /// </summary>
     public static bool CloseEnough(Vec2D v1, Vec2D v2, float epsilon = 1e-5f) =>
         Utils.CloseEnough(v1.U, v2.U, epsilon) && Utils.CloseEnough(v1.V, v2.V, epsilon);
+}
+
+// Compare HitRecord by T; allows sorting HitRecord objects from closest to furthest from ray origin
+public class CloserHit : Comparer<HitRecord>
+{
+    public override int Compare(HitRecord hit1, HitRecord hit2)
+    {
+        return (hit1.T - hit2.T) switch
+        {
+            < 0 => -1,
+            > 0 => 1,
+            _ => 0
+        };
+    }
 }

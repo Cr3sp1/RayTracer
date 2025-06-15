@@ -142,7 +142,7 @@ public class DemoCommand : ICommand
 
     [CommandOption("factor", 'f',
         Description = "Normalization factor, higher means a more luminous image.")]
-    public float Factor { get; init; } = 0.2f;
+    public float Factor { get; init; } = 1.0f;
 
     [CommandOption("gamma", 'g',
         Description = "Gamma correction.")]
@@ -172,8 +172,8 @@ public class DemoCommand : ICommand
         }
 
         // Set the scene
-        float rad1 = 0.4f;
-        float rad2 = 0.3f;
+        bool efficient = true;
+        float rad = 0.4f;
         var matRed = new Material(new DiffuseBrdf(new UniformPigment(Color.Red)));
         var matSky = new Material(new DiffuseBrdf(new UniformPigment(Color.Black)),
             new UniformPigment(Color.White));
@@ -181,18 +181,36 @@ public class DemoCommand : ICommand
             new Material(new DiffuseBrdf(new CheckeredPigment(new Color(0.8f, 0.6f, 1f), new Color(1f, 1f, 0.8f), 10)));
         var matMirror = new Material(new SpecularBrdf(new UniformPigment(0.6f * Color.White)));
         var matChess = new Material(new DiffuseBrdf(new CheckeredPigment(Color.Green, 0.2f * Color.White, 20)));
+        var matStripeVert = new Material(new DiffuseBrdf(new StripedPigment(Color.Green, 0.2f * Color.White, 20)));
+        var matStripeHor =
+            new Material(new DiffuseBrdf(new StripedPigment(Color.Blue, 0.2f * Color.White, 20, false)));
 
+        var sphereStripeHor = new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
+                                         Transformation.Scaling(new Vec(1.5f * rad, 1.5f * rad, 1.5f * rad)),
+            matStripeHor);
+        var sphereStripeVert = new Sphere(Transformation.Translation(new Vec(0f, 0.15f, 0f)) *
+                                          Transformation.Scaling(new Vec(0.4f, 0.4f, 0.4f)), matStripeVert);
+        var sphereMirror = new Sphere(Transformation.Translation(new Vec(0f, -0.15f, 0f)) *
+                                      Transformation.Scaling(new Vec(rad, rad, rad)), matMirror);
+        var csgDoubleSphere = new Csg(sphereStripeHor, sphereStripeVert, CsgType.Fusion,
+            Transformation.Translation(new Vec(0.5f, 0.7f, -0.6f)));
+        var planeGround = new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround);
+        var planeSky = new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky);
+        var csgHole = new Csg(planeGround, sphereStripeHor, CsgType.Difference, efficient: efficient);
+        var csgTripleHole = new Csg(csgHole, csgDoubleSphere, CsgType.Difference, efficient: efficient);
+        var csgUnion = new Csg(sphereStripeVert, sphereMirror, CsgType.Fusion,
+            Transformation.Translation(new Vec(0.3f, 1.5f, 1f)), efficient: efficient);
+        var csgInter = new Csg(sphereStripeVert, sphereMirror, CsgType.Intersection,
+            Transformation.Translation(new Vec(0.3f, 0f, 1f)), efficient: efficient);
+        var csgDiff = new Csg(sphereMirror, sphereStripeVert, CsgType.Difference,
+            Transformation.Translation(new Vec(0.3f, -1.5f, 1f)), efficient: efficient);
 
-        scene.AddShape(new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky));
-        scene.AddShape(new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround));
+        scene.AddShape(planeSky);
+        scene.AddShape(csgTripleHole);
+        scene.AddShape(csgInter);
+        scene.AddShape(csgUnion);
+        scene.AddShape(csgDiff);
 
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, 0.5f, -0.5f)) *
-                                  Transformation.Scaling(new Vec(rad1, rad1, rad1)), matRed));
-        scene.AddShape(new Sphere(Transformation.Translation(new Vec(-0.5f, -0.5f, 0.3f)) *
-                                  Transformation.Scaling(new Vec(rad2, rad2, rad2)), matMirror));
-        scene.AddShape(new Sphere(
-            Transformation.Translation(new Vec(-0.3f, 0.2f, 0.7f)) * Transformation.RotationZ(-60) *
-            Transformation.RotationX(90) * Transformation.Scaling(new Vec(0.2f, 0.2f, 0.9f)), matChess));
         console.Output.WriteLine("Scene successfully set");
         console.Output.WriteLine("Scene successfully set");
 
