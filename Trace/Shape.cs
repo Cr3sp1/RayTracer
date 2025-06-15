@@ -35,6 +35,17 @@ public class Shape
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Method to check if a <c>HitRecord</c> falls inside a <c>Shape</c>.
+    /// </summary>
+    /// <param name="hit"><c>HitRecord</c> to check.</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual int IsInside(in HitRecord hit)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /// <summary>
@@ -69,9 +80,9 @@ public record struct Vec2D(float U, float V)
         Utils.CloseEnough(v1.U, v2.U, epsilon) && Utils.CloseEnough(v1.V, v2.V, epsilon);
 }
 
+// Compare HitRecord by T; allows sorting HitRecord objects from closest to furthest from ray origin
 public class CloserHit : Comparer<HitRecord>
 {
-    // Compares by Length, Height, and Width.
     public override int Compare(HitRecord hit1, HitRecord hit2)
     {
         return (hit1.T - hit2.T) switch

@@ -1,5 +1,7 @@
 // ReSharper disable InconsistentNaming
 
+using System.Diagnostics;
+
 namespace Trace;
 
 // Class representing a sphere
@@ -94,5 +96,22 @@ public class Sphere : Shape
         }
 
         return res;
+    }
+    
+    /// <summary>
+    /// Method to check if a <c>HitRecord</c> falls inside a <c>Sphere</c>.
+    /// </summary>
+    /// <param name="hit"><c>HitRecord</c> to check.</param>
+    /// <returns>1 if it falls in the <c>Sphere</c>, -1 if it falls outside the <c>Sphere</c>, and 0 if it falls
+    /// on the surface of the <c>Sphere</c></returns>
+    public override int IsInside(in HitRecord hit)
+    {
+        var invPoint = Transform.Inverse() * hit.WorldPoint;
+        return (invPoint.X * invPoint.X + invPoint.Y * invPoint.Y + invPoint.Z * invPoint.Z) switch
+        {
+            > 1 => -1,
+            < 1 => 1,
+            _ => 0
+        };
     }
 }
