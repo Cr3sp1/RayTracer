@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Exceptions;
 
 namespace Trace;
@@ -34,7 +33,6 @@ public class Csg : Shape
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns> Return a <c>List</c> of <c>HitRecord</c> containing all the intersections between the <c>Ray</c> and
     /// a <c>Csg</c> from closest to <c>Ray</c> origin to furthest.</returns>
-    [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH")]
     public override List<HitRecord> AllIntersects(Ray ray)
     {
         var validHits = new List<HitRecord>();
@@ -45,7 +43,7 @@ public class Csg : Shape
         // Add valid intersections with ShapeA
         foreach (var hitRecordA in allHitsA)
         {
-            if( Type is CsgType.Union) validHits.Add(hitRecordA);
+            if (Type is CsgType.Union) validHits.Add(hitRecordA);
             int hitRecordAIsInB = Efficient ? EfficientIsInside(hitRecordA, allHitsB) : ShapeB.IsInside(hitRecordA);
             switch (Type)
             {
@@ -61,7 +59,7 @@ public class Csg : Shape
         // Add valid intersections with ShapeB
         foreach (var hitRecordB in allHitsB)
         {
-            if( Type is CsgType.Union) validHits.Add(hitRecordB);
+            if (Type is CsgType.Union) validHits.Add(hitRecordB);
             int hitRecordBIsInA = Efficient ? EfficientIsInside(hitRecordB, allHitsA) : ShapeA.IsInside(hitRecordB);
             switch (Type)
             {
@@ -80,6 +78,7 @@ public class Csg : Shape
         {
             validHits[i] = validHits[i] with
             {
+                Ray = ray,
                 WorldPoint = Transform * validHits[i].WorldPoint,
                 Normal = (Transform * validHits[i].Normal).Normalize()
             };

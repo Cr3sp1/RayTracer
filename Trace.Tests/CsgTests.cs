@@ -93,10 +93,10 @@ public class CsgTests
     {
         var shapeA = new Sphere(Transformation.Translation(new Vec(0.5f, 0f, 0f)));
         var shapeB = new Sphere(Transformation.Translation(new Vec(-0.5f, 0f, 0f)));
-        var union = new Csg(shapeA, shapeB, CsgType.Union, efficient:false);
-        var fusion = new Csg(shapeA, shapeB, CsgType.Fusion, efficient:false);
-        var difference = new Csg(shapeA, shapeB, CsgType.Difference, efficient:false);
-        var intersection = new Csg(shapeA, shapeB, CsgType.Intersection, efficient:false);
+        var union = new Csg(shapeA, shapeB, CsgType.Union, efficient: false);
+        var fusion = new Csg(shapeA, shapeB, CsgType.Fusion, efficient: false);
+        var difference = new Csg(shapeA, shapeB, CsgType.Difference, efficient: false);
+        var intersection = new Csg(shapeA, shapeB, CsgType.Intersection, efficient: false);
         var ray = new Ray(new Point(0f, 0f, 5f), -Vec.ZAxis);
 
         var hitsUnion = union.AllIntersects(ray);
@@ -109,15 +109,15 @@ public class CsgTests
         Assert.True(Utils.CloseEnough(4.13397455f, hitsUnion[1].T));
         Assert.True(Utils.CloseEnough(5.86602545f, hitsUnion[2].T));
         Assert.True(Utils.CloseEnough(5.86602545f, hitsUnion[3].T));
-        
+
         Assert.Equal(2, hitsFusion.Count);
         Assert.True(Utils.CloseEnough(4.13397455f, hitsFusion[0].T));
         Assert.True(Utils.CloseEnough(5.86602545f, hitsFusion[1].T));
-        
+
         Assert.Equal(2, hitsDifference.Count);
         Assert.True(Utils.CloseEnough(4.13397455f, hitsDifference[0].T));
         Assert.True(Utils.CloseEnough(5.86602545f, hitsDifference[1].T));
-        
+
         Assert.Equal(2, hitsIntersection.Count);
         Assert.True(Utils.CloseEnough(4.13397455f, hitsIntersection[0].T));
         Assert.True(Utils.CloseEnough(5.86602545f, hitsIntersection[1].T));

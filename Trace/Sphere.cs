@@ -84,20 +84,20 @@ public class Sphere : Shape
         if (invRay.TMin < tMin && tMin < invRay.TMax)
         {
             Point hitPoint = invRay.At(tMin);
-            res.Add(new HitRecord(this, Transform * hitPoint, Transform * SphereNormal(hitPoint, invRay.Dir),
-                SpherePointToUV(hitPoint), ray, tMin));
+            res.Add(new HitRecord(this, Transform * hitPoint,
+                (Transform * SphereNormal(hitPoint, invRay.Dir)).Normalize(), SpherePointToUV(hitPoint), ray, tMin));
         }
 
         if (invRay.TMin < tMax && tMax < invRay.TMax)
         {
             Point hitPoint = invRay.At(tMax);
-            res.Add(new HitRecord(this, Transform * hitPoint, Transform * SphereNormal(hitPoint, invRay.Dir),
-                SpherePointToUV(hitPoint), ray, tMax));
+            res.Add(new HitRecord(this, Transform * hitPoint,
+                (Transform * SphereNormal(hitPoint, invRay.Dir)).Normalize(), SpherePointToUV(hitPoint), ray, tMax));
         }
 
         return res;
     }
-    
+
     /// <summary>
     /// Method to check if a <c>HitRecord</c> falls inside a <c>Sphere</c>.
     /// </summary>
