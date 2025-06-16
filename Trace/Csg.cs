@@ -8,11 +8,11 @@ public class Csg : Shape
     public Shape ShapeA;
     public Shape ShapeB;
     public CsgType Type;
-    public bool Efficient;
+    public static bool Efficient = true;
 
     // Constructor
-    public Csg(Shape shapeA, Shape shapeB, CsgType type, Transformation? transform = null, bool efficient = true) :
-        base(transform) => (ShapeA, ShapeB, Type, Efficient) = (shapeA, shapeB, type, efficient);
+    public Csg(Shape shapeA, Shape shapeB, CsgType type, Transformation? transform = null) :
+        base(transform) => (ShapeA, ShapeB, Type) = (shapeA, shapeB, type);
 
     /// <summary>
     /// Method to compute the intersection between a ray and a <c>Csg</c>.

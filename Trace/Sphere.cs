@@ -107,11 +107,9 @@ public class Sphere : Shape
     public override int IsInside(in HitRecord hit)
     {
         var invPoint = Transform.Inverse() * hit.WorldPoint;
-        return (invPoint.X * invPoint.X + invPoint.Y * invPoint.Y + invPoint.Z * invPoint.Z) switch
-        {
-            > 1 => -1,
-            < 1 => 1,
-            _ => 0
-        };
+        float epsilon = 1e-5f;
+        float dist = invPoint.X * invPoint.X + invPoint.Y * invPoint.Y + invPoint.Z * invPoint.Z;
+        if (dist > 1f + epsilon) return -1;
+        return dist < 1f - epsilon ? 1 : 0;
     }
 }

@@ -172,7 +172,7 @@ public class DemoCommand : ICommand
         }
 
         // Set the scene
-        bool efficient = true;
+        Csg.Efficient = true;
         float rad = 0.4f;
         var matRed = new Material(new DiffuseBrdf(new UniformPigment(Color.Red)));
         var matSky = new Material(new DiffuseBrdf(new UniformPigment(Color.Black)),
@@ -196,14 +196,14 @@ public class DemoCommand : ICommand
             Transformation.Translation(new Vec(0.5f, 0.7f, -0.6f)));
         var planeGround = new Plane(Transformation.Translation(-0.5f * Vec.ZAxis), material: matGround);
         var planeSky = new Plane(Transformation.Translation(5 * Vec.ZAxis), matSky);
-        var csgHole = new Csg(planeGround, sphereStripeHor, CsgType.Difference, efficient: efficient);
-        var csgTripleHole = new Csg(csgHole, csgDoubleSphere, CsgType.Difference, efficient: efficient);
+        var csgHole = new Csg(planeGround, sphereStripeHor, CsgType.Difference);
+        var csgTripleHole = new Csg(csgHole, csgDoubleSphere, CsgType.Difference);
         var csgUnion = new Csg(sphereStripeVert, sphereMirror, CsgType.Fusion,
-            Transformation.Translation(new Vec(0.3f, 1.5f, 1f)), efficient: efficient);
+            Transformation.Translation(new Vec(0.3f, 1.5f, 1f)));
         var csgInter = new Csg(sphereStripeVert, sphereMirror, CsgType.Intersection,
-            Transformation.Translation(new Vec(0.3f, 0f, 1f)), efficient: efficient);
+            Transformation.Translation(new Vec(0.3f, 0f, 1f)));
         var csgDiff = new Csg(sphereMirror, sphereStripeVert, CsgType.Difference,
-            Transformation.Translation(new Vec(0.3f, -1.5f, 1f)), efficient: efficient);
+            Transformation.Translation(new Vec(0.3f, -1.5f, 1f)));
 
         scene.AddShape(planeSky);
         scene.AddShape(csgTripleHole);

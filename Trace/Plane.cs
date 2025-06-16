@@ -68,12 +68,12 @@ public class Plane : Shape
     {
         var invPoint = Transform.Inverse() * hit.WorldPoint;
         var invRayOrigin = Transform.Inverse() * hit.Ray.Origin;
+
         if (invRayOrigin.Z == 0.0f) return -1;
-        return (invPoint.Z * invRayOrigin.Z) switch
-        {
-            < 0f => 1,
-            > 0f => -1,
-            _ => 0
-        };
+        float epsilon = 1e-5f;
+        float dist = invPoint.Z * invRayOrigin.Z;
+        if (dist > epsilon) return -1;
+        if (dist < -epsilon) return 1;
+        return 0;
     }
 }

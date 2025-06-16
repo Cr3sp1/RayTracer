@@ -91,12 +91,13 @@ public class CsgTests
     [Fact]
     public void TestContactPoint()
     {
+        Csg.Efficient = false;
         var shapeA = new Sphere(Transformation.Translation(new Vec(0.5f, 0f, 0f)));
         var shapeB = new Sphere(Transformation.Translation(new Vec(-0.5f, 0f, 0f)));
-        var union = new Csg(shapeA, shapeB, CsgType.Union, efficient: false);
-        var fusion = new Csg(shapeA, shapeB, CsgType.Fusion, efficient: false);
-        var difference = new Csg(shapeA, shapeB, CsgType.Difference, efficient: false);
-        var intersection = new Csg(shapeA, shapeB, CsgType.Intersection, efficient: false);
+        var union = new Csg(shapeA, shapeB, CsgType.Union);
+        var fusion = new Csg(shapeA, shapeB, CsgType.Fusion);
+        var difference = new Csg(shapeA, shapeB, CsgType.Difference);
+        var intersection = new Csg(shapeA, shapeB, CsgType.Intersection);
         var ray = new Ray(new Point(0f, 0f, 5f), -Vec.ZAxis);
 
         var hitsUnion = union.AllIntersects(ray);
