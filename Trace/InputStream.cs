@@ -9,6 +9,7 @@ public class InputStream
     private readonly StreamReader Reader;
     public SourceLocation Location;
     public char? SavedChar = null;
+    public Token? SavedToken = null;
     public SourceLocation LastLocation;
     public int Tab;
 
@@ -75,6 +76,17 @@ public class InputStream
         Location = LastLocation;
     }
 
+    public void UnreadToken(Token newToken)
+    {
+        if (SavedToken != null)
+        {
+            throw new RuntimeException("Tried to unread two tokens in a row!");
+        }
+
+        SavedToken = newToken;
+        Location = LastLocation;
+    }
+
     public void SkipWhitespaceAndComments()
     {
         char? newChar = ReadChar();
@@ -100,6 +112,13 @@ public class InputStream
 
     public Token ReadToken()
     {
+        if (SavedToken != null)
+        {
+            var result = SavedToken;
+            SavedToken = null;
+            return result;
+        }
+        
         SkipWhitespaceAndComments();
 
         // Return StopToken if end of file is reached
