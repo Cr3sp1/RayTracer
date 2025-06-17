@@ -1,14 +1,13 @@
 namespace Trace;
 
-using static Trace.InputStream;
-
 public class Scene
 {
     // No need to use default constructor
     public Dictionary<string, Material> Materials { get; } = new();
-    public static Dictionary<string, float> Floats { get; } = new();
+    public Dictionary<string, float> FloatVariables { get; set; } = new();
+    public HashSet<string> OverriddenVariables { get; set; } = new(); // Track externally-set variables
     public ICamera? SceneCamera { get; set; } = null;
-    public World SceneWorld { get; set; } = new();
+    public World SceneWorld { get; } = new();
 
     // Expect functions
     
@@ -42,7 +41,7 @@ public class Scene
 
         if (!keywords.Contains(keywordToken.Keyword))
         {
-            throw new GrammarException($"Expected one of [{{string.Join(\", \", expectedKeywords)}}] instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of '{token}'.", token.Location);
         }
         return keywordToken.Keyword;
     }
@@ -51,7 +50,6 @@ public class Scene
     /// Read a token from the <c>InputStream</c> and check that it is a <c>Float</c> or a variable storing a <c>Float</c>.
     /// </summary>
     /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
-    /// <param name="scene"><c>Scene</c> that contains the dictionary of <c>Floats</c> read during lexing.</param>
     /// <returns><c>Float</c> to be stored.</returns>
     public float ExpectNumber(InputStream inputFile)
     {
@@ -64,11 +62,11 @@ public class Scene
         if (token is IdentifierToken identifierToken)
         {
             var variableName = identifierToken.Identifier;
-            if (!Scene.Floats.ContainsKey(variableName))
+            if (!FloatVariables.ContainsKey(variableName))
             {
                 throw new GrammarException($"Unknown variable '{variableName}'.", token.Location);
             }
-            return Scene.Floats[variableName];
+            return FloatVariables[variableName];
         }
         
         throw new GrammarException($"Expected number instead of '{token}'.", token.Location);
@@ -396,6 +394,93 @@ public class Scene
         }
         
         return camera;
+    }
+
+    /// <summary>
+    /// Parse the whole <c>Scene</c> until reaching the end of the file.
+    /// </summary>
+    /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
+    /// <param name="externalVariables"><c>Dictionary</c> of external variables that can be passed to override those inside the scene file.</param>
+    public void ParseScene(InputStream inputFile, Dictionary<string, float>? externalVariables)
+    {
+        // Initialize with external variables if provided
+        if (externalVariables != null)
+        {
+            FloatVariables = new Dictionary<string, float>(externalVariables);
+            OverriddenVariables = new HashSet<string>(externalVariables.Keys);
+        }
+        
+        while (true)    // Until EOF is reached
+        {
+            var whichToken = inputFile.ReadToken();
+
+            if (whichToken is StopToken stopToken)  // Stop if EOF is reached
+            {
+                break;
+            }
+
+            if (whichToken is not KeywordToken keywordToken)    // First expect a keyword
+            {
+                throw new GrammarException($"Expected keyword instead of '{whichToken}'.", inputFile.Location);
+            }
+
+            switch (keywordToken.Keyword)   // See which keyword it is and register the corresponding variable
+            {
+                case Keyword.Float:
+                    var floatName = ExpectIdentifier(inputFile);
+                    ExpectSymbol(inputFile, '(');
+                    var floatValue = ExpectNumber(inputFile);
+                    ExpectSymbol(inputFile, ')');
+                    if (!OverriddenVariables.Contains(floatName))   // If the identifier is not among the variables to override
+                    {
+                        if (FloatVariables.ContainsKey(floatName))  // If it is inside the dictionary of variables in the input file
+                        {
+                            throw new GrammarException($"Variable '{floatName}' cannot be redefined.",
+                                inputFile.Location);
+                        }
+                        else
+                        {
+                            FloatVariables.Add(floatName, floatValue);
+                        }
+                    }
+
+                    break;
+                
+                case Keyword.Plane:
+                    SceneWorld.AddShape(ParsePlane(inputFile));
+                    break;
+                
+                case Keyword.Sphere:
+                    SceneWorld.AddShape(ParseSphere(inputFile));
+                    break;
+                
+                case Keyword.Material:
+                    var (materialName, material) = ParseMaterial(inputFile);
+                    if (Materials.ContainsKey(materialName))
+                    {
+                        throw new GrammarException($"Material '{materialName}' cannot be redefined.", inputFile.Location);
+                    }
+                    else
+                    {
+                        Materials.Add(materialName, material);
+                    }
+                    break;
+                
+                case Keyword.Camera:
+                    if (SceneCamera != null)
+                    {
+                        throw new GrammarException("Scene camera already exists, cannot define two cameras.", inputFile.Location);
+                    }
+                    else
+                    {
+                        SceneCamera = ParseCamera(inputFile);
+                    }
+                    break;
+                
+                default:
+                    throw new InvalidOperationException("This line should not be reachable.");
+            }
+        }
     }
     
 }
