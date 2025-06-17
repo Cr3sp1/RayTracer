@@ -84,7 +84,6 @@ public class InputStream
         }
 
         SavedToken = newToken;
-        Location = LastLocation;
     }
 
     public void SkipWhitespaceAndComments()
@@ -118,7 +117,7 @@ public class InputStream
             SavedToken = null;
             return result;
         }
-        
+
         SkipWhitespaceAndComments();
 
         // Return StopToken if end of file is reached

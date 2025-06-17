@@ -1,16 +1,18 @@
+using Exceptions;
+
 namespace Trace;
 
 public class Scene
 {
     // No need to use default constructor
-    public Dictionary<string, Material> Materials { get; } = new();
-    public Dictionary<string, float> FloatVariables { get; set; } = new();
-    public HashSet<string> OverriddenVariables { get; set; } = new(); // Track externally-set variables
-    public ICamera? SceneCamera { get; set; } = null;
-    public World SceneWorld { get; } = new();
+    public Dictionary<string, Material> Materials = new();
+    public Dictionary<string, float> FloatVariables = new();
+    public HashSet<string> OverriddenVariables = new(); // Track externally-set variables
+    public ICamera? SceneCamera = null;
+    public World SceneWorld = new();
 
     // Expect functions
-    
+
     /// <summary>
     /// Read a token from the <c>InputStream</c> and check that it is a <c>SymbolToken</c>.
     /// </summary>
@@ -41,8 +43,10 @@ public class Scene
 
         if (!keywords.Contains(keywordToken.Keyword))
         {
-            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of '{token}'.",
+                token.Location);
         }
+
         return keywordToken.Keyword;
     }
 
@@ -62,13 +66,14 @@ public class Scene
         if (token is IdentifierToken identifierToken)
         {
             var variableName = identifierToken.Identifier;
-            if (!FloatVariables.ContainsKey(variableName))
+            if (!FloatVariables.TryGetValue(variableName, out var number))
             {
                 throw new GrammarException($"Unknown variable '{variableName}'.", token.Location);
             }
-            return FloatVariables[variableName];
+
+            return number;
         }
-        
+
         throw new GrammarException($"Expected number instead of '{token}'.", token.Location);
     }
 
@@ -84,6 +89,7 @@ public class Scene
         {
             throw new GrammarException($"Expected string instead of '{token}'.", token.Location);
         }
+
         return stringToken.String;
     }
 
@@ -99,9 +105,10 @@ public class Scene
         {
             throw new GrammarException($"Expected identifier instead of '{token}'.", token.Location);
         }
+
         return identifierToken.Identifier;
     }
-    
+
     // Parse functions
 
     /// <summary>
@@ -122,7 +129,7 @@ public class Scene
     }
 
     /// <summary>
-    /// Parse a <c>Color</c>: &lt;r, g, b&gt;.
+    /// Parse a <c>Color</c>: &lt;r, g, b&gt;
     /// </summary>
     /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
     /// <returns><c>Color</c> to be stored.</returns>
@@ -145,7 +152,7 @@ public class Scene
     /// <returns><c>Pigment</c> to be stored.</returns>
     public Pigment ParsePigment(InputStream inputFile)
     {
-        var pigmentKeyword = ExpectKeywords(inputFile, new List<Keyword> {Keyword.Uniform, Keyword.Checkered, Keyword.Image});
+        var pigmentKeyword = ExpectKeywords(inputFile, [Keyword.Uniform, Keyword.Checkered, Keyword.Image]);
         Pigment result;
 
         switch (pigmentKeyword)
@@ -179,10 +186,10 @@ public class Scene
                 result = new ImagePigment(image);
                 break;
             }
-            
+
             default:
                 // This should never happen due to ExpectKeywords, but needed for compiler
-                throw new InvalidOperationException("This line should not be reachable.");
+                throw new RuntimeException("This line should not be reachable.");
         }
 
         return result;
@@ -195,7 +202,7 @@ public class Scene
     /// <returns><c>Brdf</c> to be stored.</returns>
     public Brdf ParseBrdf(InputStream inputFile)
     {
-        var brdfKeyword = ExpectKeywords(inputFile, new List<Keyword> {Keyword.Diffuse, Keyword.Specular});
+        var brdfKeyword = ExpectKeywords(inputFile, [Keyword.Diffuse, Keyword.Specular]);
         Brdf result;
         Pigment pigment;
 
@@ -207,19 +214,19 @@ public class Scene
                 ExpectSymbol(inputFile, ')');
                 result = new DiffuseBrdf(pigment);
                 break;
-            
+
             case Keyword.Specular:
                 ExpectSymbol(inputFile, '(');
                 pigment = ParsePigment(inputFile);
                 ExpectSymbol(inputFile, ')');
                 result = new SpecularBrdf(pigment);
                 break;
-            
+
             default:
                 // This should never happen due to ExpectKeywords, but needed for compiler
-                throw new InvalidOperationException("This line should not be reachable.");
+                throw new RuntimeException("This line should not be reachable.");
         }
-        
+
         return result;
     }
 
@@ -230,14 +237,14 @@ public class Scene
     /// <returns><c>Material</c> to be stored.</returns>
     public (String, Material) ParseMaterial(InputStream inputFile)
     {
-        var materialName = ExpectString(inputFile);
+        var materialName = ExpectIdentifier(inputFile);
         ExpectSymbol(inputFile, '(');
         var brdf = ParseBrdf(inputFile);
         ExpectSymbol(inputFile, ',');
         var emittedRadiance = ParsePigment(inputFile);
         ExpectSymbol(inputFile, ')');
         var material = new Material(brdf, emittedRadiance);
-        
+
         return (materialName, material);
     }
 
@@ -253,56 +260,55 @@ public class Scene
         while (true)
         {
             var transformationKeyword = ExpectKeywords(inputFile,
-                new List<Keyword>
-                {
-                    Keyword.Identity, Keyword.Translation, Keyword.RotationX, Keyword.RotationY, Keyword.RotationZ,
-                    Keyword.Scaling
-                });
+            [
+                Keyword.Identity, Keyword.Translation, Keyword.RotationX, Keyword.RotationY, Keyword.RotationZ,
+                Keyword.Scaling
+            ]);
 
             switch (transformationKeyword)
             {
                 case Keyword.Identity:
                     break;
-                
+
                 case Keyword.Translation:
                     ExpectSymbol(inputFile, '(');
                     var vecTranslation = ParseVector(inputFile);
                     ExpectSymbol(inputFile, ')');
                     result *= Transformation.Translation(vecTranslation);
                     break;
-                
+
                 case Keyword.RotationX:
                     ExpectSymbol(inputFile, '(');
                     var angleX = ExpectNumber(inputFile);
                     ExpectSymbol(inputFile, ')');
                     result *= Transformation.RotationX(angleX);
                     break;
-                
+
                 case Keyword.RotationY:
                     ExpectSymbol(inputFile, '(');
                     var angleY = ExpectNumber(inputFile);
                     ExpectSymbol(inputFile, ')');
                     result *= Transformation.RotationY(angleY);
                     break;
-                
+
                 case Keyword.RotationZ:
                     ExpectSymbol(inputFile, '(');
                     var angleZ = ExpectNumber(inputFile);
                     ExpectSymbol(inputFile, ')');
                     result *= Transformation.RotationZ(angleZ);
                     break;
-                
+
                 case Keyword.Scaling:
                     ExpectSymbol(inputFile, '(');
                     var vecScale = ParseVector(inputFile);
                     ExpectSymbol(inputFile, ')');
                     result *= Transformation.Scaling(vecScale);
                     break;
-                
+
                 default:
-                    throw new InvalidOperationException("This line should not be reachable.");
+                    throw new RuntimeException("This line should not be reachable.");
             }
-            
+
             // Look-ahead to see if there is another transformation chained
             var newToken = inputFile.ReadToken();
             if (newToken is not SymbolToken symbol || symbol.Symbol != '*')
@@ -310,11 +316,9 @@ public class Scene
                 inputFile.UnreadToken(newToken);
                 break;
             }
-            
         }
-        
+
         return result;
-        
     }
 
     /// <summary>
@@ -327,18 +331,19 @@ public class Scene
         ExpectSymbol(inputFile, '(');
         var transformation = ParseTransformation(inputFile);
         ExpectSymbol(inputFile, ',');
-        var (materialName, material) = ParseMaterial(inputFile);
-        if (!Materials.ContainsKey(materialName))
+        var materialName = ExpectIdentifier(inputFile);
+        if (!Materials.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", inputFile.Location);
         }
+
         ExpectSymbol(inputFile, ',');
         var plane = new Plane(transformation, material);
         ExpectSymbol(inputFile, ')');
-        
+
         return plane;
     }
-    
+
     /// <summary>
     /// Parse a <c>Sphere</c>: Sphere(transformation, material).
     /// </summary>
@@ -349,32 +354,34 @@ public class Scene
         ExpectSymbol(inputFile, '(');
         var transformation = ParseTransformation(inputFile);
         ExpectSymbol(inputFile, ',');
-        var (materialName, material) = ParseMaterial(inputFile);
-        if (!Materials.ContainsKey(materialName))
+        var materialName = ExpectIdentifier(inputFile);
+        if (!Materials.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", inputFile.Location);
         }
+
         ExpectSymbol(inputFile, ',');
         var sphere = new Sphere(transformation, material);
         ExpectSymbol(inputFile, ')');
-        
+
         return sphere;
     }
 
     /// <summary>
-    /// Parse a <c>ICamera</c>: Perspective(transformation, distance, aspectRatio) or Orthogonal(transformation, distance, aspectRatio).
+    /// Parse a <c>ICamera</c>: Perspective (transformation, distance, aspectRatio) or Orthogonal (transformation, distance, aspectRatio).
     /// </summary>
     /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
     /// <returns><c>ICamera</c> to be stored.</returns>
     public ICamera ParseCamera(InputStream inputFile)
     {
-        var cameraType = ExpectKeywords(inputFile, new List<Keyword>() { Keyword.Orthogonal, Keyword.Perspective });
         ExpectSymbol(inputFile, '(');
+        var cameraType = ExpectKeywords(inputFile, [Keyword.Orthogonal, Keyword.Perspective]);
+        ExpectSymbol(inputFile, ',');
         var transformation = ParseTransformation(inputFile);
         ExpectSymbol(inputFile, ',');
-        var distance = ExpectNumber(inputFile);
-        ExpectSymbol(inputFile, ',');
         var aspectRatio = ExpectNumber(inputFile);
+        ExpectSymbol(inputFile, ',');
+        var distance = ExpectNumber(inputFile);
         ExpectSymbol(inputFile, ')');
 
         ICamera camera;
@@ -384,15 +391,15 @@ public class Scene
             case Keyword.Orthogonal:
                 camera = new OrthogonalCamera(transformation, aspectRatio);
                 break;
-            
+
             case Keyword.Perspective:
                 camera = new PerspectiveCamera(transformation, distance, aspectRatio);
                 break;
-            
+
             default:
-                throw new InvalidOperationException("This line should not be reachable.");
+                throw new RuntimeException("This line should not be reachable.");
         }
-        
+
         return camera;
     }
 
@@ -409,78 +416,75 @@ public class Scene
             FloatVariables = new Dictionary<string, float>(externalVariables);
             OverriddenVariables = new HashSet<string>(externalVariables.Keys);
         }
-        
-        while (true)    // Until EOF is reached
+
+        while (true) // Until EOF is reached
         {
             var whichToken = inputFile.ReadToken();
 
-            if (whichToken is StopToken stopToken)  // Stop if EOF is reached
+            if (whichToken is StopToken) // Stop if EOF is reached
             {
                 break;
             }
 
-            if (whichToken is not KeywordToken keywordToken)    // First expect a keyword
+            if (whichToken is not KeywordToken keywordToken) // First expect a keyword
             {
                 throw new GrammarException($"Expected keyword instead of '{whichToken}'.", inputFile.Location);
             }
 
-            switch (keywordToken.Keyword)   // See which keyword it is and register the corresponding variable
+            switch (keywordToken.Keyword) // See which keyword it is and register the corresponding variable
             {
                 case Keyword.Float:
                     var floatName = ExpectIdentifier(inputFile);
                     ExpectSymbol(inputFile, '(');
                     var floatValue = ExpectNumber(inputFile);
                     ExpectSymbol(inputFile, ')');
-                    if (!OverriddenVariables.Contains(floatName))   // If the identifier is not among the variables to override
+                    if (!OverriddenVariables
+                            .Contains(floatName)) // If the identifier is not among the variables to override
                     {
-                        if (FloatVariables.ContainsKey(floatName))  // If it is inside the dictionary of variables in the input file
+                        if (!FloatVariables.TryAdd(floatName,
+                                floatValue)) // If it is inside the dictionary of variables in the input file
                         {
                             throw new GrammarException($"Variable '{floatName}' cannot be redefined.",
                                 inputFile.Location);
                         }
-                        else
-                        {
-                            FloatVariables.Add(floatName, floatValue);
-                        }
                     }
 
                     break;
-                
+
                 case Keyword.Plane:
                     SceneWorld.AddShape(ParsePlane(inputFile));
                     break;
-                
+
                 case Keyword.Sphere:
                     SceneWorld.AddShape(ParseSphere(inputFile));
                     break;
-                
+
                 case Keyword.Material:
                     var (materialName, material) = ParseMaterial(inputFile);
-                    if (Materials.ContainsKey(materialName))
+                    if (!Materials.TryAdd(materialName, material))
                     {
-                        throw new GrammarException($"Material '{materialName}' cannot be redefined.", inputFile.Location);
+                        throw new GrammarException($"Material '{materialName}' cannot be redefined.",
+                            inputFile.Location);
                     }
-                    else
-                    {
-                        Materials.Add(materialName, material);
-                    }
+
                     break;
-                
+
                 case Keyword.Camera:
                     if (SceneCamera != null)
                     {
-                        throw new GrammarException("Scene camera already exists, cannot define two cameras.", inputFile.Location);
+                        throw new GrammarException("Scene camera already exists, cannot define two cameras.",
+                            inputFile.Location);
                     }
                     else
                     {
                         SceneCamera = ParseCamera(inputFile);
                     }
+
                     break;
-                
+
                 default:
-                    throw new InvalidOperationException("This line should not be reachable.");
+                    throw new RuntimeException("This line should not be reachable.");
             }
         }
     }
-    
 }
