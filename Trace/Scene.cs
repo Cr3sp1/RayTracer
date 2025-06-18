@@ -408,7 +408,7 @@ public class Scene
     /// </summary>
     /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
     /// <param name="externalVariables"><c>Dictionary</c> of external variables that can be passed to override those inside the scene file.</param>
-    public void ParseScene(InputStream inputFile, Dictionary<string, float>? externalVariables)
+    public void ParseScene(InputStream inputFile, Dictionary<string, float>? externalVariables = null)
     {
         // Initialize with external variables if provided
         if (externalVariables != null)
