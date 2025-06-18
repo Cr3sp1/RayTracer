@@ -23,7 +23,7 @@ public class Scene
         var token = inputFile.ReadToken();
         if (token is not SymbolToken symbolToken || symbolToken.Symbol != symbol)
         {
-            throw new GrammarException($"Expected symbol '{symbol}' instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected symbol '{symbol}' instead of {token}.", token.Location);
         }
     }
 
@@ -38,12 +38,12 @@ public class Scene
         var token = inputFile.ReadToken();
         if (token is not KeywordToken keywordToken)
         {
-            throw new GrammarException($"Expected keyword instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected keyword instead of {token}.", token.Location);
         }
 
         if (!keywords.Contains(keywordToken.Keyword))
         {
-            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of '{token}'.",
+            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of {token}.",
                 token.Location);
         }
 
@@ -74,7 +74,7 @@ public class Scene
             return number;
         }
 
-        throw new GrammarException($"Expected number instead of '{token}'.", token.Location);
+        throw new GrammarException($"Expected number instead of {token}.", token.Location);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class Scene
         var token = inputFile.ReadToken();
         if (token is not LiteralStringToken stringToken)
         {
-            throw new GrammarException($"Expected string instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected string instead of {token}.", token.Location);
         }
 
         return stringToken.String;
@@ -103,7 +103,7 @@ public class Scene
         var token = inputFile.ReadToken();
         if (token is not IdentifierToken identifierToken)
         {
-            throw new GrammarException($"Expected identifier instead of '{token}'.", token.Location);
+            throw new GrammarException($"Expected identifier instead of {token}.", token.Location);
         }
 
         return identifierToken.Identifier;
@@ -146,7 +146,7 @@ public class Scene
     }
 
     /// <summary>
-    /// Parse a <c>Pigment</c>: Uniform(color), Checkered(color1, color2) or Image(imageName).
+    /// Parse a <c>Pigment</c>: Uniform(color), Checkered(color1, color2, numSquares) or Image(imageName).
     /// </summary>
     /// <param name="inputFile"><c>InputStream</c> that contains the scene description of the input file.</param>
     /// <returns><c>Pigment</c> to be stored.</returns>
@@ -172,8 +172,10 @@ public class Scene
                 var color1 = ParseColor(inputFile);
                 ExpectSymbol(inputFile, ',');
                 var color2 = ParseColor(inputFile);
+                ExpectSymbol(inputFile, ',');
+                var numSquares = (int) ExpectNumber(inputFile);
                 ExpectSymbol(inputFile, ')');
-                result = new CheckeredPigment(color1, color2);
+                result = new CheckeredPigment(color1, color2, numSquares);
                 break;
             }
 
@@ -204,21 +206,18 @@ public class Scene
     {
         var brdfKeyword = ExpectKeywords(inputFile, [Keyword.Diffuse, Keyword.Specular]);
         Brdf result;
-        Pigment pigment;
+        
+        ExpectSymbol(inputFile, '(');
+        var pigment = ParsePigment(inputFile);
+        ExpectSymbol(inputFile, ')');
 
         switch (brdfKeyword)
         {
             case Keyword.Diffuse:
-                ExpectSymbol(inputFile, '(');
-                pigment = ParsePigment(inputFile);
-                ExpectSymbol(inputFile, ')');
                 result = new DiffuseBrdf(pigment);
                 break;
 
             case Keyword.Specular:
-                ExpectSymbol(inputFile, '(');
-                pigment = ParsePigment(inputFile);
-                ExpectSymbol(inputFile, ')');
                 result = new SpecularBrdf(pigment);
                 break;
 
@@ -329,19 +328,16 @@ public class Scene
     public Plane ParsePlane(InputStream inputFile)
     {
         ExpectSymbol(inputFile, '(');
-        var transformation = ParseTransformation(inputFile);
-        ExpectSymbol(inputFile, ',');
         var materialName = ExpectIdentifier(inputFile);
         if (!Materials.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", inputFile.Location);
         }
-
         ExpectSymbol(inputFile, ',');
-        var plane = new Plane(transformation, material);
+        var transformation = ParseTransformation(inputFile);
         ExpectSymbol(inputFile, ')');
-
-        return plane;
+        
+        return new Plane(transformation, material);
     }
 
     /// <summary>
@@ -352,19 +348,16 @@ public class Scene
     public Sphere ParseSphere(InputStream inputFile)
     {
         ExpectSymbol(inputFile, '(');
-        var transformation = ParseTransformation(inputFile);
-        ExpectSymbol(inputFile, ',');
         var materialName = ExpectIdentifier(inputFile);
         if (!Materials.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", inputFile.Location);
         }
-
         ExpectSymbol(inputFile, ',');
-        var sphere = new Sphere(transformation, material);
+        var transformation = ParseTransformation(inputFile);
         ExpectSymbol(inputFile, ')');
-
-        return sphere;
+        
+        return new Sphere(transformation, material);
     }
 
     /// <summary>
