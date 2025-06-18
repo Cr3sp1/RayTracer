@@ -39,10 +39,40 @@ public class SceneTests
         var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
         var scene = new Scene();
         scene.ParseScene(stream);
-        
+
         // Check materials
         Assert.Equal(3, scene.Materials.Count);
-        
+        Assert.Contains("sky_material", scene.Materials);
+        Assert.Contains("ground_material", scene.Materials);
+        Assert.Contains("sphere_material", scene.Materials);
+
+        var skyMaterial = scene.Materials["sky_material"];
+        Assert.IsType<DiffuseBrdf>(skyMaterial.Brdf);
+        var skyPigment = skyMaterial.Brdf.Pigment as UniformPigment;
+        Assert.NotNull(skyPigment);
+        Assert.True(Color.CloseEnough(Color.Black, skyPigment.Col));
+        var skyRadiance = skyMaterial.EmittedRadiance as UniformPigment;
+        Assert.NotNull(skyRadiance);
+        Assert.True(Color.CloseEnough(new Color(0.7f, 0.5f, 1f), skyRadiance.Col));
+
+        var groundMaterial = scene.Materials["ground_material"];
+        Assert.IsType<DiffuseBrdf>(groundMaterial.Brdf);
+        var groundPigment = groundMaterial.Brdf.Pigment as CheckeredPigment;
+        Assert.NotNull(groundPigment);
+        Assert.True(Color.CloseEnough(new Color(0.3f, 0.5f, 0.1f), groundPigment.Col1));
+        Assert.True(Color.CloseEnough(new Color(0.1f, 0.2f, 0.5f), groundPigment.Col2));
+        var groundRadiance = groundMaterial.EmittedRadiance as UniformPigment;
+        Assert.NotNull(groundRadiance);
+        Assert.True(Color.CloseEnough(Color.Black, groundRadiance.Col));
+
+        var sphereMaterial = scene.Materials["sphere_material"];
+        Assert.IsType<SpecularBrdf>(sphereMaterial.Brdf);
+        var spherePigment = sphereMaterial.Brdf.Pigment as UniformPigment;
+        Assert.NotNull(spherePigment);
+        Assert.True(Color.CloseEnough(0.5f * Color.White, spherePigment.Col));
+        var sphereRadiance = sphereMaterial.EmittedRadiance as UniformPigment;
+        Assert.NotNull(sphereRadiance);
+        Assert.True(Color.CloseEnough(Color.Black, sphereRadiance.Col));
     }
 
     [Fact]
