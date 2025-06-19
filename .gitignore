@@ -487,3 +487,7 @@ $RECYCLE.BIN/
 # Image files
 PfmFiles/
 LdrFiles/
+!ExampleImages/
+
+# Scene files
+SceneFiles/

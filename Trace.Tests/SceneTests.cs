@@ -37,8 +37,8 @@ public class SceneTests
                     camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
                     """;
         var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
-        var scene = new Scene();
-        scene.ParseScene(stream);
+        var scene = new Scene(stream);
+        scene.ParseScene();
 
         // Check materials
         Assert.Equal(3, scene.Materials.Count);
@@ -73,23 +73,26 @@ public class SceneTests
         var sphereRadiance = sphereMaterial.EmittedRadiance as UniformPigment;
         Assert.NotNull(sphereRadiance);
         Assert.True(Color.CloseEnough(Color.Black, sphereRadiance.Col));
-        
+
         // Check shapes
         Assert.Equal(3, scene.SceneWorld.Shapes.Count);
-        
+
         Assert.True(scene.SceneWorld.Shapes[0] is Plane);
-        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[0].Transform, Transformation.Translation(new Vec(0.0f, 0.0f, 100.0f))*Transformation.RotationY(150.0f)));
-        
+        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[0].Transform,
+            Transformation.Translation(new Vec(0.0f, 0.0f, 100.0f)) * Transformation.RotationY(150.0f)));
+
         Assert.True(scene.SceneWorld.Shapes[1] is Plane);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[1].Transform, new Transformation()));
-        
+
         Assert.True(scene.SceneWorld.Shapes[2] is Sphere);
-        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[2].Transform, Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
-        
+        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[2].Transform,
+            Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
+
         // Check camera
         Assert.True(scene.SceneCamera is PerspectiveCamera);
         PerspectiveCamera? camera = scene.SceneCamera as PerspectiveCamera;
-        Assert.True(camera != null && Transformation.CloseEnough(camera.Transform, Transformation.RotationZ(30.0f)*Transformation.Translation(new Vec(-4.0f, 0.0f, 1.0f))));
+        Assert.True(camera != null && Transformation.CloseEnough(camera.Transform,
+            Transformation.RotationZ(30.0f) * Transformation.Translation(new Vec(-4.0f, 0.0f, 1.0f))));
         Assert.True(Utils.CloseEnough(camera.AspectRatio, 1.0f));
         Assert.True(Utils.CloseEnough(camera.Distance, 2.0f));
     }
@@ -99,13 +102,13 @@ public class SceneTests
     {
         var input = "plane(this_material_does_not_exist, identity)";
         var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
-        var scene = new Scene();
+        var scene = new Scene(stream);
         try
         {
-            scene.ParseScene(stream);
+            scene.ParseScene();
             Assert.Fail("Code did not throw an exception!");
         }
-        catch (GrammarException e)
+        catch (GrammarException)
         {
             // Test passed
         }
@@ -119,13 +122,13 @@ public class SceneTests
                     camera(orthogonal, identity, 1.0, 1.0)
                     """;
         var stream = new InputStream(new MemoryStream(Encoding.UTF8.GetBytes(input)));
-        var scene = new Scene();
+        var scene = new Scene(stream);
         try
         {
-            scene.ParseScene(stream);
+            scene.ParseScene();
             Assert.Fail("Code did not throw an exception!");
         }
-        catch (GrammarException e)
+        catch (GrammarException)
         {
             // Test passed
         }

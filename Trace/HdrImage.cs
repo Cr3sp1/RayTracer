@@ -40,7 +40,9 @@ public class HdrImage
     public HdrImage(string filePath)
     {
         Pixels = [];
+        Console.WriteLine($"Attepting to open file '{filePath}'");
         using var pfmStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        Console.WriteLine($"File '{filePath}' loaded.");
         _ReadPfm(pfmStream);
     }
 
