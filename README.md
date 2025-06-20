@@ -59,23 +59,28 @@ For this command to work the file "demo.txt" must be in the same directory of th
 
 ## Gallery
 <p align="center">
-  <img src="ExampleImages/demo.png" alt="Demo image" width="45%" />
-  <img src="ExampleImages/demo_orthogonal.png" alt="Orthogonal image" width="45%" />
+  <img src="ExampleImages/demo.png" alt="Demo image"/>
 </p>
 
 <p align="center">
-  <em>Rendering of demo.txt</em> &nbsp;&nbsp;&nbsp;&nbsp;
-  <em>Rendering of demo.txt with an orthogonal camera</em>
+  <em>Path tracer rendering of <a href="ExampleScenes/demo.txt">demo.txt</a></em>
 </p>
 
 <p align="center">
-  <img src="ExampleImages/deathstar.png" alt="Texture image" width="45%" />
+  <img src="ExampleImages/demo_orthogonal.png" alt="Orthogonal image"/>
 </p>
 
 <p align="center">
-  <em>Example of texture materials</em>
+  <em>Path tracer rendering of <a href="ExampleScenes/demo.txt">demo.txt</a> with an orthogonal camera</em>
 </p>
 
+<p align="center">
+  <img src="ExampleImages/deathstar.png" alt="Texture image"/>
+</p>
+
+<p align="center">
+  <em>Example of texture materials with path tracer</em>
+</p>
 
 ## Supported Output Formats
 RayTracer supports the following LDR image formats:
