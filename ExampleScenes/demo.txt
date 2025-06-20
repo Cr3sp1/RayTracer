@@ -4,7 +4,7 @@ camera(perspective, rotation_z(angle) * translation([-1, 0, 1]), 1.5, 1)
 
 material sky_material(
     diffuse(uniform(<0, 0, 0>)),
-    uniform(<1, 1, 1>)
+    uniform(<0.87, 1, 1>)
 )
 
 
@@ -23,7 +23,7 @@ material sphere2_material(
     uniform(<0, 0, 0>)
 )
 
-plane (sky_material, translation([0, 0, 10]))
+sphere (sky_material, scaling([50, 50, 50]))
 plane (ground_material, translation([0, 0, -1]))
 
 sphere(sphere1_material, translation([2, 1.5, 1.8]))
