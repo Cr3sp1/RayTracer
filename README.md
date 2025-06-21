@@ -35,7 +35,7 @@ This command converts `input.pfm` to `output.png` using an exposure scaling fact
 
 ### Renderer:
 The scene must be described in the input file, which has to contain the camera and all the shapes that compose the scene. 
-The camera represents the observer of the scene and it can be either perspective or orthogonal depending on which type of projection on the screen the user desires. Shapes can be made up of different materials, which must also be defined in the input file. For further details see [Scene Generation Language Tutorial](Scene_Tutorial). Numerical variables declared in the input file can be overridden from command line options.
+The camera represents the observer of the scene and it can be either perspective or orthogonal depending on which type of projection on the screen the user desires. Shapes can be made up of different materials, which must also be defined in the input file. For further details see [Scene Generation Language Tutorial](Scene_Tutorial.md). Numerical variables declared in the input file can be overridden from command line options.
 
 #### Available rendering algorithms:
 - On-off renderer: all the objects are colored uniformly in white against a black backgound
@@ -60,12 +60,18 @@ For this command to work the file "demo.txt" must be in the same directory of th
 ## Gallery
 <p align="center">
   <img src="ExampleImages/demo.png" alt="Demo image" width="60%" />
+</p>
+
+<p align="center">
+  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a></em>
+</p>
+
+<p align="center">
   <img src="ExampleImages/demo_orthogonal.png" alt="Orthogonal image" width="60%" />
 </p>
 
 <p align="center">
-  <em>Rendering of demo.txt</em> &nbsp;&nbsp;&nbsp;&nbsp;
-  <em>Rendering of demo.txt with an orthogonal camera</em>
+  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a> with an orthogonal camera</em>
 </p>
 
 <p align="center">
@@ -75,7 +81,6 @@ For this command to work the file "demo.txt" must be in the same directory of th
 <p align="center">
   <em>Example of texture materials</em>
 </p>
-
 
 ## Supported Output Formats
 RayTracer supports the following LDR image formats:
