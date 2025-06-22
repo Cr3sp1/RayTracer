@@ -1,0 +1,31 @@
+float angle(0)
+camera(perspective, rotation_z(angle) * translation([-1, 0, 1]), 1.5, 1)
+
+
+material sky_material(
+    diffuse(uniform(<0, 0, 0>)),
+    uniform(<0.87, 1, 1>)
+)
+
+
+material ground_material(
+    diffuse(checkered(<0., 1, 0.>, <0.2, 0.2, 0.2>, 4)),
+    uniform(<0, 0, 0>)
+)
+
+material sphere1_material(
+    specular(uniform(<0.5, 0.5, 0.5>)),
+    uniform(<0, 0, 0>)
+)
+
+material sphere2_material(
+    diffuse(checkered(<1., 0, 0.>, <0.2, 0.2, 0.8>, 4)),
+    uniform(<0, 0, 0>)
+)
+
+sphere (sky_material, scaling([50, 50, 50]))
+plane (ground_material, translation([0, 0, -1]))
+
+sphere(sphere1_material, translation([2, 1.5, 1.8]))
+sphere(sphere2_material, translation([1.2, -0.7, 1.7]))
+     

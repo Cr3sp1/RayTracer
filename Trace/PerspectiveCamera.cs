@@ -32,4 +32,6 @@ public class PerspectiveCamera : ICamera
         var direction = new Vec(Distance, (1.0f - 2.0f * u) * AspectRatio, 2.0f * v - 1.0f);
         return Transform * new Ray(origin: origin, dir: direction);
     }
+    
+    public float GetAspectRatio() => AspectRatio;
 }
