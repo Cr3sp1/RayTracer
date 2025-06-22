@@ -9,7 +9,7 @@ public class Scene
     public Dictionary<string, Material> Materials = new();
     public Dictionary<string, float> FloatVariables = new();
     public HashSet<string> OverriddenVariables = new(); // Track externally-set variables
-    public ICamera? SceneCamera  = null;
+    public ICamera? SceneCamera = null;
     public World SceneWorld = new();
 
     // Expect functions
@@ -147,7 +147,7 @@ public class Scene
     /// <returns><c>Pigment</c> to be stored.</returns>
     public Pigment ParsePigment()
     {
-        var pigmentKeyword = ExpectKeywords( [Keyword.Uniform, Keyword.Checkered, Keyword.Image]);
+        var pigmentKeyword = ExpectKeywords([Keyword.Uniform, Keyword.Checkered, Keyword.Image]);
         Pigment result;
 
         switch (pigmentKeyword)
@@ -198,7 +198,7 @@ public class Scene
     /// <returns><c>Brdf</c> to be stored.</returns>
     public Brdf ParseBrdf()
     {
-        var brdfKeyword = ExpectKeywords( [Keyword.Diffuse, Keyword.Specular]);
+        var brdfKeyword = ExpectKeywords([Keyword.Diffuse, Keyword.Specular]);
         Brdf result;
 
         ExpectSymbol('(');
@@ -359,7 +359,7 @@ public class Scene
     public ICamera ParseCamera()
     {
         ExpectSymbol('(');
-        var cameraType = ExpectKeywords( [Keyword.Orthogonal, Keyword.Perspective]);
+        var cameraType = ExpectKeywords([Keyword.Orthogonal, Keyword.Perspective]);
         ExpectSymbol(',');
         var transformation = ParseTransformation();
         ExpectSymbol(',');

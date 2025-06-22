@@ -1,10 +1,9 @@
-﻿using System;
-using Exceptions;
-using SixLabors.ImageSharp.Memory;
-using Trace;
-using CliFx;
+﻿using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using Trace;
+
+namespace RayTracer;
 
 class Program
 {
@@ -80,7 +79,6 @@ public class ConverterCommand : ICommand
         return default;
     }
 }
-
 
 [Command("render",
     Description =
@@ -187,22 +185,22 @@ public class RenderCommand : ICommand
         {
             scene.ParseScene(extDict);
         }
-        catch(GrammarException e)
+        catch (GrammarException e)
         {
             console.Output.WriteLine($"Error in file {e.Location.FileName}!\n{e.Message}");
             return default;
         }
-        
+
         if (scene.SceneCamera == null)
         {
             console.Output.WriteLine($"Error! Camera was not defined in the input file '{InputSceneFilePath}'!");
             return default;
         }
+
         console.Output.WriteLine("Scene correctly parsed! Ready to render!");
 
         // Build renderer
         Renderer renderer;
-        var rng = new Pcg(InitState, InitSeq);
         switch (Algorithm)
         {
             case "on-off":
@@ -212,14 +210,25 @@ public class RenderCommand : ICommand
                 renderer = new FlatRenderer(scene.SceneWorld);
                 break;
             case "path-tracer":
-                renderer = new PathTracer(scene.SceneWorld, NumRays, MaxDepth, RouletteLimit, rng);
+                renderer = new PathTracer(scene.SceneWorld, NumRays, MaxDepth, RouletteLimit,
+                    new Pcg(InitState, InitSeq));
                 break;
             default:
                 console.Output.WriteLine(Algorithm +
                                          "is not among implemented algorithms. Available options are: \"on-off\", \"flat\", \"path-tracer\".");
                 console.Output.WriteLine("Instead using default path-tracer.");
-                renderer = new PathTracer(scene.SceneWorld, NumRays, MaxDepth, RouletteLimit, rng);
+                renderer = new PathTracer(scene.SceneWorld, NumRays, MaxDepth, RouletteLimit,
+                    new Pcg(InitState, InitSeq));
                 break;
+        }
+
+        // Warn if aspect ratio and image width and height are not coherent
+        var whRatio = (float)Width / Height;
+        var cameraRatio = scene.SceneCamera.GetAspectRatio();
+        if (!Utils.CloseEnough(whRatio, cameraRatio))
+        {
+            console.Output.WriteLine(
+                $"Warning! Camera's aspect ratio ({cameraRatio}) is different from output image aspect ratio ({whRatio}). Image will be distorted!");
         }
 
         // Render the scene

@@ -29,6 +29,10 @@ public class ImageTracer
     /// </summary>
     public void FireAllRays()
     {
+        Console.Out.WriteLine("Starting rendering...");
+        int totalPixels = Image.Width * Image.Height;
+        int processedPixels = 0;
+
         for (int row = 0; row < Image.Height; row++)
         {
             for (int col = 0; col < Image.Width; col++)
@@ -36,7 +40,16 @@ public class ImageTracer
                 var ray = FireRay(col, row);
                 Color color = Renderer.Render(ray);
                 Image.SetPixel(col, row, color);
+
+                processedPixels++;
+                if (processedPixels % (totalPixels / 100) == 0)
+                {
+                    int percent = (processedPixels * 100) / totalPixels;
+                    Console.Write($"\rProgress: {percent}%");
+                }
             }
         }
+
+        Console.WriteLine("\nRendering complete.");
     }
 }
