@@ -17,7 +17,9 @@ class Program
 
 [Command("pfm2ldr",
     Description =
-        "Convert a .pfm file to a ldr format file. Supported formats are: \"png\", \"bmp\", \"jpeg\", \"tga\", \"webp\".")]
+        "Convert a .pfm file to a ldr format file. Supported formats are: " +
+        "\"png\", \"bmp\", \"jpeg\", \"tga\", \"webp\".")]
+
 public class ConverterCommand : ICommand
 {
     // Parameters
@@ -98,7 +100,6 @@ public class RenderCommand : ICommand
     [CommandOption("height", 'H',
         Description = "Height of the image to render in pixels.")]
     public int Height { get; init; } = 480;
-
 
     [CommandOption("algorithm", 'A',
         Description = "Rendering algorithm used. Available options are: \"on-off\", \"flat\", \"path-tracer\".")]
@@ -215,7 +216,8 @@ public class RenderCommand : ICommand
                 break;
             default:
                 console.Output.WriteLine(Algorithm +
-                                         "is not among implemented algorithms. Available options are: \"on-off\", \"flat\", \"path-tracer\".");
+                                         "is not among implemented algorithms. Available options are: " +
+                                         "\"on-off\", \"flat\", \"path-tracer\".");
                 console.Output.WriteLine("Instead using default path-tracer.");
                 renderer = new PathTracer(scene.SceneWorld, NumRays, MaxDepth, RouletteLimit,
                     new Pcg(InitState, InitSeq));
@@ -228,7 +230,8 @@ public class RenderCommand : ICommand
         if (!Utils.CloseEnough(whRatio, cameraRatio))
         {
             console.Output.WriteLine(
-                $"Warning! Camera's aspect ratio ({cameraRatio}) is different from output image aspect ratio ({whRatio}). Image will be distorted!");
+                $"Warning! Camera's aspect ratio ({cameraRatio}) is different from output image aspect ratio " +
+                $"({Width}/{Height} = {whRatio}),  image come out distorted!");
         }
 
         // Render the scene
