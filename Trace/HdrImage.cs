@@ -1,6 +1,5 @@
 ﻿namespace Trace;
 
-using Exceptions;
 using System.Text;
 using static Utils;
 using SixLabors.ImageSharp;

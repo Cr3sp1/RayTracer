@@ -1,6 +1,5 @@
 namespace Trace;
 
-using Exceptions;
 using System.Text;
 
 public static class Utils

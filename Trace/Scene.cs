@@ -1,20 +1,23 @@
-using Exceptions;
-
 namespace Trace;
 
+/// <summary>
+/// Class representing a scene to be rendered that is constructed from an input file
+/// </summary>
 public class Scene
 {
-    // No need to use default constructor
     public InputStream InputFile;
     public Dictionary<string, Material> Materials = new();
     public Dictionary<string, float> FloatVariables = new();
     public HashSet<string> OverriddenVariables = new(); // Track externally-set variables
-    public ICamera? SceneCamera = null;
+    public ICamera? SceneCamera;
     public World SceneWorld = new();
 
-    // Expect functions
-    public Scene(InputStream inputFile) => InputFile = inputFile;
 
+    /// <summary>
+    /// Constructs a Scene object with a given input token stream.
+    /// </summary>
+    /// <param name="inputFile">The token stream to parse from.</param>
+    public Scene(InputStream inputFile) => InputFile = inputFile;
 
     /// <summary>
     /// Read a token from the <c>InputStream</c> and check that it is a <c>SymbolToken</c>.

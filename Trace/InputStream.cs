@@ -1,24 +1,32 @@
-using System.Diagnostics;
 using System.Globalization;
-using Exceptions;
 
 namespace Trace;
 
+/// <summary>
+/// Represent a stream from which to read characters and tokens with support for whitespace skipping,
+/// comment handling, and tracking source location.
+/// </summary>
 public class InputStream
 {
-    private readonly StreamReader Reader;
+    private readonly StreamReader _reader;
     public SourceLocation Location;
-    public char? SavedChar = null;
-    public Token? SavedToken = null;
+    public char? SavedChar;
+    public Token? SavedToken;
     public SourceLocation LastLocation;
     public int Tab;
-
+    
     public static string Whitespace = " \t\n\r";
     public static string Symbols = "()<>[],*";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputStream"/> class.
+    /// </summary>
+    /// <param name="stream">Input stream to read from.</param>
+    /// <param name="fileName">Optional source file name for location tracking.</param>
+    /// <param name="tab">Tab size used for column calculation.</param>
     public InputStream(Stream stream, string fileName = "", int tab = 8)
     {
-        Reader = new StreamReader(stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false,
+        _reader = new StreamReader(stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false,
             bufferSize: 1024, leaveOpen: true);
 
         Location = new SourceLocation(fileName, 1, 1);
@@ -26,6 +34,10 @@ public class InputStream
         Tab = tab;
     }
 
+    /// <summary>
+    /// Updates the current source location based on the newly read character.
+    /// </summary>
+    /// <param name="newChar">The character just read.</param>
     public void UpdatePosition(char? newChar)
     {
         switch (newChar)
@@ -45,6 +57,10 @@ public class InputStream
         }
     }
 
+    /// <summary>
+    /// Reads the next character from the stream, updating location tracking.
+    /// </summary>
+    /// <returns>The next character, or null if end of stream is reached.</returns>
     public char? ReadChar()
     {
         char newChar;
@@ -55,7 +71,7 @@ public class InputStream
         }
         else
         {
-            int intChar = Reader.Read();
+            int intChar = _reader.Read();
             if (intChar == -1) return null;
             newChar = (char)intChar;
         }
@@ -65,6 +81,11 @@ public class InputStream
         return newChar;
     }
 
+    /// <summary>
+    /// Pushes a character back into the stream to be re-read next time.
+    /// </summary>
+    /// <param name="newChar">The character to unread.</param>
+    /// <exception cref="RuntimeException">Thrown if a character is already saved.</exception>
     public void UnreadChar(char newChar)
     {
         if (SavedChar != null)
@@ -76,6 +97,11 @@ public class InputStream
         Location = LastLocation;
     }
 
+    /// <summary>
+    /// Pushes a token back into the stream to be re-read next time.
+    /// </summary>
+    /// <param name="newToken">The token to unread.</param>
+    /// <exception cref="RuntimeException">Thrown if a token is already saved.</exception>
     public void UnreadToken(Token newToken)
     {
         if (SavedToken != null)
@@ -86,13 +112,14 @@ public class InputStream
         SavedToken = newToken;
     }
 
+    /// <summary>
+    /// Skips over whitespace and comments starting with '#'.
+    /// </summary>
     public void SkipWhitespaceAndComments()
     {
         char? newChar = ReadChar();
-        // Keep going until a non-skippable char
         while (newChar.HasValue && (Whitespace.Contains(newChar.Value) || newChar == '#'))
         {
-            // Skip comment line
             if (newChar == '#')
             {
                 char? skipChar;
@@ -109,6 +136,11 @@ public class InputStream
         UnreadChar(newChar.Value);
     }
 
+    /// <summary>
+    /// Reads and returns the next token from the stream.
+    /// </summary>
+    /// <returns>The next parsed token.</returns>
+    /// <exception cref="GrammarException">Thrown if the character cannot be parsed into a valid token.</exception>
     public Token ReadToken()
     {
         if (SavedToken != null)
@@ -120,7 +152,6 @@ public class InputStream
 
         SkipWhitespaceAndComments();
 
-        // Return StopToken if end of file is reached
         char? newChar = ReadChar();
         if (newChar == null) return new StopToken(Location);
         char charValue = newChar.Value;
@@ -136,6 +167,12 @@ public class InputStream
         throw new GrammarException("Invalid character " + charValue, tokenLocation);
     }
 
+    /// <summary>
+    /// Parses a quoted string literal from the stream.
+    /// </summary>
+    /// <param name="tokenLocation">The starting location of the token.</param>
+    /// <returns>A literal string token.</returns>
+    /// <exception cref="GrammarException">Thrown if the string is unterminated.</exception>
     private LiteralStringToken _ParseLiteralStringToken(SourceLocation tokenLocation)
     {
         string token = "";
@@ -151,6 +188,13 @@ public class InputStream
         return new LiteralStringToken(tokenLocation, token);
     }
 
+    /// <summary>
+    /// Parses a numeric literal from the stream.
+    /// </summary>
+    /// <param name="firstChar">The first character of the number.</param>
+    /// <param name="tokenLocation">The starting location of the token.</param>
+    /// <returns>A literal number token.</returns>
+    /// <exception cref="GrammarException">Thrown if the numeric value is invalid.</exception>
     private LiteralNumberToken _ParseLiteralNumberToken(string firstChar, SourceLocation tokenLocation)
     {
         string token = firstChar;
@@ -175,6 +219,12 @@ public class InputStream
         return new LiteralNumberToken(tokenLocation, tokenVal);
     }
 
+    /// <summary>
+    /// Parses either a keyword or identifier token from the stream.
+    /// </summary>
+    /// <param name="firstChar">The first character of the token.</param>
+    /// <param name="tokenLocation">The starting location of the token.</param>
+    /// <returns>A keyword token or identifier token.</returns>
     private Token _ParseKeywordOrIdentifierToken(string firstChar, SourceLocation tokenLocation)
     {
         string token = firstChar;
@@ -188,7 +238,6 @@ public class InputStream
 
         if (newChar.HasValue) UnreadChar(newChar.Value);
 
-        // Try to interpret it as a keyword, if it fails interpret it as an identifier
         if (KeywordMap.TryGetValue(token, out var keyword))
         {
             return new KeywordToken(tokenLocation, keyword);
@@ -197,6 +246,9 @@ public class InputStream
         return new IdentifierToken(tokenLocation, token);
     }
 
+    /// <summary>
+    /// A case-insensitive dictionary mapping keywords to their enum values.
+    /// </summary>
     public static readonly Dictionary<string, Keyword> KeywordMap = new(StringComparer.OrdinalIgnoreCase)
     {
         { "new", Keyword.New },
@@ -221,6 +273,7 @@ public class InputStream
     };
 }
 
+
 /// <summary>
 /// Represents a location in a source file, including file name, line number, and column number.
 /// </summary>
@@ -241,26 +294,5 @@ public struct SourceLocation
         FileName = fileName;
         Line = line;
         Column = column;
-    }
-}
-
-public class GrammarException : Exception
-{
-    public SourceLocation Location;
-
-    public GrammarException(SourceLocation? location = null) : base("placeholder")
-    {
-        Location = location ?? new SourceLocation();
-    }
-
-    public GrammarException(string message, SourceLocation? location = null) : base(message)
-    {
-        Location = location ?? new SourceLocation();
-    }
-
-    public GrammarException(string message, Exception innerException, SourceLocation? location = null) : base(message,
-        innerException)
-    {
-        Location = location ?? new SourceLocation();
     }
 }
