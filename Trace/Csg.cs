@@ -6,7 +6,6 @@ public class Csg : Shape
     public Shape ShapeA;
     public Shape ShapeB;
     public CsgType Type;
-    public static bool Efficient = true;
 
     // Constructor
     public Csg(Shape shapeA, Shape shapeB, CsgType type, Transformation? transform = null) :
@@ -42,7 +41,7 @@ public class Csg : Shape
         foreach (var hitRecordA in allHitsA)
         {
             if (Type is CsgType.Union) validHits.Add(hitRecordA);
-            int hitRecordAIsInB = Efficient ? EfficientIsInside(hitRecordA, allHitsB) : ShapeB.IsInside(hitRecordA);
+            int hitRecordAIsInB = IsInside(hitRecordA, allHitsB);
             switch (Type)
             {
                 case CsgType.Fusion or CsgType.Difference:
@@ -58,7 +57,7 @@ public class Csg : Shape
         foreach (var hitRecordB in allHitsB)
         {
             if (Type is CsgType.Union) validHits.Add(hitRecordB);
-            int hitRecordBIsInA = Efficient ? EfficientIsInside(hitRecordB, allHitsA) : ShapeA.IsInside(hitRecordB);
+            int hitRecordBIsInA = IsInside(hitRecordB, allHitsA);
             switch (Type)
             {
                 case CsgType.Fusion:
@@ -86,43 +85,13 @@ public class Csg : Shape
     }
 
     /// <summary>
-    /// Method to check if a <c>HitRecord</c> falls inside a <c>Csg</c>.
-    /// </summary>
-    /// <param name="hit"><c>HitRecord</c> to check.</param>
-    /// <returns>1 if it falls in the <c>Csg</c>, -1 if it falls outside the <c>Csg</c>, and 0 if it falls
-    /// on the surface of the <c>Csg</c></returns>
-    public override int IsInside(in HitRecord hit)
-    {
-        var invHit = hit with
-        {
-            WorldPoint = Transform.Inverse() * hit.WorldPoint,
-            Normal = (Transform.Inverse() * hit.Normal).Normalize(),
-            Ray = Transform.Inverse() * hit.Ray
-        };
-
-        return Type switch
-        {
-            CsgType.Fusion or CsgType.Union => int.Max(ShapeA.IsInside(invHit), ShapeB.IsInside(invHit)),
-            CsgType.Difference => ShapeB.IsInside(invHit) switch
-            {
-                1 => -1,
-                -1 => ShapeA.IsInside(invHit),
-                0 => ShapeA.IsInside(invHit) == -1 ? -1 : 0,
-                _ => throw new RuntimeException("Shape.IsInside returned a value outside range [-1, 0, 1]!")
-            },
-            CsgType.Intersection => int.Min(ShapeA.IsInside(invHit), ShapeB.IsInside(invHit)),
-            _ => throw new RuntimeException("Invalid Csg.Type!")
-        };
-    }
-
-    /// <summary>
-    /// Efficient method to check if a hit is inside the other <c>Shape</c>.
+    /// Method to check if a hit is inside the other <c>Shape</c>.
     /// WARNING: Doesn't work properly at the intersection between shape surfaces, but error is vanishingly small.
     /// </summary>
     /// <param name="hit"><c>HitRecord</c> to be checked.</param>
     /// <param name="allHits">List of <c>HitRecord</c> that represents all the hits on the other <c>Shape</c>.</param>
     /// <returns></returns>
-    public int EfficientIsInside(in HitRecord hit, in List<HitRecord> allHits)
+    public int IsInside(in HitRecord hit, in List<HitRecord> allHits)
     {
         int isInside = -1;
         foreach (var hitShape in allHits)

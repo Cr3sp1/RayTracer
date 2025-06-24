@@ -97,19 +97,4 @@ public class Sphere : Shape
 
         return res;
     }
-
-    /// <summary>
-    /// Method to check if a <c>HitRecord</c> falls inside a <c>Sphere</c>.
-    /// </summary>
-    /// <param name="hit"><c>HitRecord</c> to check.</param>
-    /// <returns>1 if it falls in the <c>Sphere</c>, -1 if it falls outside the <c>Sphere</c>, and 0 if it falls
-    /// on the surface of the <c>Sphere</c></returns>
-    public override int IsInside(in HitRecord hit)
-    {
-        var invPoint = Transform.Inverse() * hit.WorldPoint;
-        float epsilon = 1e-5f;
-        float dist = invPoint.X * invPoint.X + invPoint.Y * invPoint.Y + invPoint.Z * invPoint.Z;
-        if (dist > 1f + epsilon) return -1;
-        return dist < 1f - epsilon ? 1 : 0;
-    }
 }

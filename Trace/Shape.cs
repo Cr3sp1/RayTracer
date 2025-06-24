@@ -35,17 +35,6 @@ public class Shape
     {
         throw new NotImplementedException();
     }
-
-    /// <summary>
-    /// Method to check if a <c>HitRecord</c> falls inside a <c>Shape</c>.
-    /// </summary>
-    /// <param name="hit"><c>HitRecord</c> to check.</param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public virtual int IsInside(in HitRecord hit)
-    {
-        throw new NotImplementedException();
-    }
 }
 
 /// <summary>

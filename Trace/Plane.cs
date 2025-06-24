@@ -57,23 +57,4 @@ public class Plane : Shape
         if (hit.HasValue) res.Add(hit.Value);
         return res;
     }
-
-    /// <summary>
-    /// Method to check if a <c>HitRecord</c> falls inside a <c>Plane</c>.
-    /// </summary>
-    /// <param name="hit"><c>HitRecord</c> to check.</param>
-    /// <returns>1 if it falls in the <c>Plane</c>, -1 if it falls outside the <c>Plane</c>, and 0 if it falls
-    /// on the surface of the <c>Plane</c></returns>
-    public override int IsInside(in HitRecord hit)
-    {
-        var invPoint = Transform.Inverse() * hit.WorldPoint;
-        var invRayOrigin = Transform.Inverse() * hit.Ray.Origin;
-
-        if (invRayOrigin.Z == 0.0f) return -1;
-        float epsilon = 1e-5f;
-        float dist = invPoint.Z * invRayOrigin.Z;
-        if (dist > epsilon) return -1;
-        if (dist < -epsilon) return 1;
-        return 0;
-    }
 }
