@@ -1,5 +1,3 @@
-using Exceptions;
-
 namespace Trace;
 
 // Class representing a shape obtained from the union, difference or intersection of two other shapes
