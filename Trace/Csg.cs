@@ -32,6 +32,11 @@ public class Csg : Shape
     /// a <c>Csg</c> from closest to <c>Ray</c> origin to furthest.</returns>
     public override List<HitRecord> AllIntersects(Ray ray)
     {
+        if (BBox.HasValue)
+        {
+            if (!BBox.Value.DoesIntersect(ray)) return [];
+        }
+        
         var validHits = new List<HitRecord>();
         Ray invRay = Transform.Inverse() * ray;
         var allHitsA = ShapeA.AllIntersects(invRay);
@@ -101,6 +106,30 @@ public class Csg : Shape
 
         return isInside;
     }
+    
+    /// <summary>
+    /// Method that computes the axis aligned bounding box containing the <c>Csg</c>.
+    /// </summary>
+    /// <returns> a <c>BoundingBox</c> containing the <c>Sphere</c>.</returns>
+    public sealed override BoundingBox? GetBoundingBox()
+    {
+        var bboxA = ShapeA.GetBoundingBox();
+        if(!bboxA.HasValue) return null;
+        var bboxB = ShapeB.GetBoundingBox();
+        if(!bboxB.HasValue) return null;
+        
+        float minX = float.Min(bboxA.Value.MinX, bboxB.Value.MinX);
+        float minY = float.Min(bboxA.Value.MinY, bboxB.Value.MinY);
+        float minZ = float.Min(bboxA.Value.MinZ, bboxB.Value.MinZ);
+        float maxX = float.Max(bboxA.Value.MaxX, bboxB.Value.MaxX);
+        float maxY = float.Max(bboxA.Value.MaxY, bboxB.Value.MaxY);
+        float maxZ = float.Max(bboxA.Value.MaxZ, bboxB.Value.MaxZ);
+        
+        ShapeA.BBox = null;
+        ShapeB.BBox = null;
+        return Transform * new  BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+    
 }
 
 public enum CsgType

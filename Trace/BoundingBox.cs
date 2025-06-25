@@ -14,7 +14,7 @@ public struct BoundingBox(float minX, float minY, float minZ, float maxX, float 
     /// </summary>
     /// <param name="ray"><c>Ray</c> to check.</param>
     /// <returns><c>true</c> if the <c>Ray</c> intersects the bounding box, otherwise <c>false</c>.</returns>
-    public bool Intersects(in Ray ray)
+    public bool DoesIntersect(in Ray ray)
     {
         float invDirX = 1.0f / ray.Dir.X;
         float invDirY = 1.0f / ray.Dir.Y;

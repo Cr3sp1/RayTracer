@@ -10,6 +10,7 @@ public class Sphere : Shape
     // Constructor of the sphere subject to an optional transformation and with an optional material
     public Sphere(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
+        BBox = GetBoundingBox();
     }
 
     // Return normal to the surface on the Point p
@@ -36,6 +37,11 @@ public class Sphere : Shape
     /// and return null if the <c>Sphere</c> doesn't intersect the <c>Ray</c>.</returns>
     public override HitRecord? Intersect(Ray ray)
     {
+        if (BBox.HasValue)
+        {
+            if (!BBox.Value.DoesIntersect(ray)) return null;
+        }
+
         Ray invRay = Transform.Inverse() * ray;
         Vec originVec = invRay.Origin.ToVec();
         float a = invRay.Dir.SquaredNorm();
@@ -67,7 +73,12 @@ public class Sphere : Shape
     /// a <c>Sphere</c> from closest to <c>Ray</c> origin to furthest.</returns>
     public override List<HitRecord> AllIntersects(Ray ray)
     {
-        var res = new List<HitRecord>();
+        if (BBox.HasValue)
+        {
+            if (!BBox.Value.DoesIntersect(ray)) return [];
+        }
+
+        var res = new List<HitRecord>(2);
 
         Ray invRay = Transform.Inverse() * ray;
         Vec originVec = invRay.Origin.ToVec();
@@ -96,5 +107,15 @@ public class Sphere : Shape
         }
 
         return res;
+    }
+
+    /// <summary>
+    /// Method that computes the axis aligned bounding box containing the <c>Sphere</c>.
+    /// </summary>
+    /// <returns> a <c>BoundingBox</c> containing the <c>Sphere</c>.</returns>
+    public sealed override BoundingBox? GetBoundingBox()
+    {
+        var bbox = new BoundingBox(-1f, -1f, -1f, 1f, 1f, 1f);
+        return Transform * bbox;
     }
 }

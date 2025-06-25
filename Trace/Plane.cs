@@ -52,9 +52,18 @@ public class Plane : Shape
     /// a <c>Plane</c> from closest to <c>Ray</c> origin to furthest.</returns>
     public override List<HitRecord> AllIntersects(Ray ray)
     {
-        var res = new List<HitRecord>();
         var hit = Intersect(ray);
-        if (hit.HasValue) res.Add(hit.Value);
-        return res;
+        if (hit.HasValue) return [hit.Value];
+        return [];
+    }
+
+    /// <summary>
+    /// No finite bounding box can contain a plane.
+    /// </summary>
+    /// <returns> <c>null</c>.</returns>
+    public sealed override BoundingBox? GetBoundingBox()
+    {
+        var bbox = new BoundingBox(-1f, -1f, -1f, 1f, 1f, 1f);
+        return Transform * bbox;
     }
 }
