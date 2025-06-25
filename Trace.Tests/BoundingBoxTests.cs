@@ -31,4 +31,26 @@ public class BoundingBoxTests
         var ray7 = new Ray(new Point(-2f, 0f, 0f), new Vec(1f, 2.1f, 1.1f));
         Assert.False(bbox.Intersects(ray7));
     }
+
+    [Fact]
+    public void TestTransformation()
+    {
+        var bbox = new BoundingBox(-1f, -2f, -3f, 1f, 2f, 3f);
+        
+        var trans = Transformation.Translation(new Vec(3f, 2f, 1f));
+        var transBox = trans * bbox;
+        var transBoxExp = new BoundingBox(2f, 0f, -2f, 4f, 4f, 4f);
+        Assert.True(BoundingBox.CloseEnough(transBox, transBoxExp));
+        
+        var rot = Transformation.RotationX(90) * Transformation.RotationY(90);
+        var rotBox = rot * bbox;
+        var rotBoxExp = new BoundingBox(-3f, -1f, -2f, 3f, 1f, 2f);
+        Assert.True(BoundingBox.CloseEnough(rotBoxExp, rotBox));
+        Assert.False(BoundingBox.CloseEnough(transBox, rotBox));
+        
+        var scal = Transformation.Scaling(new Vec(2f, 1f, 0.5f));
+        var scalBox = scal * bbox;      
+        var scalBoxExp = new BoundingBox(-2f, -2f, -1.5f, 2f, 2f, 1.5f);
+        Assert.True(BoundingBox.CloseEnough(scalBoxExp, scalBox));
+    }
 }

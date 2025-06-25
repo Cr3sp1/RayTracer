@@ -6,6 +6,7 @@ public class Shape
     // Transformation applied to the shape
     public readonly Transformation Transform;
     public readonly Material Material;
+    public readonly BoundingBox? BBox;
 
     // Constructor of the shape subject to a transformation and with a material
     public Shape(Transformation? transform = null, Material? material = null)
@@ -32,6 +33,16 @@ public class Shape
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     public virtual List<HitRecord> AllIntersects(Ray ray)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Method that computes the axis aligned bounding box containing the <c>Shape</c>.
+    /// </summary>
+    /// <returns> a <c>BoundingBox</c> containing the shape if it is possible, otherwise <c>null</c>.</returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public virtual BoundingBox? GetBoundingBox()
     {
         throw new NotImplementedException();
     }
