@@ -63,7 +63,6 @@ public class Plane : Shape
     /// <returns> <c>null</c>.</returns>
     public sealed override BoundingBox? GetBoundingBox()
     {
-        var bbox = new BoundingBox(-1f, -1f, -1f, 1f, 1f, 1f);
-        return Transform * bbox;
+        return null;
     }
 }

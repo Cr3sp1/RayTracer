@@ -3,13 +3,17 @@ namespace Trace;
 // Class representing a shape obtained from the union, difference or intersection of two other shapes
 public class Csg : Shape
 {
-    public Shape ShapeA;
-    public Shape ShapeB;
-    public CsgType Type;
+    public readonly Shape ShapeA;
+    public readonly Shape ShapeB;
+    public readonly CsgType Type;
 
     // Constructor
     public Csg(Shape shapeA, Shape shapeB, CsgType type, Transformation? transform = null) :
-        base(transform) => (ShapeA, ShapeB, Type) = (shapeA, shapeB, type);
+        base(transform)
+    {
+        (ShapeA, ShapeB, Type) = (shapeA, shapeB, type);
+        BBox = GetBoundingBox();
+    }
 
     /// <summary>
     /// Method to compute the intersection between a ray and a <c>Csg</c>.
@@ -36,7 +40,7 @@ public class Csg : Shape
         {
             if (!BBox.Value.DoesIntersect(ray)) return [];
         }
-        
+
         var validHits = new List<HitRecord>();
         Ray invRay = Transform.Inverse() * ray;
         var allHitsA = ShapeA.AllIntersects(invRay);
@@ -106,7 +110,7 @@ public class Csg : Shape
 
         return isInside;
     }
-    
+
     /// <summary>
     /// Method that computes the axis aligned bounding box containing the <c>Csg</c>.
     /// </summary>
@@ -114,22 +118,52 @@ public class Csg : Shape
     public sealed override BoundingBox? GetBoundingBox()
     {
         var bboxA = ShapeA.GetBoundingBox();
-        if(!bboxA.HasValue) return null;
         var bboxB = ShapeB.GetBoundingBox();
-        if(!bboxB.HasValue) return null;
-        
-        float minX = float.Min(bboxA.Value.MinX, bboxB.Value.MinX);
-        float minY = float.Min(bboxA.Value.MinY, bboxB.Value.MinY);
-        float minZ = float.Min(bboxA.Value.MinZ, bboxB.Value.MinZ);
-        float maxX = float.Max(bboxA.Value.MaxX, bboxB.Value.MaxX);
-        float maxY = float.Max(bboxA.Value.MaxY, bboxB.Value.MaxY);
-        float maxZ = float.Max(bboxA.Value.MaxZ, bboxB.Value.MaxZ);
-        
+
+        BoundingBox bboxRes = new BoundingBox();
+
+        switch (Type)
+        {
+            case CsgType.Fusion or CsgType.Union:
+                if (bboxA == null || bboxB == null) return null;
+                bboxRes.MinX = float.Min(bboxA.Value.MinX, bboxB.Value.MinX);
+                bboxRes.MinY = float.Min(bboxA.Value.MinY, bboxB.Value.MinY);
+                bboxRes.MinZ = float.Min(bboxA.Value.MinZ, bboxB.Value.MinZ);
+                bboxRes.MaxX = float.Max(bboxA.Value.MaxX, bboxB.Value.MaxX);
+                bboxRes.MaxY = float.Max(bboxA.Value.MaxY, bboxB.Value.MaxY);
+                bboxRes.MaxZ = float.Max(bboxA.Value.MaxZ, bboxB.Value.MaxZ);
+                break;
+            case CsgType.Difference:
+                if (bboxA == null) return null;
+                bboxRes = bboxA.Value;
+                break;
+            case CsgType.Intersection:
+                if (bboxA == null && bboxB == null) return null;
+                if (bboxA == null || bboxB == null)
+                {
+                    bboxRes = bboxA ?? bboxB!.Value;
+                }
+                else
+                {
+                    bboxRes.MinX = float.Max(bboxA.Value.MinX, bboxB.Value.MinX);
+                    bboxRes.MinY = float.Max(bboxA.Value.MinY, bboxB.Value.MinY);
+                    bboxRes.MinZ = float.Max(bboxA.Value.MinZ, bboxB.Value.MinZ);
+                    bboxRes.MaxX = float.Min(bboxA.Value.MaxX, bboxB.Value.MaxX);
+                    bboxRes.MaxY = float.Min(bboxA.Value.MaxY, bboxB.Value.MaxY);
+                    bboxRes.MaxZ = float.Min(bboxA.Value.MaxZ, bboxB.Value.MaxZ);
+
+                    if (bboxRes.MaxX < bboxRes.MinX) bboxRes.MaxX = bboxRes.MinX;
+                    if (bboxRes.MaxY < bboxRes.MinY) bboxRes.MaxY = bboxRes.MinY;
+                    if (bboxRes.MaxZ < bboxRes.MinZ) bboxRes.MaxZ = bboxRes.MinZ;
+                }
+
+                break;
+        }
+
         ShapeA.BBox = null;
         ShapeB.BBox = null;
-        return Transform * new  BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+        return Transform * bboxRes;
     }
-    
 }
 
 public enum CsgType
