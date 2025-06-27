@@ -94,7 +94,7 @@ public class StripedPigment : Pigment
     /// <param name="color1">First color of the striped pigment.</param>
     /// <param name="color2">Second color of the striped pigment.</param>
     /// <param name="numStripes">Number of stripes in the (u, v) square.</param>
-    /// <param name="isVertical">Wether the stripes are vertical (true) or horizontal (false).</param>
+    /// <param name="isVertical">Whether the stripes are vertical (true) or horizontal (false).</param>
     public StripedPigment(Color? color1 = null, Color? color2 = null, int numStripes = 2, bool isVertical = true)
     {
         Col1 = color1 ?? Color.Black;

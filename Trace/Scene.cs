@@ -33,7 +33,7 @@ public class Scene
     }
 
     /// <summary>
-    /// Read a token from the <c>InputStream</c> and check that it is one of a list of <c>KeywordTokens</c>.
+    /// Read a token from the <c>InputStream</c> and check that it is present in a list of <c>KeywordTokens</c>.
     /// </summary>
     /// <param name="keywords">Expected keywords.</param>
     /// <returns><c>Keyword</c> to be stored.</returns>
@@ -47,7 +47,7 @@ public class Scene
 
         if (!keywords.Contains(keywordToken.Keyword))
         {
-            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of {token}.",
+            throw new GrammarException($"Expected one of [\'{string.Join("\', \'", keywords)}\'] instead of {token}.",
                 token.Location);
         }
 
@@ -150,7 +150,7 @@ public class Scene
     /// <returns><c>Pigment</c> to be stored.</returns>
     public Pigment ParsePigment()
     {
-        var pigmentKeyword = ExpectKeywords([Keyword.Uniform, Keyword.Checkered, Keyword.Image]);
+        var pigmentKeyword = ExpectKeywords([Keyword.Uniform, Keyword.Checkered, Keyword.Striped, Keyword.Image]);
         Pigment result;
 
         switch (pigmentKeyword)
@@ -174,6 +174,22 @@ public class Scene
                 var numSquares = (int)ExpectNumber();
                 ExpectSymbol(')');
                 result = new CheckeredPigment(color1, color2, numSquares);
+                break;
+            }
+            
+            case Keyword.Striped:
+            {
+                ExpectSymbol('(');
+                var color1 = ParseColor();
+                ExpectSymbol(',');
+                var color2 = ParseColor();
+                ExpectSymbol(',');
+                var numStripes = (int)ExpectNumber();
+                ExpectSymbol(',');
+                var stripeDirection = ExpectKeywords([Keyword.Vertical, Keyword.Horizontal]);
+                var isVertical = stripeDirection == Keyword.Striped;
+                ExpectSymbol(')');
+                result = new StripedPigment(color1, color2, numStripes, isVertical);
                 break;
             }
 

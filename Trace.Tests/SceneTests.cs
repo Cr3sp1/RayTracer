@@ -25,7 +25,8 @@ public class SceneTests
                     )
 
                     material sphere_material(
-                        specular(uniform(<0.5, 0.5, 0.5>)),
+                        specular(striped(<0.3, 0.5, 0.1>,
+                                         <0.2, 0.1, 0.7>, 4, horizontal)),
                         uniform(<0, 0, 0>)
                     )
 
@@ -67,9 +68,11 @@ public class SceneTests
 
         var sphereMaterial = scene.Materials["sphere_material"];
         Assert.IsType<SpecularBrdf>(sphereMaterial.Brdf);
-        var spherePigment = sphereMaterial.Brdf.Pigment as UniformPigment;
+        var spherePigment = sphereMaterial.Brdf.Pigment as StripedPigment;
         Assert.NotNull(spherePigment);
-        Assert.True(Color.CloseEnough(0.5f * Color.White, spherePigment.Col));
+        Assert.True(Color.CloseEnough(new Color(0.3f, 0.5f, 0.1f), spherePigment.Col1));
+        Assert.True(Color.CloseEnough(new Color(0.2f, 0.1f, 0.7f), spherePigment.Col2));
+        Assert.False(spherePigment.IsVertical);
         var sphereRadiance = sphereMaterial.EmittedRadiance as UniformPigment;
         Assert.NotNull(sphereRadiance);
         Assert.True(Color.CloseEnough(Color.Black, sphereRadiance.Col));
