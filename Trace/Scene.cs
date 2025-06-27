@@ -1,3 +1,5 @@
+using Microsoft.CSharp.RuntimeBinder;
+
 namespace Trace;
 
 /// <summary>
@@ -6,7 +8,8 @@ namespace Trace;
 public class Scene
 {
     public InputStream InputFile;
-    public Dictionary<string, Material> Materials = new();
+    public Dictionary<string, Material> MaterialVariables = new();
+    public Dictionary<string, Shape> ShapeVariables = new();
     public Dictionary<string, float> FloatVariables = new();
     public HashSet<string> OverriddenVariables = new(); // Track externally-set variables
     public ICamera? SceneCamera;
@@ -71,7 +74,7 @@ public class Scene
             var variableName = identifierToken.Identifier;
             if (!FloatVariables.TryGetValue(variableName, out var number))
             {
-                throw new GrammarException($"Unknown variable '{variableName}'.", token.Location);
+                throw new GrammarException($"Unknown float variable '{variableName}'.", token.Location);
             }
 
             return number;
@@ -176,7 +179,7 @@ public class Scene
                 result = new CheckeredPigment(color1, color2, numSquares);
                 break;
             }
-            
+
             case Keyword.Striped:
             {
                 ExpectSymbol('(');
@@ -187,7 +190,12 @@ public class Scene
                 var numStripes = (int)ExpectNumber();
                 ExpectSymbol(',');
                 var stripeDirection = ExpectKeywords([Keyword.Vertical, Keyword.Horizontal]);
-                var isVertical = stripeDirection == Keyword.Striped;
+                var isVertical = stripeDirection switch
+                {
+                    Keyword.Vertical => true,
+                    Keyword.Horizontal => false,
+                    _ => throw new RuntimeException("This line should not be reachable.")
+                };
                 ExpectSymbol(')');
                 result = new StripedPigment(color1, color2, numStripes, isVertical);
                 break;
@@ -321,11 +329,9 @@ public class Scene
 
             // Look-ahead to see if there is another transformation chained
             var newToken = InputFile.ReadToken();
-            if (newToken is not SymbolToken symbol || symbol.Symbol != '*')
-            {
-                InputFile.UnreadToken(newToken);
-                break;
-            }
+            if (newToken is SymbolToken { Symbol: '*' }) continue;
+            InputFile.UnreadToken(newToken);
+            break;
         }
 
         return result;
@@ -339,7 +345,7 @@ public class Scene
     {
         ExpectSymbol('(');
         var materialName = ExpectIdentifier();
-        if (!Materials.TryGetValue(materialName, out var material))
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
         }
@@ -350,6 +356,43 @@ public class Scene
 
         return new Plane(transformation, material);
     }
+    
+    /// <summary>
+    /// Parse a <c>Csg</c>: Csg(shapeA, shapeB, csgType, transformation).
+    /// </summary>
+    /// <returns><c>Csg</c> to be stored.</returns>
+    public Csg ParseCsg()
+    {
+        ExpectSymbol('(');
+        
+        var shapeAName = ExpectIdentifier();
+        if (!ShapeVariables.TryGetValue(shapeAName, out var shapeA))
+        {
+            throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
+        }
+        ExpectSymbol(',');
+        
+        var shapeBName = ExpectIdentifier();
+        if (!ShapeVariables.TryGetValue(shapeBName, out var shapeB))
+        {
+            throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
+        }
+        ExpectSymbol(',');
+
+        var csgType = ExpectKeywords([Keyword.Union, Keyword.Difference, Keyword.Intersection]) switch
+        {
+            Keyword.Union => CsgType.Union,
+            Keyword.Intersection => CsgType.Intersection,
+            Keyword.Difference => CsgType.Difference,
+            _ => throw new RuntimeException("This line should not be reachable.")
+        };
+        ExpectSymbol(',');
+        
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Csg(shapeA, shapeB, csgType, transformation);
+    }
 
     /// <summary>
     /// Parse a <c>Sphere</c>: Sphere(transformation, material).
@@ -359,7 +402,7 @@ public class Scene
     {
         ExpectSymbol('(');
         var materialName = ExpectIdentifier();
-        if (!Materials.TryGetValue(materialName, out var material))
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
         }
@@ -369,6 +412,40 @@ public class Scene
         ExpectSymbol(')');
 
         return new Sphere(transformation, material);
+    }
+
+
+    /// <summary>
+    /// Parse a <c>Shape</c>: identifier(...).
+    /// </summary>
+    /// <returns><c>Shape</c> to be stored.</returns>
+    public (string, Shape) ParseShape()
+    {
+        var shapeName = ExpectIdentifier();
+        ExpectSymbol('(');
+        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Csg]);
+        Shape shape;
+
+        switch (shapeType)
+        {
+            case Keyword.Plane:
+                shape = ParsePlane();
+                break;
+            
+            case Keyword.Sphere:
+                shape = ParseSphere();
+                break;
+            
+            case Keyword.Csg:
+                shape = ParseCsg();
+                break;
+            
+            default:
+                throw new RuntimeException("This line should not be reachable.");
+        }
+
+        ExpectSymbol(')');
+        return (shapeName, shape);
     }
 
     /// <summary>
@@ -460,15 +537,27 @@ public class Scene
                 case Keyword.Sphere:
                     SceneWorld.AddShape(ParseSphere());
                     break;
+                
+                case  Keyword.Csg:
+                    SceneWorld.AddShape(ParseCsg());
+                    break;
 
                 case Keyword.Material:
                     var (materialName, material) = ParseMaterial();
-                    if (!Materials.TryAdd(materialName, material))
+                    if (!MaterialVariables.TryAdd(materialName, material))
                     {
                         throw new GrammarException($"Material '{materialName}' cannot be redefined.",
                             InputFile.Location);
                     }
-
+                    break;
+                
+                case Keyword.Shape:
+                    var (shapeName, shape) = ParseShape();
+                    if (!ShapeVariables.TryAdd(shapeName, shape))
+                    {
+                        throw new GrammarException($"Shape '{shapeName}' cannot be redefined.",
+                            InputFile.Location);
+                    }
                     break;
 
                 case Keyword.Camera:

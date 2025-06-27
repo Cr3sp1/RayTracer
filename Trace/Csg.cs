@@ -43,6 +43,8 @@ public class Csg : Shape
 
         var validHits = new List<HitRecord>();
         Ray invRay = Transform.Inverse() * ray;
+        invRay.TMin = float.MinValue;
+        invRay.TMax = float.MaxValue;
         var allHitsA = ShapeA.AllIntersects(invRay);
         var allHitsB = ShapeB.AllIntersects(invRay);
 
@@ -77,6 +79,9 @@ public class Csg : Shape
                     break;
             }
         }
+        
+        // Filter intersections by Tmin and Tmax
+        validHits = validHits.Where( hitRecord => ray.TMin < hitRecord.T && hitRecord.T < ray.TMax).ToList();
 
         // Sort hits and modify them accordingly
         validHits.Sort(new CloserHit());

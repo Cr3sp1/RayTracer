@@ -100,6 +100,10 @@ public enum Keyword
     Material,
     Plane,
     Sphere,
+    Csg,
+    Union,
+    Difference,
+    Intersection,
     Diffuse,
     Specular,
     Uniform,
@@ -117,5 +121,6 @@ public enum Keyword
     Camera,
     Orthogonal,
     Perspective,
-    Float
+    Float,
+    Shape
 }

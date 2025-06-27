@@ -34,6 +34,12 @@ public class SceneTests
                     plane (ground_material, identity)
 
                     sphere(sphere_material, translation([0, 0, 1]))
+                    
+                    shape shapeA(sphere(sphere_material, translation([0, 0, 1])))
+                    shape shapeB(plane (ground_material, identity))
+                    shape shapeC(csg(shapeA, shapeB, difference, rotation_y(clock)))
+                    
+                    csg( shapeB, shapeC, union, identity)
 
                     camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
                     """;
@@ -42,12 +48,12 @@ public class SceneTests
         scene.ParseScene();
 
         // Check materials
-        Assert.Equal(3, scene.Materials.Count);
-        Assert.Contains("sky_material", scene.Materials);
-        Assert.Contains("ground_material", scene.Materials);
-        Assert.Contains("sphere_material", scene.Materials);
+        Assert.Equal(3, scene.MaterialVariables.Count);
+        Assert.Contains("sky_material", scene.MaterialVariables);
+        Assert.Contains("ground_material", scene.MaterialVariables);
+        Assert.Contains("sphere_material", scene.MaterialVariables);
 
-        var skyMaterial = scene.Materials["sky_material"];
+        var skyMaterial = scene.MaterialVariables["sky_material"];
         Assert.IsType<DiffuseBrdf>(skyMaterial.Brdf);
         var skyPigment = skyMaterial.Brdf.Pigment as UniformPigment;
         Assert.NotNull(skyPigment);
@@ -56,7 +62,7 @@ public class SceneTests
         Assert.NotNull(skyRadiance);
         Assert.True(Color.CloseEnough(new Color(0.7f, 0.5f, 1f), skyRadiance.Col));
 
-        var groundMaterial = scene.Materials["ground_material"];
+        var groundMaterial = scene.MaterialVariables["ground_material"];
         Assert.IsType<DiffuseBrdf>(groundMaterial.Brdf);
         var groundPigment = groundMaterial.Brdf.Pigment as CheckeredPigment;
         Assert.NotNull(groundPigment);
@@ -66,7 +72,7 @@ public class SceneTests
         Assert.NotNull(groundRadiance);
         Assert.True(Color.CloseEnough(Color.Black, groundRadiance.Col));
 
-        var sphereMaterial = scene.Materials["sphere_material"];
+        var sphereMaterial = scene.MaterialVariables["sphere_material"];
         Assert.IsType<SpecularBrdf>(sphereMaterial.Brdf);
         var spherePigment = sphereMaterial.Brdf.Pigment as StripedPigment;
         Assert.NotNull(spherePigment);
@@ -76,9 +82,18 @@ public class SceneTests
         var sphereRadiance = sphereMaterial.EmittedRadiance as UniformPigment;
         Assert.NotNull(sphereRadiance);
         Assert.True(Color.CloseEnough(Color.Black, sphereRadiance.Col));
+        
+        // Check saved shapes
+        Assert.Equal(3, scene.ShapeVariables.Count);
+        Assert.Contains("shapeA", scene.ShapeVariables);
+        Assert.Contains("shapeB", scene.ShapeVariables);
+        Assert.Contains("shapeC", scene.ShapeVariables);
+        Assert.True(scene.ShapeVariables["shapeA"] is Sphere);
+        Assert.True(scene.ShapeVariables["shapeB"] is Plane);
+        Assert.True(scene.ShapeVariables["shapeC"] is Csg);
 
-        // Check shapes
-        Assert.Equal(3, scene.SceneWorld.Shapes.Count);
+        // Check scene shapes
+        Assert.Equal(4, scene.SceneWorld.Shapes.Count);
 
         Assert.True(scene.SceneWorld.Shapes[0] is Plane);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[0].Transform,
@@ -90,6 +105,13 @@ public class SceneTests
         Assert.True(scene.SceneWorld.Shapes[2] is Sphere);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[2].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
+        
+        Assert.True(scene.SceneWorld.Shapes[3] is Csg);
+        var csg = scene.SceneWorld.Shapes[3] as Csg;
+        Assert.NotNull(csg);
+        Assert.Equal(CsgType.Union, csg.Type);
+        Assert.Equal(csg.ShapeA, scene.ShapeVariables["shapeB"]);
+        Assert.Equal(csg.ShapeB, scene.ShapeVariables["shapeC"]);
 
         // Check camera
         Assert.True(scene.SceneCamera is PerspectiveCamera);
