@@ -358,6 +358,46 @@ public class Scene
     }
     
     /// <summary>
+    /// Parse a <c>Sphere</c>: Sphere(transformation, material).
+    /// </summary>
+    /// <returns><c>Sphere</c> to be stored.</returns>
+    public Sphere ParseSphere()
+    {
+        ExpectSymbol('(');
+        var materialName = ExpectIdentifier();
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
+        {
+            throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+        }
+
+        ExpectSymbol(',');
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Sphere(transformation, material);
+    }
+    
+    /// <summary>
+    /// Parse a <c>Cube</c>: Cube(transformation, material).
+    /// </summary>
+    /// <returns><c>Cube</c> to be stored.</returns>
+    public Cube ParseCube()
+    {
+        ExpectSymbol('(');
+        var materialName = ExpectIdentifier();
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
+        {
+            throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+        }
+
+        ExpectSymbol(',');
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Cube(transformation, material);
+    }
+    
+    /// <summary>
     /// Parse a <c>Csg</c>: Csg(shapeA, shapeB, csgType, transformation).
     /// </summary>
     /// <returns><c>Csg</c> to be stored.</returns>
@@ -394,26 +434,6 @@ public class Scene
         return new Csg(shapeA, shapeB, csgType, transformation);
     }
 
-    /// <summary>
-    /// Parse a <c>Sphere</c>: Sphere(transformation, material).
-    /// </summary>
-    /// <returns><c>Sphere</c> to be stored.</returns>
-    public Sphere ParseSphere()
-    {
-        ExpectSymbol('(');
-        var materialName = ExpectIdentifier();
-        if (!MaterialVariables.TryGetValue(materialName, out var material))
-        {
-            throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
-        }
-
-        ExpectSymbol(',');
-        var transformation = ParseTransformation();
-        ExpectSymbol(')');
-
-        return new Sphere(transformation, material);
-    }
-
 
     /// <summary>
     /// Parse a <c>Shape</c>: identifier(...).
@@ -423,7 +443,7 @@ public class Scene
     {
         var shapeName = ExpectIdentifier();
         ExpectSymbol('(');
-        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Csg]);
+        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Cube, Keyword.Csg]);
         Shape shape;
 
         switch (shapeType)
@@ -434,6 +454,10 @@ public class Scene
             
             case Keyword.Sphere:
                 shape = ParseSphere();
+                break;
+            
+            case Keyword.Cube:
+                shape = ParseCube();
                 break;
             
             case Keyword.Csg:
@@ -538,7 +562,11 @@ public class Scene
                     SceneWorld.AddShape(ParseSphere());
                     break;
                 
-                case  Keyword.Csg:
+                case Keyword.Cube:
+                    SceneWorld.AddShape(ParseCube());
+                    break;
+                
+                case Keyword.Csg:
                     SceneWorld.AddShape(ParseCsg());
                     break;
 

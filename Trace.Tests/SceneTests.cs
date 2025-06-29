@@ -40,6 +40,8 @@ public class SceneTests
                     shape shapeC(csg(shapeA, shapeB, difference, rotation_y(clock)))
                     
                     csg( shapeB, shapeC, union, identity)
+                    
+                    cube(sphere_material, translation([0, 0, 1]))
 
                     camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
                     """;
@@ -93,7 +95,7 @@ public class SceneTests
         Assert.True(scene.ShapeVariables["shapeC"] is Csg);
 
         // Check scene shapes
-        Assert.Equal(4, scene.SceneWorld.Shapes.Count);
+        Assert.Equal(5, scene.SceneWorld.Shapes.Count);
 
         Assert.True(scene.SceneWorld.Shapes[0] is Plane);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[0].Transform,
@@ -112,6 +114,10 @@ public class SceneTests
         Assert.Equal(CsgType.Union, csg.Type);
         Assert.Equal(csg.ShapeA, scene.ShapeVariables["shapeB"]);
         Assert.Equal(csg.ShapeB, scene.ShapeVariables["shapeC"]);
+        
+        Assert.True(scene.SceneWorld.Shapes[4] is Cube);
+        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[2].Transform,
+            Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
 
         // Check camera
         Assert.True(scene.SceneCamera is PerspectiveCamera);

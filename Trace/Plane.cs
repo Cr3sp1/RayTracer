@@ -8,14 +8,14 @@ public class Plane : Shape
     }
 
     // Return normal to the surface on Point p
-    public Normal PlaneNormal(Vec rayDir)
+    public static Normal PlaneNormal(Vec rayDir)
     {
         var res = new Normal(0.0f, 0.0f, 1.0f);
         return rayDir.Z < 0.0f ? res : -res;
     }
 
     // Return 2D coordinates of Point p on the surface
-    public Vec2D PlanePointToUV(Point p)
+    public static Vec2D PlanePointToUV(Point p)
     {
         float u = (float)(p.X - Math.Floor(p.X));
         float v = (float)(p.Y - Math.Floor(p.Y));

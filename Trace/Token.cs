@@ -7,7 +7,7 @@ public class Token
 
     // Constructor
     public Token(SourceLocation location) => Location = location;
-    
+
     public override string ToString() => $"base Token at line {Location.Line}, column {Location.Column}";
 }
 
@@ -20,7 +20,7 @@ public class KeywordToken : Token
 
     // Constructor
     public KeywordToken(SourceLocation location, Keyword keyword) : base(location) => Keyword = keyword;
-    
+
     public override string ToString() => $"keyword \'{Keyword}\' at line {Location.Line}, column {Location.Column}";
 }
 
@@ -33,8 +33,9 @@ public class IdentifierToken : Token
 
     // Constructor
     public IdentifierToken(SourceLocation location, string identifier) : base(location) => Identifier = identifier;
-    
-    public override string ToString() => $"identifier \'{Identifier}\' at line {Location.Line}, column {Location.Column}";
+
+    public override string ToString() =>
+        $"identifier \'{Identifier}\' at line {Location.Line}, column {Location.Column}";
 }
 
 /// <summary>
@@ -47,7 +48,7 @@ public class LiteralStringToken : Token
     // Constructor
     public LiteralStringToken(SourceLocation location, string @string) : base(location) =>
         String = @string;
-    
+
     public override string ToString() => $"string \'{String}\' at line {Location.Line}, column {Location.Column}";
 }
 
@@ -61,7 +62,7 @@ public class LiteralNumberToken : Token
     // Constructor
     public LiteralNumberToken(SourceLocation location, float value) : base(location) =>
         Value = value;
-    
+
     public override string ToString() => $"number \'{Value}\' at line {Location.Line}, column {Location.Column}";
 }
 
@@ -74,7 +75,7 @@ public class SymbolToken : Token
 
     // Constructor
     public SymbolToken(SourceLocation location, char symbol) : base(location) => Symbol = symbol;
-    
+
     public override string ToString() => $"symbol \'{Symbol}\' at line {Location.Line}, column {Location.Column}";
 }
 
@@ -87,7 +88,7 @@ public class StopToken : Token
     public StopToken(SourceLocation location) : base(location)
     {
     }
-    
+
     public override string ToString() => $"end of file at line {Location.Line}, column {Location.Column}";
 }
 
@@ -100,6 +101,7 @@ public enum Keyword
     Material,
     Plane,
     Sphere,
+    Cube,
     Csg,
     Union,
     Difference,

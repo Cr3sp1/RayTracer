@@ -28,15 +28,14 @@ material striped2_material(
     uniform(<0, 0, 0>)
 )
 
-
+shape cubeA( cube (striped2_material, identity))
 shape sphereA( sphere (mirror_material, identity))
-shape sphereB( sphere (striped2_material, translation([-0.7, 0.5, 0]) * scaling([0.5, 0.5, 0.5])))
-shape csg1( csg(sphereA, sphereB, difference, identity))
+float radB(1.3)
+shape sphereB( sphere(striped1_material, scaling([radB, radB, radB])))
 shape sphereC( sphere (striped1_material, translation([0., 0, -0.6]) * scaling([1.2, 1.2, 1.2])))
 
 sphere (sky_material, scaling([50, 50, 50]))
 plane(ground_material, identity)
 
-
-csg(csg1, sphereC, intersection, translation([1, 0, 1.4]))
-     
+csg( cubeA, sphereB, difference, translation([1., 1.5, 1]))
+csg(sphereA, sphereC, intersection, translation([1.5, -1.5, 1.4]) * rotation_z(20) * rotation_x(20))

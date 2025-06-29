@@ -1,6 +1,6 @@
 namespace Trace;
 
-// Class representing a shape obtained from the union, difference or intersection of two other shapes
+// Class representing a shape obtained from the union, fusion, difference or intersection of two other shapes
 public class Csg : Shape
 {
     public readonly Shape ShapeA;
@@ -79,9 +79,9 @@ public class Csg : Shape
                     break;
             }
         }
-        
+
         // Filter intersections by Tmin and Tmax
-        validHits = validHits.Where( hitRecord => ray.TMin < hitRecord.T && hitRecord.T < ray.TMax).ToList();
+        validHits = validHits.Where(hitRecord => ray.TMin < hitRecord.T && hitRecord.T < ray.TMax).ToList();
 
         // Sort hits and modify them accordingly
         validHits.Sort(new CloserHit());

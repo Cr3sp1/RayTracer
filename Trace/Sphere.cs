@@ -1,7 +1,3 @@
-// ReSharper disable InconsistentNaming
-
-using System.Diagnostics;
-
 namespace Trace;
 
 // Class representing a sphere
@@ -14,14 +10,14 @@ public class Sphere : Shape
     }
 
     // Return normal to the surface on the Point p
-    public Normal SphereNormal(Point p, Vec rayDir)
+    public static Normal SphereNormal(Point p, Vec rayDir)
     {
         var res = new Normal(p.X, p.Y, p.Z);
         return res.Dot(rayDir) < 0.0f ? res : -res;
     }
 
     // Return coordinates of Point p on the surface 
-    public Vec2D SpherePointToUV(Point p)
+    public static Vec2D SpherePointToUV(Point p)
     {
         float u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
         if (u < 0.0f) u += 1.0f;
@@ -110,7 +106,7 @@ public class Sphere : Shape
     }
 
     /// <summary>
-    /// Method that computes the axis aligned bounding box containing the <c>Sphere</c>.
+    /// Method that computes the axis-aligned bounding box containing the <c>Sphere</c>.
     /// </summary>
     /// <returns> a <c>BoundingBox</c> containing the <c>Sphere</c>.</returns>
     public sealed override BoundingBox? GetBoundingBox()
