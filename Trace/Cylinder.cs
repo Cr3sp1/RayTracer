@@ -27,11 +27,13 @@ public class Cylinder : Shape
         {
             case 1:
                 u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
+                if (u < 0.0f) u += 1.0f;
                 v = MathF.Sqrt(p.X * p.X + p.Y * p.Y);
                 normal = new Normal(0f, 0f, 1f);
                 break;
             case 2:
                 u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
+                if (u < 0.0f) u += 1.0f;
                 v = MathF.Sqrt(p.X * p.X + p.Y * p.Y);
                 normal = new Normal(0f, 0f, -1f);
                 break;
