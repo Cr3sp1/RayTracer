@@ -5,7 +5,7 @@ public class Shape
 {
     // Transformation applied to the shape
     public readonly Transformation Transform;
-    public readonly List<Material> Materials = new List<Material>(1);
+    public List<Material> Materials = new List<Material>(1);
     public BoundingBox? BBox = null;
 
     // Constructor of the shape subject to a transformation and with a material

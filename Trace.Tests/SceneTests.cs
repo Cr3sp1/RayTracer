@@ -43,7 +43,9 @@ public class SceneTests
                     
                     cube(sphere_material, translation([0, 0, 1]))
                     
-                    cylinder(sphere_material, translation([0, 0, 1]))
+                    cube([sphere_material, ground_material] , translation([0, 0, 2]))
+                    
+                    cylinder(sphere_material, translation([0, 0, 3]))
 
                     camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
                     """;
@@ -97,7 +99,7 @@ public class SceneTests
         Assert.True(scene.ShapeVariables["shapeC"] is Csg);
 
         // Check scene shapes
-        Assert.Equal(6, scene.SceneWorld.Shapes.Count);
+        Assert.Equal(7, scene.SceneWorld.Shapes.Count);
 
         Assert.True(scene.SceneWorld.Shapes[0] is Plane);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[0].Transform,
@@ -120,10 +122,20 @@ public class SceneTests
         Assert.True(scene.SceneWorld.Shapes[4] is Cube);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[4].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
+        Assert.Equal(6, scene.SceneWorld.Shapes[4].Materials.Count);
+        Assert.True(scene.SceneWorld.Shapes[4].Materials[0] == scene.MaterialVariables["sphere_material"]);
+        Assert.True(scene.SceneWorld.Shapes[4].Materials[1] == scene.MaterialVariables["sphere_material"]);
         
-        Assert.True(scene.SceneWorld.Shapes[5] is Cylinder);
+        Assert.True(scene.SceneWorld.Shapes[5] is Cube);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[5].Transform,
-            Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
+            Transformation.Translation(new Vec(0.0f, 0.0f, 2.0f))));
+        Assert.Equal(6, scene.SceneWorld.Shapes[5].Materials.Count);
+        Assert.True(scene.SceneWorld.Shapes[5].Materials[0] == scene.MaterialVariables["sphere_material"]);
+        Assert.True(scene.SceneWorld.Shapes[5].Materials[1] == scene.MaterialVariables["ground_material"]);
+        
+        Assert.True(scene.SceneWorld.Shapes[6] is Cylinder);
+        Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[6].Transform,
+            Transformation.Translation(new Vec(0.0f, 0.0f, 3.0f))));
 
         // Check camera
         Assert.True(scene.SceneCamera is PerspectiveCamera);

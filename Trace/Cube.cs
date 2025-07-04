@@ -1,17 +1,33 @@
 namespace Trace;
 
-// Class representing a cube (base cube has sides of length 2 parallel to the axes and is centered on the origin)
+// Class representing a cube (base cube has sides of length 2 parallel to the axes and is centered on the origin,
+// face indexes follow a right-handed dice with face 0 oriented towards x-axis)
 public class Cube : Shape
 {
     // Constructor of the cube subject to an optional transformation and with an optional material
     public Cube(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
+        Materials = [Materials[0], Materials[0], Materials[0], Materials[0], Materials[0], Materials[0]];
         BBox = GetBoundingBox();
+    }
+
+    // Constructor of the cube subject to an optional transformation and with a list of materials
+    public Cube(List<Material> materials, Transformation? transform = null) : base(transform,
+        materials.Count > 0 ? materials[0] : new Material())
+    {
+        BBox = GetBoundingBox();
+        
+        
+        Materials.Capacity = 6;
+        for (int i = 1; i < 6; i++)
+        {
+            Materials.Add(materials.Count > i ? materials[i] : Materials[0]);
+        }
     }
 
 
     // Return normal to the surface on Point p and coordinates on the surface for base cube
-    public static (Normal, Vec2D) CubeNormalAndUV(Point p, Vec rayDir)
+    public static (Normal, int, Vec2D) CubeNormalIndexUV(Point p, Vec rayDir)
     {
         // Determine the cube face
         int face;
@@ -22,22 +38,22 @@ public class Cube : Shape
         {
             if (absX > absY)
             {
-                face = p.X > 0 ? 1 : 6;
+                face = p.X > 0 ? 0 : 5;
             }
             else
             {
-                face = p.Y > 0 ? 2 : 5;
+                face = p.Y > 0 ? 1 : 4;
             }
         }
         else
         {
             if (absY > absZ)
             {
-                face = p.Y > 0 ? 2 : 5;
+                face = p.Y > 0 ? 1 : 4;
             }
             else
             {
-                face = p.Z > 0 ? 3 : 4;
+                face = p.Z > 0 ? 2 : 3;
             }
         }
 
@@ -46,32 +62,32 @@ public class Cube : Shape
 
         switch (face)
         {
-            case 1:
+            case 0:
                 u = (p.Y + 1f) / 2f;
                 v = (p.Z + 1f) / 2f;
                 normal = rayDir.X < 0f ? new Normal(1f, 0f, 0f) : new Normal(-1f, 0f, 0f);
                 break;
-            case 2:
+            case 1:
                 u = (-p.X + 1f) / 2f;
                 v = (p.Z + 1f) / 2f;
                 normal = rayDir.Y < 0f ? new Normal(0f, 1f, 0f) : new Normal(0f, -1f, 0f);
                 break;
-            case 3:
+            case 2:
                 u = (p.X + 1f) / 2f;
                 v = (p.Y + 1f) / 2f;
                 normal = rayDir.Z < 0f ? new Normal(0f, 0f, 1f) : new Normal(0f, 0f, -1f);
                 break;
-            case 4:
+            case 3:
                 u = (p.X + 1f) / 2f;
                 v = (-p.Y + 1f) / 2f;
                 normal = rayDir.Z < 0f ? new Normal(0f, 0f, 1f) : new Normal(0f, 0f, -1f);
                 break;
-            case 5:
+            case 4:
                 u = (p.X + 1f) / 2f;
                 v = (p.Z + 1f) / 2f;
                 normal = rayDir.Y < 0f ? new Normal(0f, 1f, 0f) : new Normal(0f, -1f, 0f);
                 break;
-            case 6:
+            case 5:
                 u = (-p.Y + 1f) / 2f;
                 v = (p.Z + 1f) / 2f;
                 normal = rayDir.X < 0f ? new Normal(1f, 0f, 0f) : new Normal(-1f, 0f, 0f);
@@ -80,7 +96,7 @@ public class Cube : Shape
                 throw new RuntimeException("This line should not be reachable.");
         }
 
-        return (normal, new Vec2D(u, v));
+        return (normal, face,  new Vec2D(u, v));
     }
 
     /// <summary>
@@ -149,9 +165,9 @@ public class Cube : Shape
         else return null;
 
         Point hitPoint = invRay.At(tHit);
-        (Normal normal, Vec2D uv) = CubeNormalAndUV(hitPoint, invRay.Dir);
+        (Normal normal, int faceIndex, Vec2D uv) = CubeNormalIndexUV(hitPoint, invRay.Dir);
 
-        return new HitRecord(this, Transform * hitPoint, (Transform * normal).Normalize(), uv, ray, tHit);
+        return new HitRecord(this, Transform * hitPoint, (Transform * normal).Normalize(), uv, ray, tHit, faceIndex);
     }
 
     /// <summary>
@@ -219,17 +235,17 @@ public class Cube : Shape
         if (invRay.TMin < tLow && tLow < invRay.TMax)
         {
             Point hitPoint = invRay.At(tLow);
-            (Normal normal, Vec2D uv) = CubeNormalAndUV(hitPoint, invRay.Dir);
+            (Normal normal, int faceIndex, Vec2D uv) = CubeNormalIndexUV(hitPoint, invRay.Dir);
             res.Add(new HitRecord(this, Transform * hitPoint,
-                (Transform * normal).Normalize(), uv, ray, tLow));
+                (Transform * normal).Normalize(), uv, ray, tLow, faceIndex));
         }
 
         if (invRay.TMin < tHigh && tHigh < invRay.TMax)
         {
             Point hitPoint = invRay.At(tHigh);
-            (Normal normal, Vec2D uv) = CubeNormalAndUV(hitPoint, invRay.Dir);
+            (Normal normal, int faceIndex, Vec2D uv) = CubeNormalIndexUV(hitPoint, invRay.Dir);
             res.Add(new HitRecord(this, Transform * hitPoint,
-                (Transform * normal).Normalize(), uv, ray, tHigh));
+                (Transform * normal).Normalize(), uv, ray, tHigh, faceIndex));
         }
 
         return res;
