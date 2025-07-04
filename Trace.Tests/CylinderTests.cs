@@ -61,4 +61,32 @@ public class CylinderTests
         var hit2 = transCylinder.Intersect(ray2);
         Assert.True(!hit2.HasValue);
     }
+
+    // Test AllIntersects
+    [Fact]
+    public void TestAllIntersects()
+    {
+        var unitCylinder = new Cylinder();
+
+        var ray1 = new Ray(new Point(0.5f, 0.0f, 2.0f), -Vec.ZAxis);
+        var exp1F = new HitRecord(unitCylinder, new Point(0.5f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.5f), ray1, 1.0f);
+        var exp1S = new HitRecord(unitCylinder, new Point(0.5f, 0.0f, -1.0f), new Normal(0.0f, 0.0f, 1.0f),
+            new Vec2D(0.0f, 0.5f), ray1, 3.0f);
+        var allHits1 = unitCylinder.AllIntersects(ray1);
+        Assert.Equal(2, allHits1.Count);
+        Assert.True(HitRecord.CloseEnough(allHits1[0], exp1F));
+        Assert.True(HitRecord.CloseEnough(allHits1[1], exp1S));
+        
+        var ray2 = new Ray(new Point(2.0f, 2.0f, 0.0f), -Vec.ZAxis);
+        var allHits2 = unitCylinder.AllIntersects(ray2);
+        Assert.Empty(allHits2);
+        
+        var ray3 = new Ray(new Point(0.0f, 0.0f, 0.0f), Vec.ZAxis);
+        var exp3 = new HitRecord(unitCylinder, new Point(0.0f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, -1.0f),
+            new Vec2D(0.0f, 0.0f), ray3, 1.0f);
+        var allHits3 = unitCylinder.AllIntersects(ray3);
+        Assert.Single(allHits3);
+        Assert.True(HitRecord.CloseEnough(allHits3[0], exp3));
+    }
 }
