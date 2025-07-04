@@ -5,14 +5,14 @@ public class Shape
 {
     // Transformation applied to the shape
     public readonly Transformation Transform;
-    public readonly Material Material;
+    public readonly List<Material> Materials = new List<Material>(1);
     public BoundingBox? BBox = null;
 
     // Constructor of the shape subject to a transformation and with a material
     public Shape(Transformation? transform = null, Material? material = null)
     {
         Transform = transform ?? new Transformation();
-        Material = material ?? new Material();
+        Materials.Add(material ?? new Material());
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class Shape
     }
 
     /// <summary>
-    /// Method that computes the axis aligned bounding box containing the <c>Shape</c>.
+    /// Method that computes the axis-aligned bounding box containing the <c>Shape</c>.
     /// </summary>
     /// <returns> a <c>BoundingBox</c> containing the  <c>Shape</c> if it is possible, otherwise <c>null</c>.</returns>
     /// <exception cref="NotImplementedException"></exception>
@@ -57,7 +57,15 @@ public class Shape
 /// <param name="SurfacePoint">Position of point of contact on the surface.</param>
 /// <param name="Ray"><c>Ray</c> that intersects the <c>Shape</c>.</param>
 /// <param name="T">Distance between point of contact and <c>Ray</c> origin.</param>
-public record struct HitRecord(Shape Shape, Point WorldPoint, Normal Normal, Vec2D SurfacePoint, Ray Ray, float T)
+/// <param name="SurfaceIndex">Index of the surface that intersects the <c>Ray</c>.</param>
+public record struct HitRecord(
+    Shape Shape,
+    Point WorldPoint,
+    Normal Normal,
+    Vec2D SurfacePoint,
+    Ray Ray,
+    float T,
+    int SurfaceIndex = 0)
 {
     /// <summary>
     /// Check if two <c>HitRecord</c> have the same components with tolerance <c>epsilon</c>.
@@ -67,6 +75,7 @@ public record struct HitRecord(Shape Shape, Point WorldPoint, Normal Normal, Vec
         Point.CloseEnough(hr1.WorldPoint, hr2.WorldPoint, epsilon) &&
         Normal.CloseEnough(hr1.Normal, hr2.Normal, epsilon) &&
         Vec2D.CloseEnough(hr1.SurfacePoint, hr2.SurfacePoint, epsilon) &&
+        hr1.SurfaceIndex == hr2.SurfaceIndex &&
         Ray.CloseEnough(hr1.Ray, hr2.Ray, epsilon) && Utils.CloseEnough(hr1.T, hr2.T, epsilon);
 }
 

@@ -97,7 +97,8 @@ public class FlatRenderer : Renderer
         if (hit.HasValue)
         {
             var hitVal = hit.Value;
-            return hitVal.Shape.Material.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
+            Material mat = hitVal.Shape.Materials[hitVal.SurfaceIndex];
+            return mat.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
         }
 
         return BackgroundColor;
@@ -145,7 +146,7 @@ public class PathTracer : Renderer
 
         // Register properties of the surface at the intersection
         var hitVal = hit.Value;
-        var hitMaterial = hitVal.Shape.Material;
+        var hitMaterial = hitVal.Shape.Materials[hitVal.SurfaceIndex];
         var hitColor = hitMaterial.Brdf.Pigment.GetColor(hitVal.SurfacePoint);
         var emittedRadiance = hitMaterial.EmittedRadiance.GetColor(hitVal.SurfacePoint);
         var hitColorLum = MathF.Max(MathF.Max(hitColor.R, hitColor.G), hitColor.B);
