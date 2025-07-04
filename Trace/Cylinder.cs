@@ -117,8 +117,7 @@ public class Cylinder : Shape
         if (delta < 0.0f) return null;
         else if (Utils.CloseEnough(delta, 0.0f))
         {
-            sqrtDelta = MathF.Sqrt(delta);
-            float tSol = (-b - sqrtDelta) / (2.0f * a);
+            float tSol = -b / (2.0f * a);
             if (invRay.TMin < tSol && tSol < invRay.TMax) tLateral = tSol;
             else return null;
         }
@@ -150,7 +149,6 @@ public class Cylinder : Shape
         }
 
         Ray invRay = Transform.Inverse() * ray;
-        Vec originVec = invRay.Origin.ToVec();
         
         float tHit;
         
@@ -172,6 +170,94 @@ public class Cylinder : Shape
 
         return new HitRecord(this, Transform * hitPoint, (Transform * normal).Normalize(),
             uv, ray, tHit);
+    }
+    
+    /// <summary>
+    /// Method to compute all the intersections between a <c>Ray</c> and a <c>Cylinder</c>.
+    /// </summary>
+    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <returns> Return a <c>List</c> of <c>HitRecord</c> containing all the intersections between the <c>Ray</c> and
+    /// a <c>Cylinder</c> from closest to <c>Ray</c> origin to furthest.</returns>
+    public override List<HitRecord> AllIntersects(Ray ray)
+    {
+        if (BBox.HasValue)
+        {
+            if (!BBox.Value.DoesIntersect(ray)) return [];
+        }
+
+        var res = new List<HitRecord>(2);
+
+        Ray invRay = Transform.Inverse() * ray;
+        Vec originVec = invRay.Origin.ToVec();
+        
+        // Compute intersections with caps if there are any
+        float tUp = (1f - originVec.Z) / invRay.Dir.Z;
+        float tDown = (-1f - originVec.Z) / invRay.Dir.Z;
+        
+        Point hitUp = invRay.At(tUp);
+        Point hitDown = invRay.At(tDown);
+        
+        (Normal normalUp, Vec2D uvUp) = CylinderNormalAndUV(hitUp, invRay.Dir);
+        (Normal normalDown, Vec2D uvDown) = CylinderNormalAndUV(hitDown, invRay.Dir);
+        
+        float radiusUp = hitUp.X * hitUp.X + hitUp.Y * hitUp.Y;
+        float radiusDown = hitDown.X * hitDown.X + hitDown.Y * hitDown.Y;
+        
+        if(radiusUp <= 1f && invRay.TMin < tUp && tUp < invRay.TMax){
+            res.Add(new HitRecord(this, Transform * hitUp,
+            (Transform * normalUp).Normalize(), uvUp, ray, tUp));
+            if (res.Count == 2) return res;
+        }
+        if(radiusDown <= 1f && invRay.TMin < tDown && tDown < invRay.TMax){
+            res.Add(new HitRecord(this, Transform * hitDown,
+                (Transform * normalDown).Normalize(), uvDown, ray, tDown));
+            if (res.Count == 2) return res;
+        }
+        
+        // Compute intersections with lateral surface if there are any
+        float a = invRay.Dir.X * invRay.Dir.X + invRay.Dir.Y * invRay.Dir.Y;
+        float b = 2.0f * (originVec.X * invRay.Dir.X + originVec.Y * invRay.Dir.Y);
+        float c = originVec.X * originVec.X + originVec.Y * originVec.Y - 1.0f;
+
+        float delta = b * b - 4.0f * a * c;
+        float sqrtDelta;
+        if (Utils.CloseEnough(delta, 0.0f))
+        {
+            float tSol = -b / (2.0f * a);
+            if (invRay.TMin < tSol && tSol < invRay.TMax)
+            {
+                Point hitLateral = invRay.At(tSol);
+                (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitLateral, invRay.Dir);
+                res.Add(new HitRecord(this, Transform * hitLateral,
+                    (Transform * normal).Normalize(), uv, ray, tSol));
+                if (res.Count == 2) return res;
+            }
+        }
+        if(delta > 0f)
+        {
+            sqrtDelta = MathF.Sqrt(delta);
+            float tMin = (-b - sqrtDelta) / (2.0f * a);
+            float tMax = (-b + sqrtDelta) / (2.0f * a);
+
+            if (invRay.TMin < tMin && tMin < invRay.TMax)
+            {
+                Point hitLateral = invRay.At(tMin);
+                (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitLateral, invRay.Dir);
+                res.Add(new HitRecord(this, Transform * hitLateral,
+                    (Transform * normal).Normalize(), uv, ray, tMin));
+                if (res.Count == 2) return res;
+            }
+            if (invRay.TMin < tMax && tMax < invRay.TMax)
+            {
+                Point hitLateral = invRay.At(tMax);
+                (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitLateral, invRay.Dir);
+                res.Add(new HitRecord(this, Transform * hitLateral,
+                    (Transform * normal).Normalize(), uv, ray, tMax));
+                if (res.Count == 2) return res;
+            }
+        }
+
+        return res;
     }
 
     /// <summary>

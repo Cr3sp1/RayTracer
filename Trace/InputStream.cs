@@ -256,6 +256,7 @@ public class InputStream
         { "plane", Keyword.Plane },
         { "sphere", Keyword.Sphere },
         { "cube", Keyword.Cube },
+        { "cylinder", Keyword.Cylinder },
         { "csg", Keyword.Csg },
         { "union", Keyword.Union },
         { "difference", Keyword.Difference },

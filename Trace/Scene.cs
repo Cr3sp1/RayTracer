@@ -398,6 +398,26 @@ public class Scene
     }
     
     /// <summary>
+    /// Parse a <c>Cylinder</c>: Cylinder(transformation, material).
+    /// </summary>
+    /// <returns><c>Cylinder</c> to be stored.</returns>
+    public Cylinder ParseCylinder()
+    {
+        ExpectSymbol('(');
+        var materialName = ExpectIdentifier();
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
+        {
+            throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+        }
+
+        ExpectSymbol(',');
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Cylinder(transformation, material);
+    }
+    
+    /// <summary>
     /// Parse a <c>Csg</c>: Csg(shapeA, shapeB, csgType, transformation).
     /// </summary>
     /// <returns><c>Csg</c> to be stored.</returns>
@@ -443,7 +463,7 @@ public class Scene
     {
         var shapeName = ExpectIdentifier();
         ExpectSymbol('(');
-        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Cube, Keyword.Csg]);
+        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Cube, Keyword.Cylinder, Keyword.Csg]);
         Shape shape;
 
         switch (shapeType)
@@ -458,6 +478,10 @@ public class Scene
             
             case Keyword.Cube:
                 shape = ParseCube();
+                break;
+            
+            case Keyword.Cylinder:
+                shape = ParseCylinder();
                 break;
             
             case Keyword.Csg:
@@ -564,6 +588,10 @@ public class Scene
                 
                 case Keyword.Cube:
                     SceneWorld.AddShape(ParseCube());
+                    break;
+                
+                case Keyword.Cylinder:
+                    SceneWorld.AddShape(ParseCylinder());
                     break;
                 
                 case Keyword.Csg:

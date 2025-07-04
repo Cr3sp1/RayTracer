@@ -102,6 +102,7 @@ public enum Keyword
     Plane,
     Sphere,
     Cube,
+    Cylinder,
     Csg,
     Union,
     Difference,
