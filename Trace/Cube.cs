@@ -16,8 +16,8 @@ public class Cube : Shape
         materials.Count > 0 ? materials[0] : new Material())
     {
         BBox = GetBoundingBox();
-        
-        
+
+
         Materials.Capacity = 6;
         for (int i = 1; i < 6; i++)
         {
@@ -96,7 +96,7 @@ public class Cube : Shape
                 throw new RuntimeException("This line should not be reachable.");
         }
 
-        return (normal, face,  new Vec2D(u, v));
+        return (normal, face, new Vec2D(u, v));
     }
 
     /// <summary>

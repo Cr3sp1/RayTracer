@@ -63,7 +63,7 @@ public class Cylinder : Shape
         if (invRay.Dir.Z == 0.0f) return null;
 
         float tCaps;
-        
+
         float tUp = (1f - originVec.Z) / invRay.Dir.Z;
         float tDown = (-1f - originVec.Z) / invRay.Dir.Z;
 
@@ -121,9 +121,9 @@ public class Cylinder : Shape
         float hMax = invRay.At(tMax).Z;
 
         if (invRay.TMin < tMin && tMin < invRay.TMax && -1 < hMin && hMin < 1) tLateral = tMin;
-        else if (invRay.TMin < tMax && tMax < invRay.TMax&& -1 < hMax && hMax < 1) tLateral = tMax;
+        else if (invRay.TMin < tMax && tMax < invRay.TMax && -1 < hMax && hMax < 1) tLateral = tMax;
         else return null;
-            
+
         return tLateral;
     }
 
