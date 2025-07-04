@@ -34,17 +34,17 @@ public class SceneTests
                     plane (ground_material, identity)
 
                     sphere(sphere_material, translation([0, 0, 1]))
-                    
+
                     shape shapeA(sphere(sphere_material, translation([0, 0, 1])))
-                    shape shapeB(plane (ground_material, identity))
+                    shape shapeB(cylinder (ground_material, identity))
                     shape shapeC(csg(shapeA, shapeB, difference, rotation_y(clock)))
-                    
+
                     csg( shapeB, shapeC, union, identity)
-                    
+
                     cube(sphere_material, translation([0, 0, 1]))
-                    
+
                     cube([sphere_material, ground_material] , translation([0, 0, 2]))
-                    
+
                     cylinder(sphere_material, translation([0, 0, 3]))
 
                     camera(perspective, rotation_z(30) * translation([-4, 0, 1]), 1.0, 2.0)
@@ -88,14 +88,14 @@ public class SceneTests
         var sphereRadiance = sphereMaterial.EmittedRadiance as UniformPigment;
         Assert.NotNull(sphereRadiance);
         Assert.True(Color.CloseEnough(Color.Black, sphereRadiance.Col));
-        
+
         // Check saved shapes
         Assert.Equal(3, scene.ShapeVariables.Count);
         Assert.Contains("shapeA", scene.ShapeVariables);
         Assert.Contains("shapeB", scene.ShapeVariables);
         Assert.Contains("shapeC", scene.ShapeVariables);
         Assert.True(scene.ShapeVariables["shapeA"] is Sphere);
-        Assert.True(scene.ShapeVariables["shapeB"] is Plane);
+        Assert.True(scene.ShapeVariables["shapeB"] is Cylinder);
         Assert.True(scene.ShapeVariables["shapeC"] is Csg);
 
         // Check scene shapes
@@ -111,28 +111,28 @@ public class SceneTests
         Assert.True(scene.SceneWorld.Shapes[2] is Sphere);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[2].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
-        
+
         Assert.True(scene.SceneWorld.Shapes[3] is Csg);
         var csg = scene.SceneWorld.Shapes[3] as Csg;
         Assert.NotNull(csg);
         Assert.Equal(CsgType.Union, csg.Type);
         Assert.Equal(csg.ShapeA, scene.ShapeVariables["shapeB"]);
         Assert.Equal(csg.ShapeB, scene.ShapeVariables["shapeC"]);
-        
+
         Assert.True(scene.SceneWorld.Shapes[4] is Cube);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[4].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 1.0f))));
         Assert.Equal(6, scene.SceneWorld.Shapes[4].Materials.Count);
         Assert.True(scene.SceneWorld.Shapes[4].Materials[0] == scene.MaterialVariables["sphere_material"]);
         Assert.True(scene.SceneWorld.Shapes[4].Materials[1] == scene.MaterialVariables["sphere_material"]);
-        
+
         Assert.True(scene.SceneWorld.Shapes[5] is Cube);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[5].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 2.0f))));
         Assert.Equal(6, scene.SceneWorld.Shapes[5].Materials.Count);
         Assert.True(scene.SceneWorld.Shapes[5].Materials[0] == scene.MaterialVariables["sphere_material"]);
         Assert.True(scene.SceneWorld.Shapes[5].Materials[1] == scene.MaterialVariables["ground_material"]);
-        
+
         Assert.True(scene.SceneWorld.Shapes[6] is Cylinder);
         Assert.True(Transformation.CloseEnough(scene.SceneWorld.Shapes[6].Transform,
             Transformation.Translation(new Vec(0.0f, 0.0f, 3.0f))));

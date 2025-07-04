@@ -40,7 +40,8 @@ plane (ground_material, identity)
 cylinder (striped1_material, translation([1.5, -3., 1.5]) * rotation_y(50) * scaling([0.5, 0.5, 1]))
 cylinder (striped2_material, translation([1.5, -1., 1.5]) * rotation_y(50) * scaling([0.5, 0.5, 1]))
 cylinder (ground_material, translation([1.5, 1, 1.5]) * rotation_y(50) * scaling([0.5, 0.5, 1]))
-cylinder (mirror_material, translation([1.5, 3, 1.5]) * rotation_y(50) * scaling([0.5, 0.5, 1]))
+cylinder ([mirror_material, striped2_material, striped2_material],
+    translation([1.5, 3, 1.5]) * rotation_y(50) * scaling([0.5, 0.5, 1]))
 cube ([striped1_material, mirror_material, striped2_material],  
     translation([1.5, 0, 3]) * scaling([0.4, 0.4, 0.4]) * rotation_y(-60) * rotation_z(135))
 # csg ( cubeA, sphereB, difference, translation([1., 1.5, 1]))

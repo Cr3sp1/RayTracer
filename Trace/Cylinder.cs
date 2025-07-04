@@ -8,23 +8,44 @@ public class Cylinder : Shape
     // Constructor of the cylinder subject to an optional transformation and with an optional material
     public Cylinder(Transformation? transform = null, Material? material = null) : base(transform, material)
     {
+        Materials = [Materials[0], Materials[0], Materials[0]];
         BBox = GetBoundingBox();
     }
 
+    // Constructor of the cube subject to an optional transformation and with a list of materials
+    public Cylinder(List<Material> materials, Transformation? transform = null) : base(transform,
+        materials.Count > 0 ? materials[0] : new Material())
+    {
+        BBox = GetBoundingBox();
+
+
+        Materials.Capacity = 3;
+        for (int i = 1; i < 3; i++)
+        {
+            Materials.Add(materials.Count > i ? materials[i] : Materials[0]);
+        }
+    }
+
     // Return normal to the surface on Point p and coordinates on the surface for base cylinder
-    public static (Normal, Vec2D) CylinderNormalAndUV(Point p, Vec rayDir)
+    public static (Normal, int, Vec2D) CylinderNormalIndexUV(Point p, Vec rayDir)
     {
         // Determine the cylinder surface: 1=up-cap, 2=down-cap, 3=lateral
         int face;
         if (Utils.CloseEnough(p.Z, 1.0f)) face = 1;
         else if (Utils.CloseEnough(p.Z, -1.0f)) face = 2;
-        else face = 3;
+        else face = 0;
 
         float u, v;
         Normal normal;
 
         switch (face)
         {
+            case 0:
+                u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
+                if (u < 0.0f) u += 1.0f;
+                v = (p.Z + 1.0f) / 2.0f;
+                normal = new Normal(p.X, p.Y, 0.0f);
+                break;
             case 1:
                 u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
                 if (u < 0.0f) u += 1.0f;
@@ -37,19 +58,13 @@ public class Cylinder : Shape
                 v = MathF.Sqrt(p.X * p.X + p.Y * p.Y);
                 normal = new Normal(0f, 0f, -1f);
                 break;
-            case 3:
-                u = MathF.Atan2(p.Y, p.X) / (2.0f * MathF.PI);
-                if (u < 0.0f) u += 1.0f;
-                v = (p.Z + 1.0f) / 2.0f;
-                normal = new Normal(p.X, p.Y, 0.0f);
-                break;
             default:
                 throw new RuntimeException("This line should not be reachable.");
         }
 
         normal = normal.Dot(rayDir) < 0.0f ? normal : -normal;
 
-        return (normal, new Vec2D(u, v));
+        return (normal, face, new Vec2D(u, v));
     }
 
     /// <summary>
@@ -157,10 +172,10 @@ public class Cylinder : Shape
         else return null;
 
         Point hitPoint = invRay.At(tHit);
-        (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitPoint, invRay.Dir);
+        (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitPoint, invRay.Dir);
 
         return new HitRecord(this, Transform * hitPoint, (Transform * normal).Normalize(),
-            uv, ray, tHit);
+            uv, ray, tHit, faceIndex);
     }
 
     /// <summary>
@@ -188,8 +203,8 @@ public class Cylinder : Shape
         Point hitUp = invRay.At(tUp);
         Point hitDown = invRay.At(tDown);
 
-        (Normal normalUp, Vec2D uvUp) = CylinderNormalAndUV(hitUp, invRay.Dir);
-        (Normal normalDown, Vec2D uvDown) = CylinderNormalAndUV(hitDown, invRay.Dir);
+        (Normal normalUp, int faceIndexUp, Vec2D uvUp) = CylinderNormalIndexUV(hitUp, invRay.Dir);
+        (Normal normalDown, int faceIndexDown, Vec2D uvDown) = CylinderNormalIndexUV(hitDown, invRay.Dir);
 
         float radiusUp = hitUp.X * hitUp.X + hitUp.Y * hitUp.Y;
         float radiusDown = hitDown.X * hitDown.X + hitDown.Y * hitDown.Y;
@@ -197,13 +212,14 @@ public class Cylinder : Shape
         if (radiusUp <= 1f && invRay.TMin < tUp && tUp < invRay.TMax)
         {
             res.Add(new HitRecord(this, Transform * hitUp,
-                (Transform * normalUp).Normalize(), uvUp, ray, tUp));
+                (Transform * normalUp).Normalize(), uvUp, ray, tUp, faceIndexUp));
+            ;
         }
 
         if (radiusDown <= 1f && invRay.TMin < tDown && tDown < invRay.TMax)
         {
             res.Add(new HitRecord(this, Transform * hitDown,
-                (Transform * normalDown).Normalize(), uvDown, ray, tDown));
+                (Transform * normalDown).Normalize(), uvDown, ray, tDown, faceIndexDown));
             if (res.Count == 2) return res;
         }
 
@@ -222,18 +238,19 @@ public class Cylinder : Shape
             if (invRay.TMin < tMin && tMin < invRay.TMax)
             {
                 Point hitLateral = invRay.At(tMin);
-                (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitLateral, invRay.Dir);
+                (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitLateral, invRay.Dir);
                 res.Add(new HitRecord(this, Transform * hitLateral,
-                    (Transform * normal).Normalize(), uv, ray, tMin));
+                    (Transform * normal).Normalize(), uv, ray, tMin, faceIndex));
                 if (res.Count == 2) return res;
             }
 
             if (invRay.TMin < tMax && tMax < invRay.TMax)
             {
                 Point hitLateral = invRay.At(tMax);
-                (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitLateral, invRay.Dir);
+                (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitLateral, invRay.Dir);
                 res.Add(new HitRecord(this, Transform * hitLateral,
-                    (Transform * normal).Normalize(), uv, ray, tMax));
+                    (Transform * normal).Normalize(), uv, ray, tMax, faceIndex));
+                ;
                 if (res.Count == 2) return res;
             }
         }

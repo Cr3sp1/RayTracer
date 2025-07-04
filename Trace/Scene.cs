@@ -431,17 +431,43 @@ public class Scene
     public Cylinder ParseCylinder()
     {
         ExpectSymbol('(');
-        var materialName = ExpectIdentifier();
-        if (!MaterialVariables.TryGetValue(materialName, out var material))
+        
+        var materials = new List<Material>(6);
+        // Look ahead to see if a list of materials is present
+        var newToken = InputFile.ReadToken();
+        if (newToken is SymbolToken { Symbol: '[' })
         {
-            throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+            while (true)
+            {
+                var materialName = ExpectIdentifier();
+                if (!MaterialVariables.TryGetValue(materialName, out var material))
+                {
+                    throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+                }
+                materials.Add(material);
+                var newNewToken = InputFile.ReadToken();
+                if (newNewToken is SymbolToken { Symbol: ',' }) continue;
+                InputFile.UnreadToken(newNewToken);
+                break;
+            }
+            ExpectSymbol(']');
+        }
+        else
+        {
+            InputFile.UnreadToken(newToken);
+            var materialName = ExpectIdentifier();
+            if (!MaterialVariables.TryGetValue(materialName, out var material))
+            {
+                throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+            }
+            materials.Add(material);
         }
 
         ExpectSymbol(',');
         var transformation = ParseTransformation();
         ExpectSymbol(')');
 
-        return new Cylinder(transformation, material);
+        return new Cylinder(materials, transformation);
     }
     
     /// <summary>
@@ -490,15 +516,11 @@ public class Scene
     {
         var shapeName = ExpectIdentifier();
         ExpectSymbol('(');
-        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Plane, Keyword.Cube, Keyword.Cylinder, Keyword.Csg]);
+        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Cube, Keyword.Cylinder, Keyword.Csg]);
         Shape shape;
 
         switch (shapeType)
         {
-            case Keyword.Plane:
-                shape = ParsePlane();
-                break;
-            
             case Keyword.Sphere:
                 shape = ParseSphere();
                 break;
