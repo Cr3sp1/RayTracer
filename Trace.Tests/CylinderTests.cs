@@ -36,12 +36,12 @@ public class CylinderTests
         Assert.True(hit4.HasValue);
         Assert.True(HitRecord.CloseEnough(hit4.Value, exp4));
         
-        var ray5 = new Ray(new Point(0.0f, 0.0f, 2.0f), -Vec.ZAxis);
+        var ray5 = new Ray(new Point(-1.0f, 0.0f, 2.0f), -Vec.ZAxis + Vec.XAxis);
         var exp5 = new HitRecord(unitCylinder, new Point(0.0f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
-            new Vec2D(0.0f, 0.0f), ray5, 1.0f);
+            new Vec2D(0.0f, 0.0f), ray5, 1);
         var hit5 = unitCylinder.Intersect(ray5);
         Assert.True(hit5.HasValue);
-        Assert.True(HitRecord.CloseEnough(hit5.Value, exp4));
+        Assert.True(HitRecord.CloseEnough(hit5.Value, exp5));
     }
     
     // Test Transformations

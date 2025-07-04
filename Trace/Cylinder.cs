@@ -55,15 +55,15 @@ public class Cylinder : Shape
     /// <summary>
     /// Compute ray intersection with caps: intended to be used just in the Intersect method.
     /// </summary>
-    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <param name="invRay"><c>Ray</c> to check.</param>
     /// <returns>The t-value of the intersection.</returns>
-    public float? IntersectCaps(Ray ray)
+    public float? IntersectCaps(Ray invRay)
     {
-        Ray invRay = Transform.Inverse() * ray;
         Vec originVec = invRay.Origin.ToVec();
+        if (invRay.Dir.Z == 0.0f) return null;
 
         float tCaps;
-
+        
         float tUp = (1f - originVec.Z) / invRay.Dir.Z;
         float tDown = (-1f - originVec.Z) / invRay.Dir.Z;
 
@@ -99,11 +99,10 @@ public class Cylinder : Shape
     /// <summary>
     /// Compute ray intersection with lateral surface: intended to be used just in the Intersect method.
     /// </summary>
-    /// <param name="ray"><c>Ray</c> to check.</param>
+    /// <param name="invRay"><c>Ray</c> to check.</param>
     /// <returns>The t-value of the intersection.</returns>
-    public float? IntersectLateralSurface(Ray ray)
+    public float? IntersectLateralSurface(Ray invRay)
     {
-        Ray invRay = Transform.Inverse() * ray;
         Vec originVec = invRay.Origin.ToVec();
 
         float tLateral;
@@ -113,19 +112,18 @@ public class Cylinder : Shape
         float c = originVec.X * originVec.X + originVec.Y * originVec.Y - 1.0f;
 
         float delta = b * b - 4.0f * a * c;
-        float sqrtDelta;
         if (delta <= 0.0f) return null;
-        else
-        {
-            sqrtDelta = MathF.Sqrt(delta);
-            float tMin = (-b - sqrtDelta) / (2.0f * a);
-            float tMax = (-b + sqrtDelta) / (2.0f * a);
 
-            if (invRay.TMin < tMin && tMin < invRay.TMax) tLateral = tMin;
-            else if (invRay.TMin < tMax && tMax < invRay.TMax) tLateral = tMax;
-            else return null;
-        }
+        float sqrtDelta = MathF.Sqrt(delta);
+        float tMin = (-b - sqrtDelta) / (2.0f * a);
+        float hMin = invRay.At(tMin).Z;
+        float tMax = (-b + sqrtDelta) / (2.0f * a);
+        float hMax = invRay.At(tMax).Z;
 
+        if (invRay.TMin < tMin && tMin < invRay.TMax && -1 < hMin && hMin < 1) tLateral = tMin;
+        else if (invRay.TMin < tMax && tMax < invRay.TMax&& -1 < hMax && hMax < 1) tLateral = tMax;
+        else return null;
+            
         return tLateral;
     }
 
@@ -147,19 +145,18 @@ public class Cylinder : Shape
         float tHit;
 
         // Compute intersections with caps 
-        float? tCaps = IntersectCaps(ray);
+        float? tCaps = IntersectCaps(invRay);
 
-        // Compute intersections with lateral surface
+        // Compute intersections with the lateral surface
         float? tLateral = IntersectLateralSurface(invRay);
 
         // Compare the intersections and take the minimum
-        if (tLateral.HasValue && tCaps.HasValue) tHit = tLateral.Value < tCaps.Value ? tCaps.Value : tLateral.Value;
+        if (tLateral.HasValue && tCaps.HasValue) tHit = float.Min(tLateral.Value, tCaps.Value);
         else if (tLateral.HasValue && tCaps == null) tHit = tLateral.Value;
         else if (tCaps.HasValue && tLateral == null) tHit = tCaps.Value;
         else return null;
 
         Point hitPoint = invRay.At(tHit);
-        if (hitPoint.Z < -1.0f || hitPoint.Z > 1.0f) return null;
         (Normal normal, Vec2D uv) = CylinderNormalAndUV(hitPoint, invRay.Dir);
 
         return new HitRecord(this, Transform * hitPoint, (Transform * normal).Normalize(),
@@ -216,10 +213,9 @@ public class Cylinder : Shape
         float c = originVec.X * originVec.X + originVec.Y * originVec.Y - 1.0f;
 
         float delta = b * b - 4.0f * a * c;
-        float sqrtDelta;
         if (delta > 0f)
         {
-            sqrtDelta = MathF.Sqrt(delta);
+            float sqrtDelta = MathF.Sqrt(delta);
             float tMin = (-b - sqrtDelta) / (2.0f * a);
             float tMax = (-b + sqrtDelta) / (2.0f * a);
 
