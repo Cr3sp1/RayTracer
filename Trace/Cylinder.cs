@@ -29,7 +29,7 @@ public class Cylinder : Shape
     // Return normal to the surface on Point p and coordinates on the surface for base cylinder
     public static (Normal, int, Vec2D) CylinderNormalIndexUV(Point p, Vec rayDir)
     {
-        // Determine the cylinder surface: 1=up-cap, 2=down-cap, 3=lateral
+        // Determine the cylinder surface: 0=lateral, 1=up-cap, 2=down-cap 
         int face;
         if (Utils.CloseEnough(p.Z, 1.0f)) face = 1;
         else if (Utils.CloseEnough(p.Z, -1.0f)) face = 2;
@@ -213,7 +213,6 @@ public class Cylinder : Shape
         {
             res.Add(new HitRecord(this, Transform * hitUp,
                 (Transform * normalUp).Normalize(), uvUp, ray, tUp, faceIndexUp));
-            ;
         }
 
         if (radiusDown <= 1f && invRay.TMin < tDown && tDown < invRay.TMax)
@@ -250,7 +249,6 @@ public class Cylinder : Shape
                 (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitLateral, invRay.Dir);
                 res.Add(new HitRecord(this, Transform * hitLateral,
                     (Transform * normal).Normalize(), uv, ray, tMax, faceIndex));
-                ;
                 if (res.Count == 2) return res;
             }
         }

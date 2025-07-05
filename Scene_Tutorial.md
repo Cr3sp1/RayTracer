@@ -1,6 +1,7 @@
-# Scene Generation Languange Tutorial
+# Scene Generation Language Tutorial
 
-This is a brief guide on how to write a suitable input file for a scene generation. The tutorial will include the specification of all objects available and needed for the composition of a scene and the enumeration of the language syntax rules. 
+This is a brief guide on how to write a suitable input file defining a scene. The tutorial will include the 
+specification of all objects available and needed for the composition of a scene and all the language syntax rules. 
 
 The **description of the scene** must include:
 - a **camera** representing the observer.
@@ -9,12 +10,14 @@ The **description of the scene** must include:
 
 Both camera and shapes can be moved in space by applying transformations. 
 
-Whitespaces and comments (starting by `#`) are skipped by the parser. See the [README](README.md) for details on how to overwrite scene variables from command line.
+Whitespaces and comments (starting by `#`) are skipped by the parser. See the [README](README.md) for details on how to 
+overwrite scene variables from command line.
 
 Let's walk through the grammar of the Scene Generation Language used in this RayTracer.
 
 ## Floats
-The Scene Generation Language provides the user with the possibility to declare **`float`** variables. The correct syntax is the following:
+The Scene Generation Language provides the user with the possibility to declare **`float`** variables. The correct 
+syntax is the following:
 ```
 float angle(30)
 ```
@@ -29,7 +32,8 @@ Available transformations:
 - `rotation_z(angle)`: **rotation** of `float` angle `angle` (expressed in degrees) around the z-axis.
 - `scaling([x,y,z])`: **scaling** by factor `x`, `y` or `z` respectively along the x-direction, y-direction or z-direction.
 
-A transformation can also be identified with a **composition of multiple transformations** by the symbol `*`, for example: `rotation_x(60)*translation([0,0,3])`.
+A transformation can also be identified with a **composition of multiple transformations** by the symbol `*`, for 
+example: `rotation_x(60)*translation([0,0,3])`.
 
 *Note:* `Vector` types are enclosed in brackets `[...]` and defined by their x, y, z `float` components.
 
@@ -67,21 +71,59 @@ Two types of **BRDF** are available:
 
 Example of material definition:
 ```
-material my_material ( diffuse( uniform(<0,0,0>) ), uniform(<1,1,1>) )
+material my_material (diffuse(uniform(<0,0,0>)), uniform(<1,1,1>))
 ```
 
-## Shapes
-Available shapes:
+## Basic Shapes
+Available basic shapes:
 - **`sphere`**, that by default is centered in the origin and has unitary radius.
 - **`plane`**, that by default is $z=0$.
+- **`cube`**, that by default is centered on the origin and has side of lenght 2.
+- **`cylinder`**, that by default is centered on the origin, has unitary radius and has height of lenght 2.
 
-All shapes must have the following **parameters**:
-- a **`Material`**: the material of the object, that must have been previously defined.
-- a **`Transformation`**: the transformation to shape and move the object as needed.
+All basic shapes must have the following **parameters**:
+- a **`Material`**: name of the material of the shape, which must have been previously defined.
+- a **`Transformation`**: the transformation the shape is subject to, used to modify and move around the shape.
 
-Example of adding a shape to the scene:
+Furthermore, since the **`cube`** and the **`cylinder`** have respectively six and three faces each, we offer the 
+possibility to declare a different material for each face by substituting the single **`Material`** parameter with a 
+list of **`Material`**. If the number of materials is inferior to the number of faces, the material of the 
+first face will be assigned to the undefined face material. If the number is instead superior to the number of faces,
+the extra materials will be ignored. <br>
+The order of faces in the **`cube`** follows the order of the number of dots in a
+right-handed dice, so the faces in order point to the following directions: $\hat{e}_x$, $\hat{e}_y$, $\hat{e}_z$,
+$-\hat{e}_z$, $-\hat{e}_y$, $-\hat{e}_x$.<br>
+the order of faces in the **`cylinder`** is the following: lateral face, top face, bottom face.
+
+Examples of adding a shape to the scene, assuming materials have already been previously defined:
 ```
-material sphere_material ( diffuse(uniform(<0,0,0>)), uniform(<1,0,0>))
+sphere (first_material, translation([1,0,0])*scaling([3,3,3]))
+cube (second_material, identity)
+cube ([first_material, second_material], translation([3,4.5,0]))
+cylinder ([first_material, second_material, third_material], rotation_y(20))
+```
 
-sphere (sphere_material, translation([1,0,0])*scaling([3,3,3]))
+## Constructive Solid Geometry
+The **`csg`** shape implements the Constructive Solid Geometry technique to build complex shapes from simpler ones by 
+combining them through the following operations. The parameters of  **`csg`** are the two shapes it is composed by,
+which we call shape A and shape B, the type of operation they are subject to, and an ulterior **`Transformation`**.
+The implemented types of operations are the following: 
+- **`union`**: the union of the two shapes, comprised by all the points of shape A and all the points of shape B.
+- **`difference`**: the difference between shape A and shape B, comprised by all the points of shape A that do not fall 
+within shape B.
+- **`intersection`**: the intersection between the two shapes, comprised by the points of shape A that fall within shape 
+B and vice versa.
+
+The shapes used in a **`csg`** must be previously defined as variables similarly to materials, and can both be a basic 
+shape or a **`csg`** themselves. Note: **`plane`** shapes are not finite, and so they are not supported as elements of a
+**`csg`**, and for this reason can not be defined as variables but only added to the scene.
+
+Examples of adding a **`csg`** to the scene, assuming materials have already been previously defined:
+```
+shape shapeA( sphere (first_material, translation([1,0,0])*scaling([3,3,3])) )
+shape shapeB( cube (second_material, identity) )
+shape shapeC( cylinder([first_material, second_material, third_material], rotation_y(20)) )
+shape firstCsg( csg(shapeA, shapeB, union, identity) )
+
+csg(firstCsg, shapeC, difference, identity)
 ```
