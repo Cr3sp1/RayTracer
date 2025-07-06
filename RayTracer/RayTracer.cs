@@ -124,6 +124,10 @@ public class RenderCommand : ICommand
     [CommandOption("init-seq", 'S',
         Description = "Initial sequence value for the random number generation.")]
     public ulong InitSeq { get; init; } = 54;
+    
+    [CommandOption("anti-aliasing", 'a',
+        Description = "Number of rays to be fired per side of each pixel.")]
+    public int RaysAntiAliasing { get; init; } = 0;
 
     [CommandOption("pfm-output", 'p',
         Description = "Pfm output file path.")]
@@ -235,7 +239,7 @@ public class RenderCommand : ICommand
         }
 
         // Render the scene
-        var tracer = new ImageTracer(new HdrImage(Width, Height), scene.SceneCamera, renderer);
+        var tracer = new ImageTracer(new HdrImage(Width, Height), scene.SceneCamera, renderer, RaysAntiAliasing, new Pcg(InitState, InitSeq));
         tracer.FireAllRays();
 
         // Read rendered Pfm image

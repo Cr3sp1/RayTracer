@@ -30,7 +30,7 @@ public class RendererTest
     public void TestOnOffRenderer()
     {
         var renderer = new OnOffRenderer(scene);
-        var tracer = new ImageTracer(image: image, camera: camera, renderer: renderer);
+        var tracer = new ImageTracer(image: image, camera: camera, renderer: renderer, raysPerSide: 0, pcg: new Pcg());
         tracer.FireAllRays();
 
         Assert.True(Color.CloseEnough(image.GetPixel(0, 0), Color.Black));
@@ -51,7 +51,7 @@ public class RendererTest
     public void TestFlatRenderer()
     {
         var renderer = new FlatRenderer(scene);
-        var tracer = new ImageTracer(image: image, camera: camera, renderer: renderer);
+        var tracer = new ImageTracer(image: image, camera: camera, renderer: renderer, raysPerSide: 0, pcg: new Pcg());
         tracer.FireAllRays();
 
         Assert.True(Color.CloseEnough(image.GetPixel(0, 0), Color.Black));
