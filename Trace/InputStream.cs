@@ -258,7 +258,7 @@ public class InputStream
         { "cube", Keyword.Cube },
         { "cylinder", Keyword.Cylinder },
         { "csg", Keyword.Csg },
-        { "union", Keyword.Union },
+        { "fusion", Keyword.Fusion },
         { "difference", Keyword.Difference },
         { "intersection", Keyword.Intersection },
         { "diffuse", Keyword.Diffuse },

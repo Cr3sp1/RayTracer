@@ -39,7 +39,7 @@ public class SceneTests
                     shape shapeB(cylinder (ground_material, identity))
                     shape shapeC(csg(shapeA, shapeB, difference, rotation_y(clock)))
 
-                    csg( shapeB, shapeC, union, identity)
+                    csg( shapeB, shapeC, fusion, identity)
 
                     cube(sphere_material, translation([0, 0, 1]))
 
@@ -115,7 +115,7 @@ public class SceneTests
         Assert.True(scene.SceneWorld.Shapes[3] is Csg);
         var csg = scene.SceneWorld.Shapes[3] as Csg;
         Assert.NotNull(csg);
-        Assert.Equal(CsgType.Union, csg.Type);
+        Assert.Equal(CsgType.Fusion, csg.Type);
         Assert.Equal(csg.ShapeA, scene.ShapeVariables["shapeB"]);
         Assert.Equal(csg.ShapeB, scene.ShapeVariables["shapeC"]);
 

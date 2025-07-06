@@ -108,7 +108,7 @@ The **`csg`** shape implements the Constructive Solid Geometry technique to buil
 combining them through the following operations. The parameters of  **`csg`** are the two shapes it is composed by,
 which we call shape A and shape B, the type of operation they are subject to, and an ulterior **`Transformation`**.
 The implemented types of operations are the following: 
-- **`union`**: the union of the two shapes, comprised by all the points of shape A and all the points of shape B.
+- **`fusion`**: the fusion of the two shapes, comprised by all the points of shape A and all the points of shape B, ignoring internal surfaces.
 - **`difference`**: the difference between shape A and shape B, comprised by all the points of shape A that do not fall 
 within shape B.
 - **`intersection`**: the intersection between the two shapes, comprised by the points of shape A that fall within shape 
@@ -123,7 +123,7 @@ Examples of adding a **`csg`** to the scene, assuming materials have already bee
 shape shapeA( sphere (first_material, translation([1,0,0])*scaling([3,3,3])) )
 shape shapeB( cube (second_material, identity) )
 shape shapeC( cylinder([first_material, second_material, third_material], rotation_y(20)) )
-shape firstCsg( csg(shapeA, shapeB, union, identity) )
+shape firstCsg( csg(shapeA, shapeB, fusion, identity) )
 
 csg(firstCsg, shapeC, difference, identity)
 ```

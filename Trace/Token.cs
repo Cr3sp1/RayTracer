@@ -104,7 +104,7 @@ public enum Keyword
     Cube,
     Cylinder,
     Csg,
-    Union,
+    Fusion,
     Difference,
     Intersection,
     Diffuse,

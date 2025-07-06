@@ -492,9 +492,9 @@ public class Scene
         }
         ExpectSymbol(',');
 
-        var csgType = ExpectKeywords([Keyword.Union, Keyword.Difference, Keyword.Intersection]) switch
+        var csgType = ExpectKeywords([Keyword.Fusion, Keyword.Difference, Keyword.Intersection]) switch
         {
-            Keyword.Union => CsgType.Union,
+            Keyword.Fusion => CsgType.Fusion,
             Keyword.Intersection => CsgType.Intersection,
             Keyword.Difference => CsgType.Difference,
             _ => throw new RuntimeException("This line should not be reachable.")
