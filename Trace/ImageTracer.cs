@@ -8,10 +8,12 @@ public class ImageTracer
     public HdrImage Image;
     public ICamera Camera;
     public Renderer Renderer;
+    public int RaysPerSide;
+    public Pcg Pcg;
 
     // Constructor
-    public ImageTracer(HdrImage image, ICamera camera, Renderer renderer) =>
-        (Image, Camera, Renderer) = (image, camera, renderer);
+    public ImageTracer(HdrImage image, ICamera camera, Renderer renderer, int raysPerSide, Pcg pcg) =>
+        (Image, Camera, Renderer, RaysPerSide, Pcg) = (image, camera, renderer, raysPerSide, pcg);
 
     /// <summary>
     /// Fire a ray towards a pixel (col, row) of HdrImage;
@@ -33,14 +35,35 @@ public class ImageTracer
         int totalPixels = int.Max(Image.Width * Image.Height, 1);
         int processedPixels = 0;
         int oldPercentage = -1;
+        float uPixel;
+        float vPixel;
 
         for (int row = 0; row < Image.Height; row++)
         {
             for (int col = 0; col < Image.Width; col++)
             {
-                var ray = FireRay(col, row);
-                Color color = Renderer.Render(ray);
-                Image.SetPixel(col, row, color);
+                if (RaysPerSide > 0)
+                {
+                    Color cumColor = new Color(0.0f, 0.0f, 0.0f);
+                    for (int pixelRow = 0; pixelRow < RaysPerSide; pixelRow++)
+                    {
+                        for (int pixelCol = 0; pixelCol < RaysPerSide; pixelCol++)
+                        {
+                            uPixel = (pixelCol + Pcg.RandomFloat()) / RaysPerSide;
+                            vPixel = (pixelRow + Pcg.RandomFloat()) / RaysPerSide;
+                            var ray = FireRay(col, row, uPixel, vPixel);
+                            cumColor += Renderer.Render(ray);
+                        }
+                    }
+                    cumColor = 1.0f / (RaysPerSide * RaysPerSide) * cumColor;
+                    Image.SetPixel(col, row, cumColor);
+                }
+                else
+                {
+                    var ray = FireRay(col, row);
+                    Color color = Renderer.Render(ray);
+                    Image.SetPixel(col, row, color);
+                }
 
                 processedPixels++;
                 int processedPercentage = 100 * processedPixels / totalPixels;
