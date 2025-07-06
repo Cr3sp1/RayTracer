@@ -19,7 +19,7 @@ public class ImageTracerTests
         camera = new PerspectiveCamera(aspectRatio: 2);
         scene = new World();
         renderer = new Renderer(scene);
-        tracer = new ImageTracer(image: image, camera: camera, renderer: renderer);
+        tracer = new ImageTracer(image: image, camera: camera, renderer: renderer, raysPerSide: 0, pcg: new Pcg());
         this.output = output;
     }
 
@@ -62,5 +62,18 @@ public class ImageTracerTests
         var bottomRightRay = tracer.FireRay(3, 1, 1.0f, 1.0f);
         output.WriteLine("Bottom Right Ray =\n" + bottomRightRay.At(1.0f));
         Assert.True(Point.CloseEnough(new Point(0.0f, -2.0f, -1.0f), bottomRightRay.At(1.0f)));
+    }
+    
+    // Test anti-aliasing
+    [Fact]
+    void TestAntialiasing()
+    {
+        var newImage = new HdrImage(width: 1, height: 1);
+        var newCamera = new OrthogonalCamera(aspectRatio: 1);
+        var newRenderer = new PathTracer.TestAntiAliasing(scene);
+        var newTracer = new ImageTracer(image: newImage, camera: newCamera, renderer: newRenderer, raysPerSide: 4, pcg: new Pcg());
+        
+        newTracer.FireAllRays();
+        Assert.Equal(16, newRenderer.NumRays);
     }
 }

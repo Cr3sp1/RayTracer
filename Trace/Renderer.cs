@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using SixLabors.ImageSharp.Formats.Png;
 
 namespace Trace;
@@ -180,5 +181,33 @@ public class PathTracer : Renderer
 
         // Return emitted light + averaged reflected light
         return emittedRadiance + 1.0f / NumRays * cumRadiance;
+    }
+    
+    /// <summary>
+    /// Class inheriting from Renderer, representing a test renderer for anti-aliasing
+    /// that always returns black.
+    /// </summary>
+    public class TestAntiAliasing : Renderer
+    {
+        public int NumRays;
+
+        // Constructor passing a scene and a color
+        public TestAntiAliasing(World world) : base(world) => NumRays = 0;
+
+        /// <summary>
+        /// Always return black.
+        /// </summary>
+        /// <param name="ray"><c>Ray</c> taken as input for the renderer.</param>
+        /// <returns><c>Color</c> black.</returns>
+        public override Color Render(Ray ray)
+        {
+            Point rayOnScreen = ray.At(1f);
+            Debug.Assert(Utils.CloseEnough(rayOnScreen.X, 0.0f, 1E-03F));
+            Debug.Assert(rayOnScreen.Y >= -1.0f && rayOnScreen.Y <= 1.0f);
+            Debug.Assert(rayOnScreen.Z >= -1.0f && rayOnScreen.Z <= 1.0f);
+            
+            NumRays += 1;
+            return new Color(0.0f, 0.0f, 0.0f);
+        }
     }
 }
