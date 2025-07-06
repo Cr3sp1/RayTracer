@@ -117,7 +117,7 @@ public class Csg : Shape
     }
 
     /// <summary>
-    /// Method that computes the axis aligned bounding box containing the <c>Csg</c>.
+    /// Method that computes the axis-aligned bounding box containing the <c>Csg</c>.
     /// </summary>
     /// <returns> a <c>BoundingBox</c> containing the <c>Sphere</c>.</returns>
     public sealed override BoundingBox? GetBoundingBox()

@@ -232,9 +232,11 @@ public class Cylinder : Shape
         {
             float sqrtDelta = MathF.Sqrt(delta);
             float tMin = (-b - sqrtDelta) / (2.0f * a);
+            float hMin = invRay.At(tMin).Z;
             float tMax = (-b + sqrtDelta) / (2.0f * a);
+            float hMax = invRay.At(tMax).Z;
 
-            if (invRay.TMin < tMin && tMin < invRay.TMax)
+            if (invRay.TMin < tMin && tMin < invRay.TMax && -1 < hMin && hMin < 1)
             {
                 Point hitLateral = invRay.At(tMin);
                 (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitLateral, invRay.Dir);
@@ -243,7 +245,7 @@ public class Cylinder : Shape
                 if (res.Count == 2) return res;
             }
 
-            if (invRay.TMin < tMax && tMax < invRay.TMax)
+            if (invRay.TMin < tMax && tMax < invRay.TMax && -1 < hMax && hMax < 1)
             {
                 Point hitLateral = invRay.At(tMax);
                 (Normal normal, int faceIndex, Vec2D uv) = CylinderNormalIndexUV(hitLateral, invRay.Dir);

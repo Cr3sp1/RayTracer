@@ -7,6 +7,7 @@ public class CylinderTests
     public void TestIntersect()
     {
         var unitCylinder = new Cylinder();
+        unitCylinder.BBox = null;
 
         var ray1 = new Ray(new Point(0.5f, 0.0f, 2.0f), -Vec.ZAxis);
         var exp1 = new HitRecord(unitCylinder, new Point(0.5f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
@@ -67,6 +68,7 @@ public class CylinderTests
     public void TestAllIntersects()
     {
         var unitCylinder = new Cylinder();
+        unitCylinder.BBox = null;
 
         var ray1 = new Ray(new Point(0.5f, 0.0f, 2.0f), -Vec.ZAxis);
         var exp1F = new HitRecord(unitCylinder, new Point(0.5f, 0.0f, 1.0f), new Normal(0.0f, 0.0f, 1.0f),
@@ -78,7 +80,7 @@ public class CylinderTests
         Assert.True(HitRecord.CloseEnough(allHits1[0], exp1F));
         Assert.True(HitRecord.CloseEnough(allHits1[1], exp1S));
 
-        var ray2 = new Ray(new Point(2.0f, 2.0f, 0.0f), -Vec.ZAxis);
+        var ray2 = new Ray(new Point(0f, 2.0f, 2.0f), -Vec.YAxis);
         var allHits2 = unitCylinder.AllIntersects(ray2);
         Assert.Empty(allHits2);
 
