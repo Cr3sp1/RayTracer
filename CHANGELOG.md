@@ -1,3 +1,5 @@
+- Implement anti-aliasing to deal with Moiré fringes [#10](https://github.com/Cr3sp1/RayTracer/pull/10)
+
 # Version 1.0.0
 
 -   Change "demo" command into "render" command to be able to parse a scene from an input file and render it choosing a renderer [#8](https://github.com/Cr3sp1/RayTracer/pull/8)
