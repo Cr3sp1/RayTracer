@@ -15,7 +15,7 @@ public class Renderer
     {
     }
 
-    // Costructor passing a scene
+    // Constructor passing a scene
     public Renderer(World world) => Scene = world;
 
     /// <summary>
@@ -106,7 +106,7 @@ public class FlatRenderer : Renderer
     }
 }
 
-// <summary>
+/// <summary>
 /// Class inheriting from Renderer, representing a path tracer:
 /// if <c>Ray</c> intersects a shape in the scene return the solution of the rendering equation, else return black.
 /// </summary>
@@ -182,9 +182,9 @@ public class PathTracer : Renderer
         // Return emitted light + averaged reflected light
         return emittedRadiance + 1.0f / NumRays * cumRadiance;
     }
-    
+
     /// <summary>
-    /// Class inheriting from Renderer, representing a test renderer for anti-aliasing
+    /// Class inheriting from Renderer, representing a test renderer for antialiasing
     /// that always returns black.
     /// </summary>
     public class TestAntiAliasing : Renderer
@@ -205,7 +205,7 @@ public class PathTracer : Renderer
             Debug.Assert(Utils.CloseEnough(rayOnScreen.X, 0.0f, 1E-03F));
             Debug.Assert(rayOnScreen.Y >= -1.0f && rayOnScreen.Y <= 1.0f);
             Debug.Assert(rayOnScreen.Z >= -1.0f && rayOnScreen.Z <= 1.0f);
-            
+
             NumRays += 1;
             return new Color(0.0f, 0.0f, 0.0f);
         }

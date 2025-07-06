@@ -109,7 +109,7 @@ public class RenderCommand : ICommand
         Description = "Number of rays scattered at each iteration by the path renderer.")]
     public int NumRays { get; init; } = 10;
 
-    [CommandOption("max-depth", 'm',
+    [CommandOption("max-depth", 'd',
         Description = "Maximum depth of rays scattered by the path renderer.")]
     public int MaxDepth { get; init; } = 3;
 

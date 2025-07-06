@@ -1,3 +1,6 @@
+- Implement automatically generated Axis Aligned Bounding Boxes [#9](https://github.com/Cr3sp1/RayTracer/pull/9)
+- Implement Constructive Solid Geometry [#9](https://github.com/Cr3sp1/RayTracer/pull/9)
+- Implement cubes and cylinders [#9](https://github.com/Cr3sp1/RayTracer/pull/9)
 - Implement anti-aliasing to deal with Moiré fringes [#10](https://github.com/Cr3sp1/RayTracer/pull/10)
 
 # Version 1.0.0
