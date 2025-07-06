@@ -1,3 +1,5 @@
+using Microsoft.CSharp.RuntimeBinder;
+
 namespace Trace;
 
 /// <summary>
@@ -6,7 +8,8 @@ namespace Trace;
 public class Scene
 {
     public InputStream InputFile;
-    public Dictionary<string, Material> Materials = new();
+    public Dictionary<string, Material> MaterialVariables = new();
+    public Dictionary<string, Shape> ShapeVariables = new();
     public Dictionary<string, float> FloatVariables = new();
     public HashSet<string> OverriddenVariables = new(); // Track externally-set variables
     public ICamera? SceneCamera;
@@ -33,7 +36,7 @@ public class Scene
     }
 
     /// <summary>
-    /// Read a token from the <c>InputStream</c> and check that it is one of a list of <c>KeywordTokens</c>.
+    /// Read a token from the <c>InputStream</c> and check that it is present in a list of <c>KeywordTokens</c>.
     /// </summary>
     /// <param name="keywords">Expected keywords.</param>
     /// <returns><c>Keyword</c> to be stored.</returns>
@@ -47,7 +50,7 @@ public class Scene
 
         if (!keywords.Contains(keywordToken.Keyword))
         {
-            throw new GrammarException($"Expected one of [{string.Join(", ", keywords)}] instead of {token}.",
+            throw new GrammarException($"Expected one of [\'{string.Join("\', \'", keywords)}\'] instead of {token}.",
                 token.Location);
         }
 
@@ -71,7 +74,7 @@ public class Scene
             var variableName = identifierToken.Identifier;
             if (!FloatVariables.TryGetValue(variableName, out var number))
             {
-                throw new GrammarException($"Unknown variable '{variableName}'.", token.Location);
+                throw new GrammarException($"Unknown float variable '{variableName}'.", token.Location);
             }
 
             return number;
@@ -150,7 +153,7 @@ public class Scene
     /// <returns><c>Pigment</c> to be stored.</returns>
     public Pigment ParsePigment()
     {
-        var pigmentKeyword = ExpectKeywords([Keyword.Uniform, Keyword.Checkered, Keyword.Image]);
+        var pigmentKeyword = ExpectKeywords([Keyword.Uniform, Keyword.Checkered, Keyword.Striped, Keyword.Image]);
         Pigment result;
 
         switch (pigmentKeyword)
@@ -174,6 +177,27 @@ public class Scene
                 var numSquares = (int)ExpectNumber();
                 ExpectSymbol(')');
                 result = new CheckeredPigment(color1, color2, numSquares);
+                break;
+            }
+
+            case Keyword.Striped:
+            {
+                ExpectSymbol('(');
+                var color1 = ParseColor();
+                ExpectSymbol(',');
+                var color2 = ParseColor();
+                ExpectSymbol(',');
+                var numStripes = (int)ExpectNumber();
+                ExpectSymbol(',');
+                var stripeDirection = ExpectKeywords([Keyword.Vertical, Keyword.Horizontal]);
+                var isVertical = stripeDirection switch
+                {
+                    Keyword.Vertical => true,
+                    Keyword.Horizontal => false,
+                    _ => throw new RuntimeException("This line should not be reachable.")
+                };
+                ExpectSymbol(')');
+                result = new StripedPigment(color1, color2, numStripes, isVertical);
                 break;
             }
 
@@ -303,13 +327,11 @@ public class Scene
                     throw new RuntimeException("This line should not be reachable.");
             }
 
-            // Look-ahead to see if there is another transformation chained
+            // Look ahead to see if there is another transformation chained
             var newToken = InputFile.ReadToken();
-            if (newToken is not SymbolToken symbol || symbol.Symbol != '*')
-            {
-                InputFile.UnreadToken(newToken);
-                break;
-            }
+            if (newToken is SymbolToken { Symbol: '*' }) continue;
+            InputFile.UnreadToken(newToken);
+            break;
         }
 
         return result;
@@ -323,7 +345,7 @@ public class Scene
     {
         ExpectSymbol('(');
         var materialName = ExpectIdentifier();
-        if (!Materials.TryGetValue(materialName, out var material))
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
         }
@@ -334,7 +356,7 @@ public class Scene
 
         return new Plane(transformation, material);
     }
-
+    
     /// <summary>
     /// Parse a <c>Sphere</c>: Sphere(transformation, material).
     /// </summary>
@@ -343,7 +365,7 @@ public class Scene
     {
         ExpectSymbol('(');
         var materialName = ExpectIdentifier();
-        if (!Materials.TryGetValue(materialName, out var material))
+        if (!MaterialVariables.TryGetValue(materialName, out var material))
         {
             throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
         }
@@ -353,6 +375,174 @@ public class Scene
         ExpectSymbol(')');
 
         return new Sphere(transformation, material);
+    }
+    
+    /// <summary>
+    /// Parse a <c>Cube</c>: Cube(transformation, material).
+    /// </summary>
+    /// <returns><c>Cube</c> to be stored.</returns>
+    public Cube ParseCube()
+    {
+        ExpectSymbol('(');
+        
+        var materials = new List<Material>(6);
+        // Look ahead to see if a list of materials is present
+        var newToken = InputFile.ReadToken();
+        if (newToken is SymbolToken { Symbol: '[' })
+        {
+            while (true)
+            {
+                var materialName = ExpectIdentifier();
+                if (!MaterialVariables.TryGetValue(materialName, out var material))
+                {
+                    throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+                }
+                materials.Add(material);
+                var newNewToken = InputFile.ReadToken();
+                if (newNewToken is SymbolToken { Symbol: ',' }) continue;
+                InputFile.UnreadToken(newNewToken);
+                break;
+            }
+            ExpectSymbol(']');
+        }
+        else
+        {
+            InputFile.UnreadToken(newToken);
+            var materialName = ExpectIdentifier();
+            if (!MaterialVariables.TryGetValue(materialName, out var material))
+            {
+                throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+            }
+            materials.Add(material);
+        }
+       
+
+        ExpectSymbol(',');
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Cube(materials, transformation);
+    }
+    
+    /// <summary>
+    /// Parse a <c>Cylinder</c>: Cylinder(transformation, material).
+    /// </summary>
+    /// <returns><c>Cylinder</c> to be stored.</returns>
+    public Cylinder ParseCylinder()
+    {
+        ExpectSymbol('(');
+        
+        var materials = new List<Material>(6);
+        // Look ahead to see if a list of materials is present
+        var newToken = InputFile.ReadToken();
+        if (newToken is SymbolToken { Symbol: '[' })
+        {
+            while (true)
+            {
+                var materialName = ExpectIdentifier();
+                if (!MaterialVariables.TryGetValue(materialName, out var material))
+                {
+                    throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+                }
+                materials.Add(material);
+                var newNewToken = InputFile.ReadToken();
+                if (newNewToken is SymbolToken { Symbol: ',' }) continue;
+                InputFile.UnreadToken(newNewToken);
+                break;
+            }
+            ExpectSymbol(']');
+        }
+        else
+        {
+            InputFile.UnreadToken(newToken);
+            var materialName = ExpectIdentifier();
+            if (!MaterialVariables.TryGetValue(materialName, out var material))
+            {
+                throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
+            }
+            materials.Add(material);
+        }
+
+        ExpectSymbol(',');
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Cylinder(materials, transformation);
+    }
+    
+    /// <summary>
+    /// Parse a <c>Csg</c>: Csg(shapeA, shapeB, csgType, transformation).
+    /// </summary>
+    /// <returns><c>Csg</c> to be stored.</returns>
+    public Csg ParseCsg()
+    {
+        ExpectSymbol('(');
+        
+        var shapeAName = ExpectIdentifier();
+        if (!ShapeVariables.TryGetValue(shapeAName, out var shapeA))
+        {
+            throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
+        }
+        ExpectSymbol(',');
+        
+        var shapeBName = ExpectIdentifier();
+        if (!ShapeVariables.TryGetValue(shapeBName, out var shapeB))
+        {
+            throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
+        }
+        ExpectSymbol(',');
+
+        var csgType = ExpectKeywords([Keyword.Fusion, Keyword.Difference, Keyword.Intersection]) switch
+        {
+            Keyword.Fusion => CsgType.Fusion,
+            Keyword.Intersection => CsgType.Intersection,
+            Keyword.Difference => CsgType.Difference,
+            _ => throw new RuntimeException("This line should not be reachable.")
+        };
+        ExpectSymbol(',');
+        
+        var transformation = ParseTransformation();
+        ExpectSymbol(')');
+
+        return new Csg(shapeA, shapeB, csgType, transformation);
+    }
+
+
+    /// <summary>
+    /// Parse a <c>Shape</c>: identifier(...).
+    /// </summary>
+    /// <returns><c>Shape</c> to be stored.</returns>
+    public (string, Shape) ParseShape()
+    {
+        var shapeName = ExpectIdentifier();
+        ExpectSymbol('(');
+        var shapeType = ExpectKeywords([Keyword.Sphere, Keyword.Cube, Keyword.Cylinder, Keyword.Csg]);
+        Shape shape;
+
+        switch (shapeType)
+        {
+            case Keyword.Sphere:
+                shape = ParseSphere();
+                break;
+            
+            case Keyword.Cube:
+                shape = ParseCube();
+                break;
+            
+            case Keyword.Cylinder:
+                shape = ParseCylinder();
+                break;
+            
+            case Keyword.Csg:
+                shape = ParseCsg();
+                break;
+            
+            default:
+                throw new RuntimeException("This line should not be reachable.");
+        }
+
+        ExpectSymbol(')');
+        return (shapeName, shape);
     }
 
     /// <summary>
@@ -444,15 +634,35 @@ public class Scene
                 case Keyword.Sphere:
                     SceneWorld.AddShape(ParseSphere());
                     break;
+                
+                case Keyword.Cube:
+                    SceneWorld.AddShape(ParseCube());
+                    break;
+                
+                case Keyword.Cylinder:
+                    SceneWorld.AddShape(ParseCylinder());
+                    break;
+                
+                case Keyword.Csg:
+                    SceneWorld.AddShape(ParseCsg());
+                    break;
 
                 case Keyword.Material:
                     var (materialName, material) = ParseMaterial();
-                    if (!Materials.TryAdd(materialName, material))
+                    if (!MaterialVariables.TryAdd(materialName, material))
                     {
                         throw new GrammarException($"Material '{materialName}' cannot be redefined.",
                             InputFile.Location);
                     }
-
+                    break;
+                
+                case Keyword.Shape:
+                    var (shapeName, shape) = ParseShape();
+                    if (!ShapeVariables.TryAdd(shapeName, shape))
+                    {
+                        throw new GrammarException($"Shape '{shapeName}' cannot be redefined.",
+                            InputFile.Location);
+                    }
                     break;
 
                 case Keyword.Camera:

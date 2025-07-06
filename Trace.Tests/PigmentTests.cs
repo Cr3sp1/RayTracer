@@ -44,6 +44,25 @@ public class PigmentTests
         Assert.True(Color.CloseEnough(pigment.GetColor(new Vec2D(0.75f, 0.75f)), color1));
     }
 
+    // Test Striped Pigment
+    [Fact]
+    public void TestStripedPigment()
+    {
+        var color1 = new Color(1.0f, 2.0f, 3.0f);
+        var color2 = new Color(10.0f, 20.0f, 30.0f);
+        var pigmentVert = new StripedPigment(color1, color2, 2);
+        var pigmentHor = new StripedPigment(color1, color2, 2, isVertical: false);
+
+        Assert.True(Color.CloseEnough(pigmentVert.GetColor(new Vec2D(0.25f, 0.25f)), color1));
+        Assert.True(Color.CloseEnough(pigmentVert.GetColor(new Vec2D(0.75f, 0.25f)), color2));
+        Assert.True(Color.CloseEnough(pigmentVert.GetColor(new Vec2D(0.25f, 0.75f)), color1));
+        Assert.True(Color.CloseEnough(pigmentVert.GetColor(new Vec2D(0.75f, 0.75f)), color2));
+        Assert.True(Color.CloseEnough(pigmentHor.GetColor(new Vec2D(0.25f, 0.25f)), color1));
+        Assert.True(Color.CloseEnough(pigmentHor.GetColor(new Vec2D(0.75f, 0.25f)), color1));
+        Assert.True(Color.CloseEnough(pigmentHor.GetColor(new Vec2D(0.25f, 0.75f)), color2));
+        Assert.True(Color.CloseEnough(pigmentHor.GetColor(new Vec2D(0.75f, 0.75f)), color2));
+    }
+
     // Test Image Pigment
     [Fact]
     public void TestImagePigment()

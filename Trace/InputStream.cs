@@ -14,7 +14,7 @@ public class InputStream
     public Token? SavedToken;
     public SourceLocation LastLocation;
     public int Tab;
-    
+
     public static string Whitespace = " \t\n\r";
     public static string Symbols = "()<>[],*";
 
@@ -255,10 +255,19 @@ public class InputStream
         { "material", Keyword.Material },
         { "plane", Keyword.Plane },
         { "sphere", Keyword.Sphere },
+        { "cube", Keyword.Cube },
+        { "cylinder", Keyword.Cylinder },
+        { "csg", Keyword.Csg },
+        { "fusion", Keyword.Fusion },
+        { "difference", Keyword.Difference },
+        { "intersection", Keyword.Intersection },
         { "diffuse", Keyword.Diffuse },
         { "specular", Keyword.Specular },
         { "uniform", Keyword.Uniform },
         { "checkered", Keyword.Checkered },
+        { "striped", Keyword.Striped },
+        { "vertical", Keyword.Vertical },
+        { "horizontal", Keyword.Horizontal },
         { "image", Keyword.Image },
         { "identity", Keyword.Identity },
         { "translation", Keyword.Translation },
@@ -269,10 +278,10 @@ public class InputStream
         { "camera", Keyword.Camera },
         { "orthogonal", Keyword.Orthogonal },
         { "perspective", Keyword.Perspective },
-        { "float", Keyword.Float }
+        { "float", Keyword.Float },
+        { "shape", Keyword.Shape }
     };
 }
-
 
 /// <summary>
 /// Represents a location in a source file, including file name, line number, and column number.

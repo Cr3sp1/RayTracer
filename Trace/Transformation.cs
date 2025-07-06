@@ -122,7 +122,12 @@ public readonly struct Transformation
                 [0.0F, 0.0F, 1.0f, 0.0F]));
     }
 
-    // Apply a transformation to a Point object
+    /// <summary>
+    /// Apply a <c>Transformation</c> to a <c>Point</c>.
+    /// </summary>
+    /// <param name="t"><c>Transformation</c> to apply.</param>
+    /// <param name="p"><c>Point</c> to transform,</param>
+    /// <returns>transformed <c>Point</c></returns>
     public static Point operator *(in Transformation t, in Point p)
     {
         var p0 = 0f;
@@ -145,7 +150,12 @@ public readonly struct Transformation
         return new Point(p0, p1, p2);
     }
 
-    // Apply a transformation to a Vec object
+    /// <summary>
+    /// Apply a <c>Transformation</c> to a <c>Vec</c>.
+    /// </summary>
+    /// <param name="t"><c>Transformation</c> to apply.</param>
+    /// <param name="v"><c>Vec</c> to transform,</param>
+    /// <returns>transformed <c>Vec</c></returns>
     public static Vec operator *(in Transformation t, in Vec v)
     {
         var v0 = 0f;
@@ -165,7 +175,12 @@ public readonly struct Transformation
         return new Vec(v0, v1, v2);
     }
 
-    // Apply a transformation to a Normal object
+    /// <summary>
+    /// Apply a <c>Transformation</c> to a <c>Normal</c>.
+    /// </summary>
+    /// <param name="t"><c>Transformation</c> to apply.</param>
+    /// <param name="n"><c>Normal</c> to transform,</param>
+    /// <returns>transformed <c>Normal</c></returns>
     public static Normal operator *(in Transformation t, in Normal n)
     {
         var n0 = 0f;
@@ -185,7 +200,12 @@ public readonly struct Transformation
         return new Normal(n0, n1, n2);
     }
 
-    // Apply a Transformation object to a Ray
+    /// <summary>
+    /// Apply a <c>Transformation</c> to a <c>Ray</c>.
+    /// </summary>
+    /// <param name="t"><c>Transformation</c> to apply.</param>
+    /// <param name="r"><c>Ray</c> to transform,</param>
+    /// <returns>transformed <c>Ray</c></returns>
     public static Ray operator *(in Transformation t, in Ray r) =>
         new Ray(t * r.Origin, t * r.Dir, r.TMin, r.TMax, r.Depth);
 

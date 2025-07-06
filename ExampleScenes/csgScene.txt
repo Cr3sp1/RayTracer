@@ -1,0 +1,51 @@
+camera (perspective, translation([-1, 0, 0]), 1, 2)
+
+float light_pow(5)
+
+material sky_mat(
+    diffuse(uniform(<0, 0, 0>)),
+    uniform(<1, 1, 1>)
+)
+material light_mat(
+    diffuse(uniform(<0, 0, 0>)),
+    uniform(<light_pow, light_pow, light_pow>)
+)
+material red_mat(
+    diffuse(uniform(<1, 0, 0>)),
+    uniform(<0, 0, 0>)
+)
+material green_mat(
+    diffuse(uniform(<0, 1, 0>)),
+    uniform(<0, 0, 0>)
+)
+material blue_mat(
+    diffuse(uniform(<0, 0, 1>)),
+    uniform(<0, 0, 0>)
+)
+
+
+shape cylA (cylinder (green_mat, rotation_y(-10) * scaling([0.075, 0.075, 0.17])))
+shape cylB (cylinder (green_mat,  rotation_y(-10) * rotation_z(-35) * rotation_x(90) * scaling([0.075, 0.075, 0.17])))
+shape cylAB (csg( cylA, cylB, fusion, identity))
+shape cylC (cylinder (green_mat, rotation_y(-10) * rotation_z(-125) * rotation_x(90) * scaling([0.075, 0.075, 0.17])))
+shape sphereA (sphere (blue_mat, scaling([0.145, 0.145, 0.145])))
+shape cubeA (cube (red_mat, scaling([0.11, 0.11, 0.11]) * rotation_y(-10) * rotation_z(55)))
+shape cylABC (csg(cylAB, cylC, fusion, identity))
+shape cubeSp (csg(sphereA, cubeA, intersection, identity))
+
+
+sphere (sky_mat, scaling([50, 50, 50]))
+sphere (light_mat, translation([-1., -62, 20]) * scaling([50, 50, 50]) )
+
+cylinder (green_mat, translation([0.1, -1.2, -1.2]) * rotation_y(-10) * scaling([0.075, 0.075, 0.17]))
+cylinder (green_mat, translation([0.1, -0.7, -1.2]) * rotation_y(-10) * rotation_z(-35) * rotation_x(90) * scaling([0.075, 0.075, 0.17]))
+
+csg(cylA, cylB, fusion, translation([0.1, -0.9, -0.7]) * rotation_y(-5))
+cylinder (green_mat, translation([0.1, -0.3, -0.7]) * rotation_y(-15) * rotation_z(-125) * rotation_x(90) * scaling([0.075, 0.075, 0.17]))
+sphere (blue_mat, translation([0.1, 0.3, -0.7]) * scaling([0.145, 0.145, 0.145]))
+cube (red_mat, translation([0.1, 0.9, -0.7]) * scaling([0.11, 0.11, 0.11]) * rotation_y(-15) * rotation_z(55))
+
+csg(cylAB, cylC, fusion, translation([0.1, -0.6, -0.2]) * rotation_y(-15))
+csg(sphereA, cubeA, intersection, translation([0.1, 0.6, -0.2]) * rotation_y(-15))
+
+csg(cubeSp, cylABC, difference, translation([3, 0., 1.3]) * rotation_y(-35) * scaling([7, 7, 7]))
