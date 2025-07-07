@@ -1,5 +1,3 @@
-using Microsoft.CSharp.RuntimeBinder;
-
 namespace Trace;
 
 /// <summary>
@@ -356,7 +354,7 @@ public class Scene
 
         return new Plane(transformation, material);
     }
-    
+
     /// <summary>
     /// Parse a <c>Sphere</c>: Sphere(transformation, material).
     /// </summary>
@@ -376,7 +374,7 @@ public class Scene
 
         return new Sphere(transformation, material);
     }
-    
+
     /// <summary>
     /// Parse a <c>Cube</c>: Cube(transformation, material).
     /// </summary>
@@ -384,7 +382,7 @@ public class Scene
     public Cube ParseCube()
     {
         ExpectSymbol('(');
-        
+
         var materials = new List<Material>(6);
         // Look ahead to see if a list of materials is present
         var newToken = InputFile.ReadToken();
@@ -397,12 +395,14 @@ public class Scene
                 {
                     throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
                 }
+
                 materials.Add(material);
                 var newNewToken = InputFile.ReadToken();
                 if (newNewToken is SymbolToken { Symbol: ',' }) continue;
                 InputFile.UnreadToken(newNewToken);
                 break;
             }
+
             ExpectSymbol(']');
         }
         else
@@ -413,9 +413,10 @@ public class Scene
             {
                 throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
             }
+
             materials.Add(material);
         }
-       
+
 
         ExpectSymbol(',');
         var transformation = ParseTransformation();
@@ -423,7 +424,7 @@ public class Scene
 
         return new Cube(materials, transformation);
     }
-    
+
     /// <summary>
     /// Parse a <c>Cylinder</c>: Cylinder(transformation, material).
     /// </summary>
@@ -431,7 +432,7 @@ public class Scene
     public Cylinder ParseCylinder()
     {
         ExpectSymbol('(');
-        
+
         var materials = new List<Material>(6);
         // Look ahead to see if a list of materials is present
         var newToken = InputFile.ReadToken();
@@ -444,12 +445,14 @@ public class Scene
                 {
                     throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
                 }
+
                 materials.Add(material);
                 var newNewToken = InputFile.ReadToken();
                 if (newNewToken is SymbolToken { Symbol: ',' }) continue;
                 InputFile.UnreadToken(newNewToken);
                 break;
             }
+
             ExpectSymbol(']');
         }
         else
@@ -460,6 +463,7 @@ public class Scene
             {
                 throw new GrammarException($"Unknown material '{materialName}'.", InputFile.Location);
             }
+
             materials.Add(material);
         }
 
@@ -469,7 +473,7 @@ public class Scene
 
         return new Cylinder(materials, transformation);
     }
-    
+
     /// <summary>
     /// Parse a <c>Csg</c>: Csg(shapeA, shapeB, csgType, transformation).
     /// </summary>
@@ -477,19 +481,21 @@ public class Scene
     public Csg ParseCsg()
     {
         ExpectSymbol('(');
-        
+
         var shapeAName = ExpectIdentifier();
         if (!ShapeVariables.TryGetValue(shapeAName, out var shapeA))
         {
             throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
         }
+
         ExpectSymbol(',');
-        
+
         var shapeBName = ExpectIdentifier();
         if (!ShapeVariables.TryGetValue(shapeBName, out var shapeB))
         {
             throw new GrammarException($"Unknown shape '{shapeAName}'.", InputFile.Location);
         }
+
         ExpectSymbol(',');
 
         var csgType = ExpectKeywords([Keyword.Fusion, Keyword.Difference, Keyword.Intersection]) switch
@@ -500,7 +506,7 @@ public class Scene
             _ => throw new RuntimeException("This line should not be reachable.")
         };
         ExpectSymbol(',');
-        
+
         var transformation = ParseTransformation();
         ExpectSymbol(')');
 
@@ -524,19 +530,19 @@ public class Scene
             case Keyword.Sphere:
                 shape = ParseSphere();
                 break;
-            
+
             case Keyword.Cube:
                 shape = ParseCube();
                 break;
-            
+
             case Keyword.Cylinder:
                 shape = ParseCylinder();
                 break;
-            
+
             case Keyword.Csg:
                 shape = ParseCsg();
                 break;
-            
+
             default:
                 throw new RuntimeException("This line should not be reachable.");
         }
@@ -602,12 +608,14 @@ public class Scene
                 break;
             }
 
-            if (whichToken is not KeywordToken keywordToken) // First expect a keyword
-            {
-                throw new GrammarException($"Expected keyword instead of '{whichToken}'.", InputFile.Location);
-            }
+            InputFile.UnreadToken(whichToken);
+            var keyword = ExpectKeywords([
+                Keyword.Float, Keyword.Plane, Keyword.Sphere, Keyword.Cube, Keyword.Cylinder, Keyword.Csg,
+                Keyword.Material, Keyword.Shape, Keyword.Camera
+            ]);
 
-            switch (keywordToken.Keyword) // See which keyword it is and register the corresponding variable
+
+            switch (keyword) // See which keyword it is and register the corresponding variable
             {
                 case Keyword.Float:
                     var floatName = ExpectIdentifier();
@@ -634,15 +642,15 @@ public class Scene
                 case Keyword.Sphere:
                     SceneWorld.AddShape(ParseSphere());
                     break;
-                
+
                 case Keyword.Cube:
                     SceneWorld.AddShape(ParseCube());
                     break;
-                
+
                 case Keyword.Cylinder:
                     SceneWorld.AddShape(ParseCylinder());
                     break;
-                
+
                 case Keyword.Csg:
                     SceneWorld.AddShape(ParseCsg());
                     break;
@@ -654,8 +662,9 @@ public class Scene
                         throw new GrammarException($"Material '{materialName}' cannot be redefined.",
                             InputFile.Location);
                     }
+
                     break;
-                
+
                 case Keyword.Shape:
                     var (shapeName, shape) = ParseShape();
                     if (!ShapeVariables.TryAdd(shapeName, shape))
@@ -663,18 +672,15 @@ public class Scene
                         throw new GrammarException($"Shape '{shapeName}' cannot be redefined.",
                             InputFile.Location);
                     }
+
                     break;
 
                 case Keyword.Camera:
                     if (SceneCamera != null)
-                    {
                         throw new GrammarException("Scene camera already exists, cannot define two cameras.",
                             InputFile.Location);
-                    }
-                    else
-                    {
-                        SceneCamera = ParseCamera();
-                    }
+                    SceneCamera = ParseCamera();
+
 
                     break;
 
