@@ -62,7 +62,15 @@ For this command to run properly, the file "demo.txt" must be in the same direct
 </p>
 
 <p align="center">
-  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a></em>
+  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a>.</em>
+</p>
+
+<p align="center">
+  <img src="ExampleImages/demoA4.png" alt="Demo AA image" width="60%" />
+</p>
+
+<p align="center">
+  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a> with antialiasing (16 rays per pixel).</em>
 </p>
 
 <p align="center">
@@ -70,7 +78,15 @@ For this command to run properly, the file "demo.txt" must be in the same direct
 </p>
 
 <p align="center">
-  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a> with an orthogonal camera</em>
+  <em>Rendering of <a href="ExampleScenes/demo.txt">demo.txt</a> with an orthogonal camera.</em>
+</p>
+
+<p align="center">
+  <img src="ExampleImages/CornellN10D3A5.png" alt="Cornell box" width="40%" />
+</p>
+
+<p align="center">
+  <em>Rendering of the Cornell box.</em>
 </p>
 
 <p align="center">
@@ -78,15 +94,32 @@ For this command to run properly, the file "demo.txt" must be in the same direct
 </p>
 
 <p align="center">
-  <em>Example of texture materials</em>
+  <em>Example of texture materials.</em>
 </p>
+
+<p align="center">
+  <img src="ExampleImages/csg.png" alt="Csg" width="60%" />
+</p>
+
+<p align="center">
+  <em>Example of Constructive Solid Geometry.</em>
+</p>
+
 
 <p align="center">
   <img src="ExampleImages/ballroom.png" alt="Ballroom image" width="60%" />
 </p>
 
 <p align="center">
-  <em>A sphere attending her first ballet class. Wooden textures from <a href="https://it.vecteezy.com">Vecteezy</a></em>
+  <em>A sphere attending her first ballet class. Wooden textures from <a href="https://it.vecteezy.com">Vecteezy</a>.</em>
+</p>
+
+<p align="center">
+  <img src="ExampleImages/sushi.png" alt="Sushi" width="60%" />
+</p>
+
+<p align="center">
+  <em>A stylized plate of sushi.</em>
 </p>
 
 ## Supported Output Formats

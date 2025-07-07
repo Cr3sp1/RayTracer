@@ -1,0 +1,29 @@
+camera (perspective, translation([0, 0, 1]), 1, 2)
+
+material light_mat(
+  diffuse(uniform(<0, 0, 0>)),
+  uniform(<1, 1, 1>)
+)
+material white_mat(
+  diffuse(uniform(<1, 1, 1>)),
+  uniform(<0, 0, 0>)
+)
+material red_mat(
+  diffuse(uniform(<1, 0, 0>)),
+  uniform(<0, 0, 0>)
+)
+material green_mat(
+  diffuse(uniform(<0, 1, 0>)),
+  uniform(<0, 0, 0>)
+)
+
+shape ceiling (cube(white_mat, scaling([5, 5, 5])))
+shape ceil_light (cube(light_mat, translation([0, 0, -4]) * scaling([0.25, 0.25, 25])))
+
+plane (white_mat, identity)
+plane (white_mat, translation([2, 0, 0]) * rotation_y(90)) 
+plane (red_mat, translation([0, 1, 0]) * rotation_x(90)) 
+plane (green_mat, translation([0, -1, 0]) * rotation_x(90))
+csg (ceiling, ceil_light, difference, translation([0.5, 0, 7]))
+cube( white_mat, translation([0.5, -0.33, 0.3]) * rotation_z(-20) * scaling([0.3, 0.3, 0.3]) )
+cube( white_mat, translation([1.5, 0.33, 0.6]) * rotation_z(20) * scaling([0.3, 0.3, 0.6]) )
