@@ -47,6 +47,7 @@ The camera represents the observer of the scene, and it can be either "perspecti
 - Maximum depth of rays.
 - Maximum depth before Russian Roulette starts occurring in the path tracer.
 - List of names and list of new values of variables to be overridden.
+- Number of rays to be fired per side of pixel for anti-aliasing.
 
 Example:
 ```sh
@@ -78,6 +79,14 @@ For this command to run properly, the file "demo.txt" must be in the same direct
 
 <p align="center">
   <em>Example of texture materials</em>
+</p>
+
+<p align="center">
+  <img src="ExampleImages/ballroom.png" alt="Ballroom image" width="60%" />
+</p>
+
+<p align="center">
+  <em>A sphere attending her first ballet class. Wooden textures from <a href="https://it.vecteezy.com">Vecteezy</a></em>
 </p>
 
 ## Supported Output Formats
