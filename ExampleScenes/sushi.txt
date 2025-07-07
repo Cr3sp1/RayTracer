@@ -1,6 +1,6 @@
 camera (perspective, rotation_y(45) * translation([-1.3, 0, 0]), 1.5, 1)
 
-float light_pow(5)
+float light_pow(4)
 
 material background(
     diffuse(uniform(<0, 0, 0>)),
@@ -51,9 +51,21 @@ material light_wood(
     uniform(<0, 0, 0>)
 )
 
-shape rice_ball (cube(rice, translation([0, 0, -0.2]) * scaling([1, 1, 0.8])))
-shape salmon_slice (cube(salmon, translation([0, 0, 0.8]) * scaling([1, 1, 0.2])))
-shape tuna_slice (cube(tuna, translation([0, 0, 0.8]) * scaling([1, 1, 0.2])))
+shape rice_cube (cube(rice, identity))
+shape rice_cyl_x (cylinder(rice, rotation_y(90) * scaling([1., 1., 1.5])))
+shape rice_cyl_z (cylinder(rice,scaling([1.2, 1.2, 1.5])))
+shape rice_shaper (csg(rice_cyl_x, rice_cyl_z, intersection, identity))
+shape rice_ball (csg(rice_cube, rice_shaper, intersection, translation([0, 0, -0.3]) * scaling([1, 1, 0.7])))
+shape salmon_cube (cube(salmon, identity))
+shape salmon_cyl_x (cylinder(salmon, rotation_y(90) * scaling([1., 1., 1.5])))
+shape salmon_cyl_z (cylinder(salmon,scaling([1.2, 1.2, 1.5])))
+shape salmon_shaper (csg(salmon_cyl_x, salmon_cyl_z, intersection, identity))
+shape salmon_slice (csg(salmon_cube, salmon_shaper, intersection, translation([0, 0, +0.3]) * scaling([0.99, 0.99, 0.99]) * scaling([1, 1, 0.7])))
+shape tuna_cube (cube(tuna, identity))
+shape tuna_cyl_x (cylinder(tuna, rotation_y(90) * scaling([1., 1., 1.5])))
+shape tuna_cyl_z (cylinder(tuna,scaling([1.2, 1.2, 1.5])))
+shape tuna_shaper (csg(tuna_cyl_x, tuna_cyl_z, intersection, identity))
+shape tuna_slice (csg(tuna_cube, tuna_shaper, intersection, translation([0, 0, +0.3]) * scaling([0.99, 0.99, 0.99]) * scaling([1, 1, 0.7])))
 shape outer_bowl (sphere(ceramic, identity)) 
 shape inner_bowl (sphere(ceramic, translation([0, 0, 0.3]) * scaling([1.1, 1.1, 1.1])))
 shape bowl (csg(outer_bowl, inner_bowl, difference, identity))
@@ -62,13 +74,13 @@ shape soy_liquid (csg(soy_cube, inner_bowl, intersection, identity))
 
 
 sphere (background, scaling([50, 50, 50]))
-sphere (light_mat, translation([-10., -72, 30]) * scaling([50, 50, 50]) )
+sphere (light_mat, translation([-40., -20, 40]) * scaling([50, 50, 50]) )
 
 cube (wood, scaling([1.2, 2, 0.1]) * translation([0, 0, -1]))
 cube (wood, translation([0, 1.5, -0.3]) * scaling([1.2, 0.1, 0.2]))
 cube (wood, translation([0, -1.5, -0.3]) * scaling([1.2, 0.1, 0.2]))
 
-csg (rice_ball, salmon_slice, fusion, translation([-0.6, 1.2, 0]) * rotation_z(-20) * scaling([0.25, 0.1, 0.1]) * translation([0, 0, 2]))
+csg(rice_ball, salmon_slice, fusion, translation([-0.6, 1.2, 0]) * rotation_z(-20) * scaling([0.25, 0.1, 0.1]) * translation([0, 0, 2]))
 csg (rice_ball, salmon_slice, fusion, translation([-0.6, 0.7, 0]) * rotation_z(-20) * scaling([0.25, 0.1, 0.1]) * translation([0, 0, 2]))
 csg (rice_ball, tuna_slice, fusion, translation([-0.6, 0.2, 0]) * rotation_z(-20) * scaling([0.25, 0.1, 0.1]) * translation([0, 0, 2]))
 csg (rice_ball, tuna_slice, fusion, translation([-0.6, -0.3, 0]) * rotation_z(-20) * scaling([0.25, 0.1, 0.1]) * translation([0, 0, 2]))
@@ -80,6 +92,5 @@ cylinder ([seaweed, roll_tuna, roll_tuna], translation([0.4, -0.3, 0]) * scaling
 
 csg (bowl, soy_liquid, fusion, translation([0.6, -1.2, 0]) * scaling([0.4, 0.4, 0.4]) * translation([0, 0, 1]))
 
-cylinder (light_wood, translation([-0.4, -1.4, 0])  * scaling([0.7, 0.02, 0.02]) * translation([0, 0, 1]) * rotation_Y(90))
-cylinder (light_wood, translation([-0.4, -1.2, 0])  * scaling([0.7, 0.02, 0.02]) * translation([0, 0, 1]) * rotation_Y(90))
-
+cylinder (light_wood, translation([-0.4, -1.4, 0])  * scaling([0.666, 0.02, 0.02]) * translation([0, 0, 1]) * rotation_Y(90))
+cylinder (light_wood, translation([-0.4, -1.2, 0])  * scaling([0.666, 0.02, 0.02]) * translation([0, 0, 1]) * rotation_Y(90))
