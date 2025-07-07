@@ -10,7 +10,7 @@ The project is developed using .NET 9.
 - Linux or Windows operating systems.
 
 ## Usage
-Download the executable corresponding to your OS.
+Download the executable corresponding to your OS (RayTracer.exe for Windows, RayTracer for Linux).
 RayTracer is executed from the command line.
 
 To run the tool on Windows:
